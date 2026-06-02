@@ -1,0 +1,78 @@
+{
+  "brand": {
+    "name": "Ahmad Haddad",
+    "tagline": "Cinematographer · Filmmaker · Photographer · Colorist"
+  },
+  "nav": { "home": "Home", "about": "About", "work": "Work", "services": "Services", "contact": "Contact" },
+  "lang": { "switch": "العربية", "current": "English" },
+  "home": {
+    "kicker": "Ahmad Haddad",
+    "title": "Welcome to my journey in cinema and photography",
+    "subtitle": "I craft frames that tell stories — from the idea to the screen, with an honest, considered cinematic voice.",
+    "cta_work": "See the work",
+    "cta_contact": "Get in touch",
+    "stats": { "years": "Years of experience", "projects": "Projects delivered", "clients": "Brands worked with" },
+    "services_title": "What I offer",
+    "services_sub": "A focused set of services designed to bring your vision to the screen with intention.",
+    "preview_title": "Selected work",
+    "preview_cta": "View all work"
+  },
+  "about": {
+    "title": "My journey",
+    "p1": "My adventure in photography began in 2014, driven by a passion to capture the beauty of the world around me.",
+    "p2": "A turning point came in 2016 when one of my photographs was published in an international magazine — it opened new horizons and inspired me deeply.",
+    "title2": "Discovering cinema",
+    "p3": "That same year I enrolled at Yarmouk University to study Computer Engineering and graduated in 2022.",
+    "p4": "In 2018 I started working at a small studio to learn and grow. That experience opened my eyes to the magic of videography and cemented my love for cinema.",
+    "p5": "I keep learning and evolving with every new opportunity, grateful for every moment that brought me here.",
+    "cv_title": "Get to know me",
+    "cv_sub": "Download my CV for a full overview of my background, projects, and the skills I've built along the way.",
+    "cv_download": "Download CV (PDF)"
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Five focused offerings to bring your vision to the screen.",
+    "items": {
+      "shorts": { "title": "Short film production", "desc": "High-quality short films that bring a focused story to life with intention and craft." },
+      "ads": { "title": "Cinematic ads", "desc": "Inventive commercial work that reflects your brand identity and stops the scroll." },
+      "color": { "title": "Color grading", "desc": "Cinematic color treatment that elevates the image and gives scenes their mood." },
+      "photo": { "title": "Photography", "desc": "Photographic services for products, portraits, and editorial moments — done with care." },
+      "edit": { "title": "Video editing", "desc": "Professional editing that brings your footage to life with precision and rhythm." }
+    },
+    "rate_card_title": "Rate card",
+    "rate_card_sub": "See the official rate card with full details.",
+    "rate_card_cta": "Open rate card",
+    "company_title": "Faii House",
+    "company_sub": "The creative team I lead — for larger production projects.",
+    "company_cta": "Visit the company"
+  },
+  "work": {
+    "title": "Work",
+    "subtitle": "Whether you need a short or a feature, let me help turn your vision into a striking cinematic experience.",
+    "tabs": { "films": "Films", "ads": "Commercials", "photo": "Photography" },
+    "youtube_title": "From my YouTube channel",
+    "youtube_sub": "Recent releases — tap to watch.",
+    "instagram_title": "Instagram",
+    "instagram_sub": "Follow the latest frames and behind-the-scenes.",
+    "instagram_cta": "Open profile"
+  },
+  "contact": {
+    "title": "Get in touch",
+    "subtitle": "Whether you're interested in working together or just want to say hi, I'd love to hear from you.",
+    "name": "Full name",
+    "email": "Email address",
+    "message": "Your message",
+    "send": "Send message",
+    "info_title": "Contact info",
+    "address_label": "Address",
+    "address": "Irbid, Jordan",
+    "phone_label": "Phone",
+    "email_label": "Email",
+    "open_mail": "Open your email app"
+  },
+  "footer": {
+    "blurb": "Thanks for taking the time to explore my work and journey through cinema and photography.",
+    "blurb2": "If you have any inquiries or would like to collaborate on your next project, don't hesitate to reach out.",
+    "rights": "© 2026 Ahmad Haddad. All rights reserved."
+  }
+}
