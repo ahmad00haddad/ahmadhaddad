@@ -19,8 +19,9 @@ if (!i18n.isInitialized) {
       fallbackLng: "ar",
       supportedLngs: ["ar", "en"],
       interpolation: { escapeValue: false },
+      lng: "ar",
       detection: {
-        order: ["localStorage", "navigator"],
+        order: ["localStorage"],
         caches: ["localStorage"],
         lookupLocalStorage: "haddad-lang",
       },
