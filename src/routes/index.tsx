@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
+  ArrowRight,
   Film,
   Camera,
   Palette,
@@ -13,6 +13,7 @@ import {
   Facebook,
   Youtube,
   Aperture,
+  Menu,
 } from "lucide-react";
 import heroImg from "@/assets/ahmad-hero.jpg";
 import filmSet from "@/assets/film-set.jpg";
@@ -41,198 +42,167 @@ const SERVICES = [
   { key: "edit", Icon: Video },
 ] as const;
 
-const STRIP = [
-  { src: heroImg, label: "PORTRAIT" },
-  { src: filmSet, label: "FILM SET" },
-  { src: lens, label: "MACRO" },
-];
+const STRIP = [heroImg, filmSet, lens];
 
 function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
+
   return (
     <>
-      {/* ============ CINEMATIC HERO ============ */}
+      {/* ============ CINEMATIC HERO — fits viewport exactly ============ */}
       <section
         dir="ltr"
-        className="relative isolate min-h-[88vh] overflow-hidden bg-[var(--ink)] px-3 py-3 md:px-5 md:py-5"
+        className="bg-[var(--ink)] p-3 md:p-4"
+        style={{ height: "calc(100svh - 65px)" }}
       >
         <div
-          className="relative grid min-h-[calc(88vh-2rem)] grid-cols-1 overflow-hidden rounded-sm lg:grid-cols-[1fr_320px]"
-          style={{ background: "var(--cinema)" }}
+          className="relative grid h-full grid-cols-1 overflow-hidden rounded-sm lg:grid-cols-[1fr_300px]"
+          style={{ backgroundColor: "var(--cinema)" }}
         >
-          {/* grain texture */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-60 mix-blend-overlay"
-            style={{ backgroundImage: "var(--grain)" }}
-          />
+          {/* Heavy grain overlay */}
+          <div className="grain-layer" />
 
-          {/* LEFT — main canvas */}
-          <div className="relative flex flex-col justify-between p-6 md:p-12">
-            {/* Top nav row */}
-            <div className="flex items-center justify-between gap-6">
+          {/* ============ LEFT: red canvas ============ */}
+          <div className="relative z-[2] flex flex-col justify-between p-5 md:p-10">
+            {/* top nav row */}
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 text-[var(--cream)]">
-                <Aperture className="size-8" strokeWidth={1.4} />
+                <Aperture className="size-9" strokeWidth={1.3} />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  Haddad · Studio
+                  {t("home.brand_tag")}
                 </span>
               </div>
-              <div className="hidden items-center gap-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]/90 md:flex">
-                <span>It's all about</span>
-                <span className="h-px w-24 bg-[var(--cream)]/40" />
-                <Link to="/services" className="hover:text-[var(--cream)]">
-                  Production
+              <div className="hidden items-center gap-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]/90 md:flex">
+                <span>{t("home.hero_top_label")}</span>
+                <span className="h-px w-20 bg-[var(--cream)]/40" />
+                <Link to="/services" className="hover:opacity-70">
+                  {t("home.hero_nav_a")}
                 </Link>
-                <Link to="/work" className="hover:text-[var(--cream)]">
-                  Portfolio
+                <Link to="/work" className="hover:opacity-70">
+                  {t("home.hero_nav_b")}
                 </Link>
               </div>
             </div>
 
-            {/* Center: huge display text */}
-            <div className="relative mt-10 grid grid-cols-1 items-center gap-8 md:mt-0 md:grid-cols-[1.1fr_1fr]">
+            {/* middle: title left + aperture right */}
+            <div className="grid flex-1 grid-cols-1 items-center gap-6 py-6 md:grid-cols-[1.05fr_1fr]">
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="text-[var(--cream)]"
+                dir={isAr ? "rtl" : "ltr"}
               >
-                {/* Arabic giant title */}
                 <h1
-                  dir="rtl"
-                  className="font-arabic text-[clamp(3.2rem,9vw,8rem)] leading-[0.95] tracking-tight"
+                  className={
+                    isAr
+                      ? "font-arabic text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-tight"
+                      : "font-display text-[clamp(3rem,8vw,7rem)] font-bold leading-[0.9] tracking-tight"
+                  }
                 >
-                  إطار
+                  {t("home.hero_title_a")}
                   <br />
-                  وَ تركيز
+                  {t("home.hero_title_b")}
                 </h1>
-                <p
-                  dir="rtl"
-                  className="mt-6 max-w-md text-sm leading-relaxed text-[var(--cream)]/90 md:text-base"
-                >
-                  ستوديو مستقل متخصص بالتصوير السينمائي الفاخر، يلتقط
-                  اللحظات الصادقة ويصنع من الفكرة قصةً على الشاشة.
+                <p className="mt-5 max-w-md text-xs leading-relaxed text-[var(--cream)]/90 md:text-sm">
+                  {t("home.hero_tagline")}
                 </p>
               </motion.div>
 
-              {/* Decorative aperture mark */}
+              {/* aperture / lens disc with portrait inside */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.85, rotate: -8 }}
-                animate={{ opacity: 0.9, scale: 1, rotate: 0 }}
+                initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="relative hidden aspect-square w-full max-w-[420px] place-self-end md:block"
+                className="relative mx-auto aspect-square w-full max-w-[340px] md:max-w-[380px]"
               >
-                <div className="absolute inset-0 rounded-full border-[14px] border-[var(--ink)]/15" />
-                <div className="absolute inset-6 rounded-full border-2 border-dashed border-[var(--ink)]/30" />
-                <div className="absolute inset-14 overflow-hidden rounded-full ring-2 ring-[var(--ink)]/30">
+                <div className="absolute inset-0 rounded-full border-[10px] border-[var(--ink)]/15" />
+                <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
+                <div className="absolute inset-10 overflow-hidden rounded-full ring-2 ring-[var(--ink)]/35">
                   <img
                     src={journey}
                     alt=""
-                    className="size-full object-cover opacity-90 grayscale"
+                    className="size-full object-cover grayscale"
                   />
                   <div className="absolute inset-0 bg-[var(--cinema)] mix-blend-multiply" />
+                  <div className="grain-layer" style={{ opacity: 0.7 }} />
                 </div>
                 <Aperture
-                  className="absolute inset-0 m-auto size-16 text-[var(--ink)]/40"
-                  strokeWidth={1}
+                  className="absolute inset-0 m-auto size-12 text-[var(--ink)]/40"
+                  strokeWidth={0.9}
                 />
               </motion.div>
             </div>
 
-            {/* Bottom: huge bilingual statement */}
-            <div className="mt-10 md:mt-0">
-              <motion.h2
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.15 }}
-                className="font-display text-[clamp(2.6rem,8.5vw,7.5rem)] font-bold leading-[0.9] tracking-tight text-[var(--cream)]"
-              >
-                WE CAPTURE
-                <br />
-                <span className="opacity-90">__THE EXTRAORDINARY</span>
-              </motion.h2>
-
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link
-                  to="/work"
-                  className="group inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] transition-transform hover:scale-[1.03]"
-                >
-                  {t("home.cta_work")}
-                  <ArrowLeft className="size-4 -rotate-180 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--cream)]/60 px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] transition-colors hover:bg-[var(--cream)] hover:text-[var(--ink)]"
-                >
-                  {t("home.cta_contact")}
-                </Link>
-              </div>
-            </div>
+            {/* bottom huge statement */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.15 }}
+              dir={isAr ? "rtl" : "ltr"}
+              className={
+                isAr
+                  ? "font-arabic text-[clamp(2.4rem,7.5vw,6.5rem)] leading-[0.95] text-[var(--cream)]"
+                  : "font-display text-[clamp(2.2rem,7vw,6rem)] font-bold leading-[0.88] tracking-tight text-[var(--cream)]"
+              }
+            >
+              {t("home.hero_big_a")}
+              <br />
+              <span className="opacity-95">{t("home.hero_big_b")}</span>
+            </motion.h2>
           </div>
 
-          {/* RIGHT — cream filmstrip column */}
-          <aside
-            className="relative hidden flex-col bg-[var(--cream)] p-4 lg:flex"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 12px 14px, var(--cinema) 3px, transparent 4px), radial-gradient(circle at calc(100% - 12px) 14px, var(--cinema) 3px, transparent 4px)",
-              backgroundSize: "100% 28px",
-              backgroundRepeat: "repeat-y",
-            }}
-          >
-            {/* Capture Now pill */}
-            <div className="mb-4 flex items-center justify-between px-2">
+          {/* ============ RIGHT: real 35mm filmstrip ============ */}
+          <aside className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex">
+            {/* top: capture now + menu */}
+            <div className="mb-3 flex items-center justify-between px-3">
               <Link
                 to="/contact"
-                className="rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
+                className="rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-105"
               >
-                Capture Now
+                {t("home.capture_now")}
               </Link>
-              <div className="grid size-9 place-items-center rounded-full border border-[var(--ink)]/30">
-                <div className="flex flex-col gap-1">
-                  <span className="block h-[2px] w-3 bg-[var(--ink)]" />
-                  <span className="block h-[2px] w-3 bg-[var(--ink)]" />
-                </div>
-              </div>
+              <button
+                aria-label="menu"
+                className="grid size-9 place-items-center rounded-full border border-[var(--ink)]/30 text-[var(--ink)]"
+              >
+                <Menu className="size-4" />
+              </button>
             </div>
 
-            {/* Stacked photo frames */}
-            <div className="flex flex-1 flex-col gap-4 px-2">
-              {STRIP.map((item, i) => (
+            {/* 3 stacked frames, no scroll */}
+            <div className="flex min-h-0 flex-1 flex-col gap-3 px-3">
+              {STRIP.map((src, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * i }}
-                  className="relative aspect-[4/5] flex-1 overflow-hidden rounded-sm"
+                  className="relative min-h-0 flex-1 overflow-hidden rounded-[2px]"
                 >
-                  <img
-                    src={item.src}
-                    alt={item.label}
-                    className="size-full object-cover"
-                  />
-                  <span className="absolute bottom-2 left-2 rounded-sm bg-[var(--ink)]/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[var(--cream)]">
-                    {item.label}
-                  </span>
+                  <img src={src} alt="" className="size-full object-cover" />
+                  <div className="grain-layer" style={{ opacity: 0.4 }} />
                 </motion.div>
               ))}
             </div>
 
-            {/* Footer of strip — contact */}
-            <div className="mt-4 border-t border-[var(--ink)]/15 px-2 pt-3">
+            {/* footer: contact + socials */}
+            <div className="mt-3 border-t border-[var(--ink)]/15 px-3 pt-3">
               <div className="flex items-center gap-2">
                 <span className="grid size-7 place-items-center rounded-sm border border-[var(--ink)]/40 text-[var(--ink)]">
                   <Film className="size-3.5" />
                 </span>
                 <div className="leading-tight">
-                  <div className="text-sm font-bold text-[var(--ink)]">
-                    Contact for
+                  <div className="text-[13px] font-bold text-[var(--ink)]">
+                    {t("home.contact_for")}
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--ink)]/70">
-                    Collaboration +
+                  <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--ink)]/70">
+                    {t("home.collab")}
                   </div>
                 </div>
               </div>
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-2 flex items-center gap-2">
                 {[
                   { Icon: Linkedin, href: "https://www.linkedin.com/in/ahmad00haddad/" },
                   { Icon: Instagram, href: "https://www.instagram.com/ahmad00haddad/" },
@@ -256,7 +226,7 @@ function HomePage() {
       </section>
 
       {/* ============ STATS STRIP ============ */}
-      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-10">
+      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12">
         <div className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6">
           <Stat number="10+" label={t("home.stats.years")} />
           <Stat number="120+" label={t("home.stats.projects")} />
@@ -265,8 +235,9 @@ function HomePage() {
       </section>
 
       {/* ============ SERVICES PREVIEW ============ */}
-      <section className="bg-[var(--surface-deep)] py-24">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="relative bg-[var(--surface-deep)] py-24">
+        <div className="grain-layer-soft" />
+        <div className="relative z-[2] mx-auto max-w-7xl px-6">
           <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">
@@ -317,9 +288,9 @@ function HomePage() {
             </h2>
             <Link
               to="/work"
-              className="text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream"
             >
-              {t("home.preview_cta")} →
+              {t("home.preview_cta")} <ArrowRight className="size-3.5" />
             </Link>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
