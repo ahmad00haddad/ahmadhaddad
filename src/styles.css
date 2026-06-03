@@ -123,16 +123,19 @@
   position: relative;
   isolation: isolate;
 }
-@utility grain-overlay::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--grain);
-  mix-blend-mode: overlay;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 1;
+@utility grain-overlay {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--grain);
+    mix-blend-mode: overlay;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+  }
 }
+
 
 @utility filmstrip-edge {
   background-image:
