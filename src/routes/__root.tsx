@@ -81,20 +81,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "أحمد حدّاد — مصور سينمائي وصانع أفلام" },
+      { title: "Ahmad Haddad - Cinematographer" },
       {
         name: "description",
         content:
           "الموقع الرسمي لأحمد حدّاد — مصور سينمائي، صانع أفلام، مصور فوتوغراف، وملوّن سينمائي من الأردن.",
       },
       { name: "author", content: "Ahmad Haddad" },
-      { property: "og:title", content: "أحمد حدّاد — Cinematographer & Filmmaker" },
+      { property: "og:title", content: "Ahmad Haddad - Cinematographer" },
       {
         property: "og:description",
         content: "أعمال سينمائية، إعلانات، تصوير فوتوغراف، وتلوين سينمائي.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Ahmad Haddad - Cinematographer" },
+      { name: "description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
+      { property: "og:description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
+      { name: "twitter:description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cbd0f487-f812-4877-9656-e472e32ee681/id-preview-58dec9e7--093ccc0d-cb06-4429-b0af-c514a1310e4c.lovable.app-1780563310511.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cbd0f487-f812-4877-9656-e472e32ee681/id-preview-58dec9e7--093ccc0d-cb06-4429-b0af-c514a1310e4c.lovable.app-1780563310511.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
