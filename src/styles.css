@@ -135,13 +135,25 @@
   z-index: 1;
 }
 
-/* Authentic 35mm film sprocket strip — small red rectangles on cream */
+/* Authentic 35mm film sprocket strip — small red rectangles on all 4 sides */
 @utility filmstrip-vertical {
   background-color: var(--cream);
   background-image:
-    linear-gradient(to bottom, var(--cinema) 0 9px, transparent 9px 26px),
-    linear-gradient(to bottom, var(--cinema) 0 9px, transparent 9px 26px);
-  background-size: 16px 26px, 16px 26px;
-  background-position: 8px 0, calc(100% - 8px) 0;
+    /* left column of small red rectangles */
+    linear-gradient(to bottom, var(--cinema) 0 6px, transparent 6px 18px),
+    /* right column of small red rectangles */
+    linear-gradient(to bottom, var(--cinema) 0 6px, transparent 6px 18px);
+  background-size: 10px 18px, 10px 18px;
+  background-position: 6px 0, calc(100% - 6px) 0;
   background-repeat: repeat-y, repeat-y;
+}
+
+/* Horizontal sprocket row — small red rectangles for top/bottom of each frame */
+@utility sprocket-row {
+  height: 12px;
+  background-color: var(--cream);
+  background-image: linear-gradient(to right, var(--cinema) 0 6px, transparent 6px 18px);
+  background-size: 18px 6px;
+  background-position: 0 center;
+  background-repeat: repeat-x;
 }
