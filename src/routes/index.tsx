@@ -172,18 +172,21 @@ function HomePage() {
             </div>
 
             {/* 3 stacked frames, no scroll */}
-            <div className="flex min-h-0 flex-1 flex-col gap-3 px-3">
+            <div className="flex min-h-0 flex-1 flex-col px-3">
               {STRIP.map((src, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 * i }}
-                  className="relative min-h-0 flex-1 overflow-hidden rounded-[2px]"
-                >
-                  <img src={src} alt="" className="size-full object-cover" />
-                  <div className="grain-layer" style={{ opacity: 0.4 }} />
-                </motion.div>
+                <div key={i} className="flex min-h-0 flex-1 flex-col">
+                  <div className="sprocket-row shrink-0" />
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 * i }}
+                    className="relative min-h-0 flex-1 overflow-hidden rounded-[2px]"
+                  >
+                    <img src={src} alt="" className="size-full object-cover" />
+                    <div className="grain-layer" style={{ opacity: 0.4 }} />
+                  </motion.div>
+                  {i === STRIP.length - 1 && <div className="sprocket-row shrink-0" />}
+                </div>
               ))}
             </div>
 
