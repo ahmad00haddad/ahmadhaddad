@@ -63,7 +63,7 @@ export function useSettings() {
   useEffect(() => {
     load();
     const ch = supabase
-      .channel("site_settings-live")
+      .channel(`site_settings-live-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
@@ -96,7 +96,7 @@ export function useContent<T = any>(
   useEffect(() => {
     load();
     const ch = supabase
-      .channel(`${table}-live`)
+      .channel(`${table}-live-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
