@@ -182,7 +182,7 @@ function HomePage() {
 
             {/* 3 stacked frames, no scroll */}
             <div className="flex min-h-0 flex-1 flex-col px-3">
-              {STRIP.map((src, i) => (
+              {strip.map((src: string, i: number) => (
                 <div key={i} className="flex min-h-0 flex-1 flex-col">
                   <div className="sprocket-row shrink-0" />
                   <motion.div
@@ -194,7 +194,7 @@ function HomePage() {
                     <img src={src} alt="" className="size-full object-cover" />
                     <div className="grain-layer" style={{ opacity: 0.4 }} />
                   </motion.div>
-                  {i === STRIP.length - 1 && <div className="sprocket-row shrink-0" />}
+                  {i === strip.length - 1 && <div className="sprocket-row shrink-0" />}
                 </div>
               ))}
             </div>
