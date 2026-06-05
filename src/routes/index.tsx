@@ -139,10 +139,6 @@ function HomePage() {
                   <div className="absolute inset-0 bg-[var(--cinema)] mix-blend-multiply" />
                   <div className="grain-layer" style={{ opacity: 0.7 }} />
                 </div>
-                <Aperture
-                  className="absolute inset-0 m-auto size-12 text-[var(--ink)]/40"
-                  strokeWidth={0.9}
-                />
               </motion.div>
             </div>
 
