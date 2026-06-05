@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, Facebook, Send } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -20,7 +21,13 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
+  const { settings } = useSettings();
+  const c = settings.contact;
+  const emailTo = c.email || "ahmad00haddad@gmail.com";
+  const phone = c.phone || "+962 79 925 6345";
+  const city = (isAr ? c.city_ar : c.city_en) || t("contact.address");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   const onSubmit = (e: React.FormEvent) => {
@@ -29,7 +36,7 @@ function ContactPage() {
     const body = encodeURIComponent(
       `${form.message}\n\n— ${form.name} (${form.email})`,
     );
-    window.location.href = `mailto:ahmad00haddad@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -96,33 +103,33 @@ function ContactPage() {
                 </h3>
                 <ul className="mt-6 space-y-5">
                   <Info icon={<MapPin className="size-4" />} label={t("contact.address_label")}>
-                    {t("contact.address")}
+                    {city}
                   </Info>
                   <Info icon={<Phone className="size-4" />} label={t("contact.phone_label")}>
-                    <a href="tel:+962799256345" dir="ltr" className="hover:opacity-80">
-                      +962 79 925 6345
+                    <a href={`tel:${phone.replace(/\s+/g, "")}`} dir="ltr" className="hover:opacity-80">
+                      {phone}
                     </a>
                   </Info>
                   <Info icon={<Mail className="size-4" />} label={t("contact.email_label")}>
-                    <a href="mailto:ahmad00haddad@gmail.com" className="hover:opacity-80">
-                      ahmad00haddad@gmail.com
+                    <a href={`mailto:${emailTo}`} className="hover:opacity-80">
+                      {emailTo}
                     </a>
                   </Info>
                 </ul>
 
                 <div className="mt-8 flex flex-wrap gap-2 border-t border-[var(--cream)]/20 pt-6">
-                  <SocialIcon href="https://www.instagram.com/ahmad00haddad/" label="Instagram">
-                    <Instagram className="size-4" />
-                  </SocialIcon>
-                  <SocialIcon href="https://www.linkedin.com/in/ahmad00haddad/" label="LinkedIn">
-                    <Linkedin className="size-4" />
-                  </SocialIcon>
-                  <SocialIcon href="https://www.youtube.com/@ahmad00haddad" label="YouTube">
-                    <Youtube className="size-4" />
-                  </SocialIcon>
-                  <SocialIcon href="https://www.facebook.com/ahmad00haddad/" label="Facebook">
-                    <Facebook className="size-4" />
-                  </SocialIcon>
+                  {c.instagram && (
+                    <SocialIcon href={c.instagram} label="Instagram"><Instagram className="size-4" /></SocialIcon>
+                  )}
+                  {c.linkedin && (
+                    <SocialIcon href={c.linkedin} label="LinkedIn"><Linkedin className="size-4" /></SocialIcon>
+                  )}
+                  {c.youtube && (
+                    <SocialIcon href={c.youtube} label="YouTube"><Youtube className="size-4" /></SocialIcon>
+                  )}
+                  {c.facebook && (
+                    <SocialIcon href={c.facebook} label="Facebook"><Facebook className="size-4" /></SocialIcon>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Instagram, Youtube, ExternalLink, Play } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-import { supabase } from "@/integrations/supabase/client";
+import { useContent } from "@/lib/use-settings";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/work")({
 type Work = {
   id: string;
   title: string;
+  title_en?: string | null;
   category: string;
   description: string | null;
   image_url: string;
@@ -47,24 +48,14 @@ const FALLBACK: Work[] = [
 type Tab = "all" | "films" | "ads" | "photo";
 
 function WorkPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
   const [tab, setTab] = useState<Tab>("all");
-  const [works, setWorks] = useState<Work[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from("works")
-      .select("id,title,category,description,image_url,video_url,external_url")
-      .eq("published", true)
-      .order("sort_order")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        const rows = (data ?? []) as Work[];
-        setWorks(rows.length ? rows : FALLBACK);
-      });
-  }, []);
+  const { rows } = useContent<Work>("works");
+  const works = rows.length ? rows : FALLBACK;
 
   const items = tab === "all" ? works : works.filter((w) => w.category === tab);
+
 
   const TABS: { key: Tab; label: string }[] = [
     { key: "all", label: "الكل" },
@@ -138,7 +129,7 @@ function WorkPage() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cinema">
                     {w.category}
                   </span>
-                  <h3 className="mt-1 font-arabic text-xl">{w.title}</h3>
+                  <h3 className="mt-1 font-arabic text-xl">{isAr ? w.title : (w.title_en || w.title)}</h3>
                 </div>
               </Wrapper>
             );
