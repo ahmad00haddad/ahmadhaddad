@@ -56,6 +56,10 @@ function HomePage() {
   const brandTag = isAr
     ? settings.brand.tagline_ar || t("home.brand_tag")
     : settings.brand.tagline_en || t("home.brand_tag");
+  const heroTitle = (isAr ? settings.hero.title_ar : settings.hero.title_en)
+    || `${t("home.hero_title_a")} ${t("home.hero_title_b")}`;
+  const heroSubtitle = (isAr ? settings.hero.subtitle_ar : settings.hero.subtitle_en)
+    || t("home.hero_tagline");
 
   return (
     <>
@@ -79,7 +83,7 @@ function HomePage() {
               <div className="flex items-center gap-3 text-[var(--cream)]">
                 <Aperture className="size-9" strokeWidth={1.3} />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  {t("home.brand_tag")}
+                  {brandTag}
                 </span>
               </div>
               <div className="hidden items-center gap-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]/90 md:flex">
@@ -110,12 +114,10 @@ function HomePage() {
                       : "font-display text-[clamp(3rem,8vw,7rem)] font-bold leading-[0.9] tracking-tight"
                   }
                 >
-                  {t("home.hero_title_a")}
-                  <br />
-                  {t("home.hero_title_b")}
+                  {heroTitle}
                 </h1>
                 <p className="mt-5 max-w-md text-xs leading-relaxed text-[var(--cream)]/90 md:text-sm">
-                  {t("home.hero_tagline")}
+                  {heroSubtitle}
                 </p>
               </motion.div>
 
@@ -130,7 +132,7 @@ function HomePage() {
                 <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
                 <div className="absolute inset-10 overflow-hidden rounded-full ring-2 ring-[var(--ink)]/35">
                   <img
-                    src={journey}
+                    src={portrait}
                     alt=""
                     className="size-full object-cover grayscale"
                   />
