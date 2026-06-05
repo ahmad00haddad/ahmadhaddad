@@ -130,6 +130,7 @@ function WorkPage() {
                     {w.category}
                   </span>
                   <h3 className="mt-1 font-arabic text-xl">{isAr ? w.title : (w.title_en || w.title)}</h3>
+                </div>
               </Wrapper>
             );
           })}
