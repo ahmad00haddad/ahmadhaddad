@@ -51,7 +51,6 @@ export function useSettings() {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    setLoading(true);
     const { data } = await supabase.from("site_settings").select("key,value");
     const merged = { ...DEFAULTS };
     (data ?? []).forEach((r: any) => {
@@ -61,7 +60,14 @@ export function useSettings() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+    const ch = supabase
+      .channel("site_settings-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [load]);
 
   const save = useCallback(async (key: keyof AllSettings, value: any) => {
     await supabase.from("site_settings").upsert({ key, value }, { onConflict: "key" });
@@ -69,6 +75,34 @@ export function useSettings() {
   }, []);
 
   return { settings, loading, save, reload: load };
+}
+
+/** Live list of rows from a content table — auto-refreshes via realtime. */
+export function useContent<T = any>(
+  table: "services" | "works" | "testimonials" | "clients",
+  opts: { publishedOnly?: boolean } = { publishedOnly: true },
+) {
+  const [rows, setRows] = useState<T[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    let q = supabase.from(table).select("*").order("sort_order").order("created_at", { ascending: false });
+    if (opts.publishedOnly) q = q.eq("published", true);
+    const { data } = await q;
+    setRows((data ?? []) as T[]);
+    setLoading(false);
+  }, [table, opts.publishedOnly]);
+
+  useEffect(() => {
+    load();
+    const ch = supabase
+      .channel(`${table}-live`)
+      .on("postgres_changes", { event: "*", schema: "public", table }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [table, load]);
+
+  return { rows, loading, reload: load };
 }
 
 export async function uploadMedia(file: File): Promise<string> {
