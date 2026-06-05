@@ -14,6 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string
+          name: string
+          published: boolean
+          sort_order: number
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url: string
+          name: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string
+          name?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          description_en: string | null
+          icon: string
+          id: string
+          published: boolean
+          sort_order: number
+          title: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          icon?: string
+          id?: string
+          published?: boolean
+          sort_order?: number
+          title: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          icon?: string
+          id?: string
+          published?: boolean
+          sort_order?: number
+          title?: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          name: string
+          published: boolean
+          quote: string
+          quote_en: string | null
+          role: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          published?: boolean
+          quote: string
+          quote_en?: string | null
+          role?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          published?: boolean
+          quote?: string
+          quote_en?: string | null
+          role?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       works: {
         Row: {
           category: string

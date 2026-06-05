@@ -19,6 +19,7 @@ import heroImg from "@/assets/ahmad-hero.jpg";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
+import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,11 +43,19 @@ const SERVICES = [
   { key: "edit", Icon: Video },
 ] as const;
 
-const STRIP = [heroImg, filmSet, lens];
+const FALLBACK_STRIP = [heroImg, filmSet, lens];
 
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
+  const { settings } = useSettings();
+  const portrait = settings.hero.portrait_url || journey;
+  const strip = [0, 1, 2].map(
+    (i) => settings.hero.strip_images?.[i] || FALLBACK_STRIP[i],
+  );
+  const brandTag = isAr
+    ? settings.brand.tagline_ar || t("home.brand_tag")
+    : settings.brand.tagline_en || t("home.brand_tag");
 
   return (
     <>
@@ -173,7 +182,7 @@ function HomePage() {
 
             {/* 3 stacked frames, no scroll */}
             <div className="flex min-h-0 flex-1 flex-col px-3">
-              {STRIP.map((src, i) => (
+              {strip.map((src: string, i: number) => (
                 <div key={i} className="flex min-h-0 flex-1 flex-col">
                   <div className="sprocket-row shrink-0" />
                   <motion.div
@@ -185,7 +194,7 @@ function HomePage() {
                     <img src={src} alt="" className="size-full object-cover" />
                     <div className="grain-layer" style={{ opacity: 0.4 }} />
                   </motion.div>
-                  {i === STRIP.length - 1 && <div className="sprocket-row shrink-0" />}
+                  {i === strip.length - 1 && <div className="sprocket-row shrink-0" />}
                 </div>
               ))}
             </div>
