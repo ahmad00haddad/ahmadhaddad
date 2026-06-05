@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useSettings } from "@/lib/use-settings";
 
 const navItems = [
   { to: "/", key: "nav.home" },
@@ -13,7 +14,11 @@ const navItems = [
 ] as const;
 
 export function Header() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { settings } = useSettings();
+  const isAr = i18n.language === "ar";
+  const brandAr = settings.brand.name_ar || "أحمد حدّاد";
+  const brandEn = settings.brand.name_en || "Haddad";
   const [open, setOpen] = useState(false);
 
   return (
@@ -24,9 +29,10 @@ export function Header() {
           className="font-arabic text-2xl font-black tracking-tight text-foreground"
           onClick={() => setOpen(false)}
         >
-          حدّاد
-          <span className="ms-2 text-sm font-normal text-muted-foreground">Haddad</span>
+          {isAr ? brandAr : brandEn}
+          <span className="ms-2 text-sm font-normal text-muted-foreground">{isAr ? brandEn : brandAr}</span>
         </Link>
+
 
         <nav className="hidden items-center gap-7 md:flex">
           {navItems.map((item) => (
