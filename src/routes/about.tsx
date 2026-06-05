@@ -7,6 +7,7 @@ import journey from "@/assets/journey.jpg";
 import filmSet from "@/assets/film-set.jpg";
 import cvAsset from "@/assets/Ahmad_Haddad_CV.pdf.asset.json";
 import { PageHero } from "@/components/PageHero";
+import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -24,14 +25,20 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
+  const { settings } = useSettings();
+  const aboutTitle = (isAr ? settings.about.title_ar : settings.about.title_en) || t("about.title");
+  const aboutBody = isAr ? settings.about.body_ar : settings.about.body_en;
+  const bodyParas = aboutBody ? aboutBody.split(/\n\s*\n/).filter(Boolean) : null;
 
   return (
     <>
       <PageHero
-        title={t("about.title")}
+        title={aboutTitle}
         subtitle="من 2014 إلى اليوم — رحلة في التصوير والسينما"
       />
+
 
       <div dir="rtl" className="mx-auto max-w-7xl px-6 py-20">
         {/* Journey */}
@@ -46,10 +53,18 @@ function AboutPage() {
               — 01 / البداية
             </span>
             <h2 className="mt-4 font-arabic text-4xl text-cream md:text-5xl">
-              {t("about.title")}
+              {aboutTitle}
             </h2>
-            <p className="mt-6 leading-loose text-muted-foreground">{t("about.p1")}</p>
-            <p className="mt-4 leading-loose text-muted-foreground">{t("about.p2")}</p>
+            {bodyParas ? (
+              bodyParas.map((p, i) => (
+                <p key={i} className={`${i === 0 ? "mt-6" : "mt-4"} leading-loose text-muted-foreground whitespace-pre-line`}>{p}</p>
+              ))
+            ) : (
+              <>
+                <p className="mt-6 leading-loose text-muted-foreground">{t("about.p1")}</p>
+                <p className="mt-4 leading-loose text-muted-foreground">{t("about.p2")}</p>
+              </>
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

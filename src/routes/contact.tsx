@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, Facebook, Send } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
