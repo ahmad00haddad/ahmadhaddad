@@ -19,6 +19,7 @@ import heroImg from "@/assets/ahmad-hero.jpg";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
+import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,11 +43,19 @@ const SERVICES = [
   { key: "edit", Icon: Video },
 ] as const;
 
-const STRIP = [heroImg, filmSet, lens];
+const FALLBACK_STRIP = [heroImg, filmSet, lens];
 
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
+  const { settings } = useSettings();
+  const portrait = settings.hero.portrait_url || journey;
+  const strip = [0, 1, 2].map(
+    (i) => settings.hero.strip_images?.[i] || FALLBACK_STRIP[i],
+  );
+  const brandTag = isAr
+    ? settings.brand.tagline_ar || t("home.brand_tag")
+    : settings.brand.tagline_en || t("home.brand_tag");
 
   return (
     <>
