@@ -19,7 +19,15 @@ import heroImg from "@/assets/ahmad-hero.jpg";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
-import { useSettings } from "@/lib/use-settings";
+import { useSettings, useContent } from "@/lib/use-settings";
+
+type WorkRow = {
+  id: string;
+  title: string;
+  title_en?: string | null;
+  image_url: string;
+  external_url?: string | null;
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
