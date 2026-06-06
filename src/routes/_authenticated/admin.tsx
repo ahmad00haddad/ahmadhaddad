@@ -476,6 +476,8 @@ function labelize(key: string) {
     eyebrow_ar: "النص العلوي (عربي)", eyebrow_en: "Eyebrow (EN)",
     title_ar: "العنوان (عربي)", title_en: "Title (EN)",
     subtitle_ar: "العنوان الفرعي (عربي)", subtitle_en: "Subtitle (EN)",
+    big_a_ar: "جملة بارزة - الجزء الأول (عربي) مثل: نلتقط", big_a_en: "Big statement — line 1 (EN)",
+    big_b_ar: "جملة بارزة - الجزء الثاني (عربي) مثل: __الاستثنائي", big_b_en: "Big statement — line 2 (EN)",
     portrait_url: "الصورة الشخصية في الهيرو",
     body_ar: "النص (عربي)", body_en: "Body (EN)",
     email: "البريد الإلكتروني", phone: "الهاتف",
