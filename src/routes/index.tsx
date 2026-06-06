@@ -21,6 +21,15 @@ import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
 import { useSettings, useContent } from "@/lib/use-settings";
+import { Loader2 } from "lucide-react";
+
+function ImgLoader({ className = "" }: { className?: string }) {
+  return (
+    <div className={`grid size-full place-items-center bg-[var(--ink)]/40 ${className}`}>
+      <Loader2 className="size-5 animate-spin text-[var(--cream)]/60" />
+    </div>
+  );
+}
 
 type WorkRow = {
   id: string;
