@@ -96,6 +96,8 @@ function WorkPage() {
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           {items.map((w) => {
+            const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
+            const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
             const Wrapper = (props: any) =>
               w.external_url || w.video_url ? (
                 <a
@@ -104,13 +106,15 @@ function WorkPage() {
                   rel="noreferrer"
                   {...props}
                 />
+              ) : hasLetter ? (
+                <button type="button" onClick={() => setOpenWork(w)} {...props} />
               ) : (
                 <div {...props} />
               );
             return (
               <Wrapper
                 key={w.id}
-                className="group relative aspect-[4/5] overflow-hidden rounded-sm"
+                className="group relative aspect-[4/5] overflow-hidden rounded-sm text-right"
               >
                 <img
                   src={w.image_url}
@@ -125,6 +129,11 @@ function WorkPage() {
                     <span className="grid size-14 place-items-center rounded-full bg-cinema text-cream">
                       <Play className="size-5" />
                     </span>
+                  </div>
+                )}
+                {hasLetter && (
+                  <div className="absolute right-3 top-3 z-[2] rounded-full border border-cream/30 bg-[var(--ink)]/70 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-cream opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                    {isAr ? "اقرأ الرسالة" : "Read the letter"}
                   </div>
                 )}
                 <div className="absolute inset-x-0 bottom-0 p-5 text-cream">
