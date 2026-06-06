@@ -21,25 +21,32 @@ function FilmFrame({
   loading,
   ratio = "aspect-square",
   className = "",
+  plain = false,
 }: {
   src?: string;
   loading?: boolean;
   ratio?: string;
   className?: string;
+  /** when true, render the image with its true colors (no sepia, no sprocket holes, no vignette) — only a light grain overlay. */
+  plain?: boolean;
 }) {
   return (
     <div className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)]/40 ${className}`}>
-      {/* sprocket holes top/bottom */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-        ))}
-      </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-        ))}
-      </div>
+      {!plain && (
+        <>
+          {/* sprocket holes top/bottom */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
+            ))}
+          </div>
+        </>
+      )}
       {loading || !src ? (
         <ImgLoader />
       ) : (
@@ -48,15 +55,16 @@ function FilmFrame({
           alt=""
           className="size-full object-cover"
           loading="lazy"
-          style={{ filter: "sepia(0.35) contrast(1.05) saturate(0.85)" }}
+          style={plain ? undefined : { filter: "sepia(0.35) contrast(1.05) saturate(0.85)" }}
         />
       )}
-      <div className="grain-layer" style={{ opacity: 0.45 }} />
-      {/* vignette */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[2]"
-        style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
-      />
+      <div className="grain-layer" style={{ opacity: plain ? 0.25 : 0.45 }} />
+      {!plain && (
+        <div
+          className="pointer-events-none absolute inset-0 z-[2]"
+          style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
+        />
+      )}
     </div>
   );
 }
