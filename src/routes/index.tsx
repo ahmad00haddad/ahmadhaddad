@@ -354,14 +354,14 @@ function Stat({ number, label }: { number: string; label: string }) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    if (!inView || !match) return;
+    if (!inView || !target) return;
     const controls = animate(0, target, {
       duration: 2,
       ease: "easeOut",
       onUpdate: (v) => setDisplay(Math.round(v)),
     });
     return () => controls.stop();
-  }, [inView, target, match]);
+  }, [inView, target]);
 
   return (
     <motion.div
