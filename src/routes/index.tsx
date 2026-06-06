@@ -57,6 +57,9 @@ function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const { settings } = useSettings();
+  const { rows: worksRows } = useContent<WorkRow>("works");
+  const previewWorks = worksRows.slice(0, 3);
+  const fallbackPreview = [filmSet, journey, lens];
   const portrait = settings.hero.portrait_url || journey;
   const strip = [0, 1, 2].map(
     (i) => settings.hero.strip_images?.[i] || FALLBACK_STRIP[i],
