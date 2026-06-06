@@ -30,7 +30,7 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const a = settings.about;
 
   const aboutTitle = (isAr ? a.title_ar : a.title_en) || t("about.title");
@@ -41,9 +41,9 @@ function AboutPage() {
   const body2 = isAr ? a.body2_ar : a.body2_en;
   const body2Paras = body2 ? body2.split(/\n\s*\n/).filter(Boolean) : null;
 
-  const img1 = a.image1_url || heroImg;
-  const img2 = a.image2_url || journey;
-  const img3 = a.image3_url || filmSet;
+  const img1 = a.image1_url;
+  const img2 = a.image2_url;
+  const img3 = a.image3_url;
   const cvUrl = a.cv_url || cvAsset.url;
   const cvTitle = (isAr ? a.cv_title_ar : a.cv_title_en) || t("about.cv_title");
   const cvSub = (isAr ? a.cv_sub_ar : a.cv_sub_en) || t("about.cv_sub");
