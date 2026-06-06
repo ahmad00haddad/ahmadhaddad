@@ -207,23 +207,31 @@ function AboutPage() {
             title={title2}
             paras={paras2}
             reverse
-            imageSlot={
-              <div className="grid grid-cols-2 gap-3">
-                <FilmFrame src={img2} loading={settingsLoading} ratio="aspect-[3/4]" />
-                <div className="mt-8">
-                  <FilmFrame src={img3} loading={settingsLoading} ratio="aspect-[3/4]" />
-                </div>
-              </div>
-            }
+            imageSlot={<FilmFrame src={img2} loading={settingsLoading} ratio="aspect-[4/5]" plain />}
           />
 
-          <Chapter
-            num="03"
-            label={isAr ? "السينما" : "Cinema"}
-            title={title3}
-            paras={paras3}
-            imageSlot={<FilmFrame src={img3} loading={settingsLoading} ratio="aspect-[4/3]" />}
-          />
+          {/* Cinema — text-only chapter, no photo (image3 belongs to the team/studio block) */}
+          <motion.section
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <div className="mb-3 flex items-center justify-center gap-3 text-cream/40">
+              <span className="h-px w-12 bg-current" />
+              <Film className="size-3.5" />
+              <span className="h-px w-12 bg-current" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-cream/60">— 03 / {isAr ? "السينما" : "Cinema"}</span>
+            <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title3}</h2>
+            <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
+              {paras3.map((p, i) => (
+                <p key={i} className="whitespace-pre-line">{p}</p>
+              ))}
+            </div>
+          </motion.section>
+
 
           {/* Vision pull-quote, full width on cinema red */}
           <motion.section
