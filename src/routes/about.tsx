@@ -72,8 +72,8 @@ function AboutPage() {
               </>
             )}
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative aspect-square overflow-hidden rounded-sm">
-            <img src={img1} alt="" className="size-full object-cover grayscale" loading="lazy" />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative aspect-square overflow-hidden rounded-sm bg-[var(--ink)]/40">
+            {settingsLoading || !img1 ? <ImgLoader /> : <img src={img1} alt="" className="size-full object-cover grayscale" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.35 }} />
           </motion.div>
         </section>
