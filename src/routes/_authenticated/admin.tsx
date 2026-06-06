@@ -81,6 +81,7 @@ function AdminPage() {
         {tab === "general" && <SettingsForm sectionKey="brand" title="الهوية والعلامة" />}
         {tab === "hero" && <SettingsForm sectionKey="hero" title="قسم الهيرو الرئيسي" />}
         {tab === "about" && <SettingsForm sectionKey="about" title="صفحة حول" />}
+        {tab === "stats" && <SettingsForm sectionKey="stats" title="أرقام الإنجازات (الصفحة الرئيسية)" />}
         {tab === "contact" && <ContactTab />}
         {tab === "services" && <ServicesTab />}
         {tab === "works" && <WorksTab />}
