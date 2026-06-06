@@ -65,7 +65,7 @@ const SERVICES = [
   { key: "edit", Icon: Video },
 ] as const;
 
-const FALLBACK_STRIP = [heroImg, filmSet, lens];
+
 
 function HomePage() {
   const { t, i18n } = useTranslation();
