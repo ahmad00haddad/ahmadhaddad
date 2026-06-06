@@ -26,11 +26,23 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         <Link
           to="/"
-          className="font-arabic text-2xl font-black tracking-tight text-foreground"
+          className="flex items-center gap-3 text-foreground"
           onClick={() => setOpen(false)}
         >
-          {isAr ? brandAr : brandEn}
-          <span className="ms-2 text-sm font-normal text-muted-foreground">{isAr ? brandEn : brandAr}</span>
+          {settings.brand.logo_url ? (
+            <img
+              src={settings.brand.logo_url}
+              alt={isAr ? brandAr : brandEn}
+              className="h-9 w-auto md:h-10"
+            />
+          ) : (
+            <span className="font-arabic text-2xl font-black tracking-tight">
+              {isAr ? brandAr : brandEn}
+            </span>
+          )}
+          <span className="hidden text-sm font-normal text-muted-foreground sm:inline">
+            {isAr ? brandEn : brandAr}
+          </span>
         </Link>
 
 
