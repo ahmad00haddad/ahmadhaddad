@@ -207,6 +207,68 @@ function WorkPage() {
           </a>
         </section>
       </div>
+
+      <AnimatePresence>
+        {openWork && (
+          <motion.div
+            className="fixed inset-0 z-[100] grid place-items-center p-4 sm:p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpenWork(null)}
+          >
+            <div className="absolute inset-0 bg-[var(--ink)]/85 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              dir={isAr ? "rtl" : "ltr"}
+              className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm border border-[var(--cream)]/15 bg-[#f3ecdc] text-[#2a1f12] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 20% 10%, rgba(120,80,40,0.08), transparent 50%), radial-gradient(circle at 80% 90%, rgba(80,40,20,0.10), transparent 55%)",
+              }}
+            >
+              <div className="grain-layer" style={{ opacity: 0.35, mixBlendMode: "multiply" }} />
+              <button
+                type="button"
+                onClick={() => setOpenWork(null)}
+                aria-label="close"
+                className={`absolute top-3 grid size-9 place-items-center rounded-full bg-[#2a1f12]/10 text-[#2a1f12] transition-colors hover:bg-[#2a1f12]/25 ${isAr ? "left-3" : "right-3"}`}
+              >
+                <X className="size-4" />
+              </button>
+              <div className="relative px-7 py-10 sm:px-12 sm:py-14">
+                <div className="mb-6 text-center">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7a5a30]">
+                    {isAr ? "رسالة" : "A Letter"}
+                  </span>
+                  <div className="mx-auto mt-3 h-px w-16 bg-[#7a5a30]/40" />
+                  <h3 className={`mt-4 text-2xl sm:text-3xl ${isAr ? "font-arabic" : "font-serif italic"}`}>
+                    {isAr ? openWork.title : (openWork.title_en || openWork.title)}
+                  </h3>
+                </div>
+                <article
+                  className={`whitespace-pre-line text-[15px] leading-[2] sm:text-[16px] sm:leading-[2.05] ${isAr ? "font-arabic text-right" : "font-serif text-left"}`}
+                  style={{ textWrap: "pretty" as any }}
+                >
+                  {isAr
+                    ? (openWork.description || "")
+                    : (openWork.description_en || openWork.description || "")}
+                </article>
+                <div className="mt-10 text-center">
+                  <div className="mx-auto h-px w-12 bg-[#7a5a30]/40" />
+                  <p className={`mt-4 text-[11px] uppercase tracking-[0.35em] text-[#7a5a30] ${isAr ? "font-arabic" : ""}`}>
+                    — {isAr ? "أحمد حدّاد" : "Ahmad Haddad"}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
