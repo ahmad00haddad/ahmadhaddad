@@ -125,9 +125,15 @@ function SettingsForm({ sectionKey, title }: { sectionKey: keyof AllSettings; ti
           const isUrl = field.endsWith("_url");
           const isLong = field.startsWith("body") || field.startsWith("subtitle");
           if (isUrl) {
+            const isPdf = field === "cv_url" || field.endsWith("_pdf_url");
             return (
               <div key={field} className="md:col-span-2">
-                <MediaUploader label={labelize(field)} value={draft[field] || ""} onChange={(v) => update(field, v)} />
+                <MediaUploader
+                  label={labelize(field)}
+                  value={draft[field] || ""}
+                  onChange={(v) => update(field, v)}
+                  accept={isPdf ? "application/pdf,.pdf" : "image/*"}
+                />
               </div>
             );
           }
