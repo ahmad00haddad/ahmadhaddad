@@ -252,29 +252,41 @@ function HomePage() {
       </section>
 
       {/* ============ STATS STRIP ============ */}
-      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12">
-        <div className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6">
+      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, staggerChildren: 0.15 }}
+          className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6"
+        >
           <Stat number={settings.stats.years} label={t("home.stats.years")} />
           <Stat number={settings.stats.projects} label={t("home.stats.projects")} />
           <Stat number={settings.stats.clients} label={t("home.stats.clients")} />
-        </div>
+        </motion.div>
       </section>
 
 
       {/* ============ WORK PREVIEW ============ */}
       <section className="bg-[var(--ink)] py-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-10 flex items-end justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6 }}
+            className="mb-10 flex items-end justify-between"
+          >
             <h2 className="text-3xl font-bold text-cream md:text-5xl">
               {t("home.preview_title")}
             </h2>
             <Link
               to="/work"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream story-link"
             >
-              {t("home.preview_cta")} <ArrowRight className="size-3.5" />
+              {t("home.preview_cta")} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
-          </div>
+          </motion.div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {worksLoading
               ? [0, 1, 2].map((i) => (
