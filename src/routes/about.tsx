@@ -80,8 +80,8 @@ function AboutPage() {
 
         {/* Cinema discovery */}
         <section className="mt-28 grid items-center gap-12 md:grid-cols-2">
-          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative aspect-[4/5] overflow-hidden rounded-sm md:order-2">
-            <img src={img2} alt="" className="size-full object-cover" loading="lazy" />
+          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:order-2">
+            {settingsLoading || !img2 ? <ImgLoader /> : <img src={img2} alt="" className="size-full object-cover" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.3 }} />
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
