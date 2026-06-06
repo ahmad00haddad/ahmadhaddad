@@ -16,11 +16,16 @@ import {
   Aperture,
   Menu,
 } from "lucide-react";
-import heroImg from "@/assets/ahmad-hero.jpg";
-import filmSet from "@/assets/film-set.jpg";
-import journey from "@/assets/journey.jpg";
-import lens from "@/assets/camera-lens.jpg";
 import { useSettings, useContent } from "@/lib/use-settings";
+import { Loader2 } from "lucide-react";
+
+function ImgLoader({ className = "" }: { className?: string }) {
+  return (
+    <div className={`grid size-full place-items-center bg-[var(--ink)]/40 ${className}`}>
+      <Loader2 className="size-5 animate-spin text-[var(--cream)]/60" />
+    </div>
+  );
+}
 
 type WorkRow = {
   id: string;
@@ -60,20 +65,17 @@ const SERVICES = [
   { key: "edit", Icon: Video },
 ] as const;
 
-const FALLBACK_STRIP = [heroImg, filmSet, lens];
+
 
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
-  const { settings } = useSettings();
-  const { rows: worksRows } = useContent<WorkRow>("works");
-  const { rows: servicesRows } = useContent<ServiceRow>("services");
+  const { settings, loading: settingsLoading } = useSettings();
+  const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
+  const { rows: servicesRows, loading: servicesLoading } = useContent<ServiceRow>("services");
   const previewWorks = worksRows.slice(0, 3);
-  const fallbackPreview = [filmSet, journey, lens];
-  const portrait = settings.hero.portrait_url || journey;
-  const strip = [0, 1, 2].map(
-    (i) => settings.hero.strip_images?.[i] || FALLBACK_STRIP[i],
-  );
+  const portrait = settings.hero.portrait_url;
+  const strip = [0, 1, 2].map((i) => settings.hero.strip_images?.[i] || "");
   const brandTag = isAr
     ? settings.brand.tagline_ar || t("home.brand_tag")
     : settings.brand.tagline_en || t("home.brand_tag");
@@ -151,13 +153,22 @@ function HomePage() {
                 <div className="absolute inset-0 rounded-full border-[10px] border-[var(--ink)]/15" />
                 <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
                 <div className="absolute inset-10 overflow-hidden rounded-full ring-2 ring-[var(--ink)]/35">
-                  <img
-                    src={portrait}
-                    alt=""
-                    className="size-full object-cover grayscale"
-                  />
-                  <div className="absolute inset-0 bg-[var(--cinema)] mix-blend-multiply" />
-                  <div className="grain-layer" style={{ opacity: 0.7 }} />
+                  {settingsLoading ? (
+                    <ImgLoader />
+                  ) : portrait ? (
+                    <>
+                      <img
+                        src={portrait}
+                        alt=""
+                        loading="lazy"
+                        className="size-full object-cover grayscale-[0.4]"
+                      />
+                      <div className="absolute inset-0 bg-[var(--cinema)]/45 mix-blend-multiply" />
+                      <div className="grain-layer" style={{ opacity: 0.5 }} />
+                    </>
+                  ) : (
+                    <ImgLoader />
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -198,7 +209,7 @@ function HomePage() {
               </button>
             </div>
 
-            {/* 3 stacked frames, no scroll */}
+            {/* 3 stacked frames, uniform sizing */}
             <div className="flex min-h-0 flex-1 flex-col px-3">
               {strip.map((src: string, i: number) => (
                 <div key={i} className="flex min-h-0 flex-1 flex-col">
@@ -207,10 +218,23 @@ function HomePage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * i }}
-                    className="relative min-h-0 flex-1 overflow-hidden rounded-[2px]"
+                    className="relative min-h-0 flex-1 overflow-hidden rounded-[2px] bg-[var(--ink)]"
                   >
-                    <img src={src} alt="" className="size-full object-cover" />
-                    <div className="grain-layer" style={{ opacity: 0.4 }} />
+                    {settingsLoading ? (
+                      <ImgLoader />
+                    ) : src ? (
+                      <>
+                        <img
+                          src={src}
+                          alt=""
+                          loading="lazy"
+                          className="absolute inset-0 size-full object-cover object-center"
+                        />
+                        <div className="grain-layer" style={{ opacity: 0.4 }} />
+                      </>
+                    ) : (
+                      <ImgLoader />
+                    )}
                   </motion.div>
                   {i === strip.length - 1 && <div className="sprocket-row shrink-0" />}
                 </div>
@@ -330,38 +354,51 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {(previewWorks.length ? previewWorks : fallbackPreview.map((src, i) => ({
-              id: `fb-${i}`, title: "", title_en: "", image_url: src, external_url: null,
-            }) as WorkRow)).map((w, i) => {
-              const title = (isAr ? w.title : w.title_en || w.title) || "";
-              const card = (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-sm"
-                >
-                  <img
-                    src={w.image_url}
-                    alt={title}
-                    loading="lazy"
-                    className="size-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-cinema/90 via-cinema/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                  {title && (
-                    <div className="absolute inset-x-0 bottom-0 p-4 text-cream opacity-0 translate-y-2 transition-all group-hover:opacity-100 group-hover:translate-y-0">
-                      <div className="text-sm font-bold">{title}</div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-              return w.external_url ? (
-                <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
-              ) : (
-                <div key={w.id}>{card}</div>
-              );
-            })}
+            {worksLoading
+              ? [0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="aspect-[4/5] overflow-hidden rounded-sm bg-[var(--surface-deep)]"
+                  >
+                    <ImgLoader />
+                  </div>
+                ))
+              : previewWorks.length === 0
+              ? (
+                <p className="col-span-full text-center text-sm text-muted-foreground">
+                  {isAr ? "لا توجد أعمال منشورة بعد." : "No published works yet."}
+                </p>
+              )
+              : previewWorks.map((w: WorkRow, i: number) => {
+                  const title = (isAr ? w.title : w.title_en || w.title) || "";
+                  const card = (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--surface-deep)]"
+                    >
+                      <img
+                        src={w.image_url}
+                        alt={title}
+                        loading="lazy"
+                        className="size-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-cinema/90 via-cinema/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      {title && (
+                        <div className="absolute inset-x-0 bottom-0 p-4 text-cream opacity-0 translate-y-2 transition-all group-hover:opacity-100 group-hover:translate-y-0">
+                          <div className="text-sm font-bold">{title}</div>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                  return w.external_url ? (
+                    <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
+                  ) : (
+                    <div key={w.id}>{card}</div>
+                  );
+                })}
           </div>
 
         </div>
