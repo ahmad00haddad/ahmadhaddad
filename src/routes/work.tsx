@@ -231,16 +231,17 @@ function WorkPage() {
                   "radial-gradient(circle at 20% 10%, rgba(120,80,40,0.08), transparent 50%), radial-gradient(circle at 80% 90%, rgba(80,40,20,0.10), transparent 55%)",
               }}
             >
-              <div className="grain-layer" style={{ opacity: 0.35, mixBlendMode: "multiply" }} />
               <button
                 type="button"
                 onClick={() => setOpenWork(null)}
                 aria-label="close"
-                className={`absolute top-3 grid size-9 place-items-center rounded-full bg-[#2a1f12]/10 text-[#2a1f12] transition-colors hover:bg-[#2a1f12]/25 ${isAr ? "left-3" : "right-3"}`}
+                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/10 text-[#2a1f12] transition-colors hover:bg-[#2a1f12]/25 ${isAr ? "ml-3 mr-auto" : "mr-3 ml-auto"}`}
+                style={{ float: isAr ? "left" : "right" }}
               >
                 <X className="size-4" />
               </button>
               <div className="relative px-7 py-10 sm:px-12 sm:py-14">
+                <div className="grain-layer pointer-events-none absolute inset-0" style={{ opacity: 0.35, mixBlendMode: "multiply" }} />
                 <div className="mb-6 text-center">
                   <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7a5a30]">
                     {isAr ? "رسالة" : "A Letter"}
