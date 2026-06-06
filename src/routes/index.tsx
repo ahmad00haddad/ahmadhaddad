@@ -157,13 +157,22 @@ function HomePage() {
                 <div className="absolute inset-0 rounded-full border-[10px] border-[var(--ink)]/15" />
                 <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
                 <div className="absolute inset-10 overflow-hidden rounded-full ring-2 ring-[var(--ink)]/35">
-                  <img
-                    src={portrait}
-                    alt=""
-                    className="size-full object-cover grayscale"
-                  />
-                  <div className="absolute inset-0 bg-[var(--cinema)] mix-blend-multiply" />
-                  <div className="grain-layer" style={{ opacity: 0.7 }} />
+                  {settingsLoading ? (
+                    <ImgLoader />
+                  ) : portrait ? (
+                    <>
+                      <img
+                        src={portrait}
+                        alt=""
+                        loading="lazy"
+                        className="size-full object-cover grayscale-[0.4]"
+                      />
+                      <div className="absolute inset-0 bg-[var(--cinema)]/45 mix-blend-multiply" />
+                      <div className="grain-layer" style={{ opacity: 0.5 }} />
+                    </>
+                  ) : (
+                    <ImgLoader />
+                  )}
                 </div>
               </motion.div>
             </div>
