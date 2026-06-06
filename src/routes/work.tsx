@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Instagram, Youtube, ExternalLink, Play } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Instagram, Youtube, ExternalLink, Play, X } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { useContent } from "@/lib/use-settings";
 import filmSet from "@/assets/film-set.jpg";
