@@ -185,9 +185,9 @@ function HomePage() {
                   : "font-display text-[clamp(2.2rem,7vw,6rem)] font-bold leading-[0.88] tracking-tight text-[var(--cream)]"
               }
             >
-              {t("home.hero_big_a")}
+              {(isAr ? settings.hero.big_a_ar : settings.hero.big_a_en) || t("home.hero_big_a")}
               <br />
-              <span className="opacity-95">{t("home.hero_big_b")}</span>
+              <span className="opacity-95">{(isAr ? settings.hero.big_b_ar : settings.hero.big_b_en) || t("home.hero_big_b")}</span>
             </motion.h2>
           </div>
 
