@@ -15,13 +15,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 type TabKey =
-  | "general" | "hero" | "about" | "services"
+  | "general" | "hero" | "about" | "stats" | "services"
   | "works" | "testimonials" | "clients" | "contact";
 
 const TABS: { key: TabKey; label: string; Icon: any }[] = [
   { key: "general", label: "العام", Icon: Settings },
   { key: "hero", label: "الهيرو", Icon: ImageIcon },
   { key: "about", label: "حول", Icon: FileText },
+  { key: "stats", label: "الأرقام", Icon: Briefcase },
   { key: "services", label: "الخدمات", Icon: Film },
   { key: "works", label: "الأعمال", Icon: Briefcase },
   { key: "testimonials", label: "الآراء", Icon: MessageSquare },
