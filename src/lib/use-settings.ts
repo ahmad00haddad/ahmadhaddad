@@ -20,6 +20,10 @@ export type About = {
   body_ar: string; body_en: string;
   title2_ar: string; title2_en: string;
   body2_ar: string; body2_en: string;
+  title3_ar: string; title3_en: string;
+  body3_ar: string; body3_en: string;
+  title4_ar: string; title4_en: string;
+  body4_ar: string; body4_en: string;
   image1_url: string; image2_url: string; image3_url: string;
   cv_url: string;
   cv_title_ar: string; cv_title_en: string;
