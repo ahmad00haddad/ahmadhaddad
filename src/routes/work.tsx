@@ -31,6 +31,7 @@ type Work = {
   title_en?: string | null;
   category: string;
   description: string | null;
+  description_en?: string | null;
   image_url: string;
   video_url: string | null;
   external_url: string | null;
