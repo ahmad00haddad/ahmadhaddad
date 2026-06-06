@@ -52,6 +52,7 @@ function WorkPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const [tab, setTab] = useState<Tab>("all");
+  const [openWork, setOpenWork] = useState<Work | null>(null);
   const { rows } = useContent<Work>("works");
   const works = rows.length ? rows : FALLBACK;
 
