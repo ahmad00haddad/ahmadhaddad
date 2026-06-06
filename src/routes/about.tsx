@@ -1,13 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Download, ExternalLink } from "lucide-react";
-import heroImg from "@/assets/ahmad-hero.jpg";
-import journey from "@/assets/journey.jpg";
-import filmSet from "@/assets/film-set.jpg";
+import { Download, ExternalLink, Loader2, FileText } from "lucide-react";
 import cvAsset from "@/assets/Ahmad_Haddad_CV.pdf.asset.json";
 import { PageHero } from "@/components/PageHero";
 import { useSettings } from "@/lib/use-settings";
+
+function ImgLoader() {
+  return (
+    <div className="grid size-full place-items-center bg-[var(--ink)]/40">
+      <Loader2 className="size-5 animate-spin text-[var(--cream)]/60" />
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
