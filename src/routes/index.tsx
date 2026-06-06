@@ -213,7 +213,7 @@ function HomePage() {
               </button>
             </div>
 
-            {/* 3 stacked frames, no scroll */}
+            {/* 3 stacked frames, uniform sizing */}
             <div className="flex min-h-0 flex-1 flex-col px-3">
               {strip.map((src: string, i: number) => (
                 <div key={i} className="flex min-h-0 flex-1 flex-col">
@@ -222,10 +222,23 @@ function HomePage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * i }}
-                    className="relative min-h-0 flex-1 overflow-hidden rounded-[2px]"
+                    className="relative min-h-0 flex-1 overflow-hidden rounded-[2px] bg-[var(--ink)]"
                   >
-                    <img src={src} alt="" className="size-full object-cover" />
-                    <div className="grain-layer" style={{ opacity: 0.4 }} />
+                    {settingsLoading ? (
+                      <ImgLoader />
+                    ) : src ? (
+                      <>
+                        <img
+                          src={src}
+                          alt=""
+                          loading="lazy"
+                          className="absolute inset-0 size-full object-cover object-center"
+                        />
+                        <div className="grain-layer" style={{ opacity: 0.4 }} />
+                      </>
+                    ) : (
+                      <ImgLoader />
+                    )}
                   </motion.div>
                   {i === strip.length - 1 && <div className="sprocket-row shrink-0" />}
                 </div>
