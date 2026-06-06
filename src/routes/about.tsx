@@ -101,31 +101,39 @@ function AboutPage() {
           </motion.div>
         </section>
 
-        {/* CV */}
-        <section className="relative mt-28 overflow-hidden rounded-sm bg-[var(--cinema)] p-10 md:p-14">
+        {/* CV — compact */}
+        <section className="relative mt-20 overflow-hidden rounded-sm bg-[var(--cinema)] p-6 md:p-10">
           <div className="grain-layer" />
-          <div className="relative z-[2] grid items-center gap-10 text-[var(--cream)] md:grid-cols-5">
-            <div className="md:col-span-3">
+          <div className="relative z-[2] grid items-center gap-6 text-[var(--cream)] md:grid-cols-[1fr_auto]">
+            <div>
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">— CV</span>
-              <h2 className="mt-3 font-arabic text-3xl md:text-4xl">{cvTitle}</h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed opacity-90">{cvSub}</p>
+              <h2 className="mt-2 font-arabic text-2xl md:text-3xl">{cvTitle}</h2>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-90">{cvSub}</p>
               <a href={cvUrl} download="Ahmad_Haddad_CV.pdf" target="_blank" rel="noreferrer"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] hover:scale-[1.02]">
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] hover:scale-[1.02]">
                 <Download className="size-3.5" />
                 {t("about.cv_download")}
               </a>
             </div>
-            <div className="md:col-span-2">
-              <div className="aspect-[3/4] overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white">
-                <iframe src={`${cvUrl}#toolbar=0&view=FitH`} title="CV preview" className="size-full" />
+            <a href={cvUrl} target="_blank" rel="noreferrer" className="group relative block h-40 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white md:h-48 md:w-36">
+              <object data={cvUrl} type="application/pdf" className="size-full pointer-events-none">
+                <div className="grid size-full place-items-center bg-[var(--ink)]/10 text-[var(--ink)]">
+                  <div className="flex flex-col items-center gap-1">
+                    <FileText className="size-8" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PDF</span>
+                  </div>
+                </div>
+              </object>
+              <div className="absolute inset-0 grid place-items-center bg-[var(--ink)]/0 opacity-0 transition-all group-hover:bg-[var(--ink)]/40 group-hover:opacity-100">
+                <ExternalLink className="size-5 text-[var(--cream)]" />
               </div>
-            </div>
+            </a>
           </div>
         </section>
 
         <section className="mt-12 grid gap-4 md:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-sm">
-            <img src={img3} alt="" className="size-full object-cover" loading="lazy" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40">
+            {settingsLoading || !img3 ? <ImgLoader /> : <img src={img3} alt="" className="size-full object-cover" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.3 }} />
           </div>
           <div className="flex flex-col justify-center rounded-sm border border-cream/10 bg-[var(--surface)] p-8">
