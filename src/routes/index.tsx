@@ -1,23 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import * as Icons from "lucide-react";
 import {
   ArrowRight,
   Film,
-  Camera,
-  Palette,
-  Video,
-  Sparkles,
   Linkedin,
   Instagram,
   Facebook,
   Youtube,
   Aperture,
-  Menu,
+  Loader2,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
-import { Loader2 } from "lucide-react";
+
 
 function ImgLoader({ className = "" }: { className?: string }) {
   return (
