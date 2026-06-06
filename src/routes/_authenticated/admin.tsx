@@ -496,6 +496,7 @@ function labelize(key: string) {
     cv_sub_ar: "وصف قسم السيرة (عربي)", cv_sub_en: "CV section subtitle (EN)",
     studio_name: "اسم الاستوديو", studio_url: "رابط الاستوديو",
     studio_desc_ar: "وصف الاستوديو (عربي)", studio_desc_en: "Studio description (EN)",
+    years: "سنوات الخبرة (مثل: +12)", projects: "عدد المشاريع (مثل: +175)", clients: "عدد العملاء (مثل: +100)",
   };
   return map[key] || key;
 }
