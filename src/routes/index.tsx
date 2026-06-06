@@ -1,23 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import * as Icons from "lucide-react";
 import {
   ArrowRight,
   Film,
-  Camera,
-  Palette,
-  Video,
-  Sparkles,
   Linkedin,
   Instagram,
   Facebook,
   Youtube,
   Aperture,
-  Menu,
+  Loader2,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
-import { Loader2 } from "lucide-react";
+
 
 function ImgLoader({ className = "" }: { className?: string }) {
   return (
@@ -34,14 +29,6 @@ type WorkRow = {
   image_url: string;
   external_url?: string | null;
 };
-type ServiceRow = {
-  id: string;
-  title: string;
-  title_en?: string | null;
-  description?: string | null;
-  description_en?: string | null;
-  icon: string;
-};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -57,22 +44,12 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const SERVICES = [
-  { key: "shorts", Icon: Film },
-  { key: "ads", Icon: Sparkles },
-  { key: "color", Icon: Palette },
-  { key: "photo", Icon: Camera },
-  { key: "edit", Icon: Video },
-] as const;
-
-
-
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
-  const { rows: servicesRows, loading: servicesLoading } = useContent<ServiceRow>("services");
+
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
   const strip = [0, 1, 2].map((i) => settings.hero.strip_images?.[i] || "");
@@ -185,15 +162,15 @@ function HomePage() {
                   : "font-display text-[clamp(2.2rem,7vw,6rem)] font-bold leading-[0.88] tracking-tight text-[var(--cream)]"
               }
             >
-              {t("home.hero_big_a")}
+              {(isAr ? settings.hero.big_a_ar : settings.hero.big_a_en) || t("home.hero_big_a")}
               <br />
-              <span className="opacity-95">{t("home.hero_big_b")}</span>
+              <span className="opacity-95">{(isAr ? settings.hero.big_b_ar : settings.hero.big_b_en) || t("home.hero_big_b")}</span>
             </motion.h2>
           </div>
 
           {/* ============ RIGHT: real 35mm filmstrip ============ */}
           <aside className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex">
-            {/* top: capture now + menu */}
+            {/* top: capture now */}
             <div className="mb-3 flex items-center justify-between px-3">
               <Link
                 to="/contact"
@@ -201,12 +178,6 @@ function HomePage() {
               >
                 {t("home.capture_now")}
               </Link>
-              <button
-                aria-label="menu"
-                className="grid size-9 place-items-center rounded-full border border-[var(--ink)]/30 text-[var(--ink)]"
-              >
-                <Menu className="size-4" />
-              </button>
             </div>
 
             {/* 3 stacked frames, uniform sizing */}
@@ -288,56 +259,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ============ SERVICES PREVIEW ============ */}
-      <section className="relative bg-[var(--surface-deep)] py-24">
-        <div className="grain-layer-soft" />
-        <div className="relative z-[2] mx-auto max-w-7xl px-6">
-          <div className="mb-14 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">
-                — {t("home.services_title")}
-              </p>
-              <h2 className="mt-3 text-3xl font-bold text-cream md:text-5xl">
-                {t("home.services_title")}
-              </h2>
-            </div>
-            <p className="max-w-md text-sm text-muted-foreground">
-              {t("home.services_sub")}
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {(servicesRows.length ? servicesRows.slice(0, 6).map((s, i) => {
-              const Icon = (Icons as any)[s.icon] || SERVICES[i % SERVICES.length].Icon;
-              const title = (isAr ? s.title : (s.title_en || s.title)) || "";
-              const desc = (isAr ? s.description : (s.description_en || s.description)) || "";
-              return { id: s.id, Icon, title, desc };
-            }) : SERVICES.map(({ key, Icon }) => ({
-              id: key,
-              Icon,
-              title: t(`services.items.${key}.title`),
-              desc: t(`services.items.${key}.desc`),
-            }))).map((s, i) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                className="group relative overflow-hidden rounded-sm border border-cream/10 bg-[var(--ink)] p-7 transition-all hover:border-cinema/60"
-              >
-                <div className="grid size-12 place-items-center rounded-sm bg-cinema/15 text-cinema transition-colors group-hover:bg-cinema group-hover:text-cream">
-                  <s.Icon className="size-6" strokeWidth={1.5} />
-                </div>
-                <h3 className="mt-5 text-lg font-bold text-cream">{s.title}</h3>
-                {s.desc && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>}
-                <span className="absolute -right-4 -bottom-4 font-display text-7xl font-bold text-cinema/10">
-                  0{i + 1}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ============ WORK PREVIEW ============ */}
       <section className="bg-[var(--ink)] py-24">

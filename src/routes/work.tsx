@@ -136,6 +136,19 @@ function WorkPage() {
           })}
         </motion.div>
 
+        <div className="mt-14 flex justify-center">
+          <a
+            href="https://www.behance.net/ahmad00haddad"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-[1.03]"
+          >
+            {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
+            <ExternalLink className="size-3.5" />
+          </a>
+        </div>
+
+
         {/* social CTAs */}
         <section className="mt-20 grid gap-4 md:grid-cols-2">
           <a

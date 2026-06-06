@@ -1,13 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Download, ExternalLink } from "lucide-react";
-import heroImg from "@/assets/ahmad-hero.jpg";
-import journey from "@/assets/journey.jpg";
-import filmSet from "@/assets/film-set.jpg";
+import { Download, ExternalLink, Loader2, FileText } from "lucide-react";
 import cvAsset from "@/assets/Ahmad_Haddad_CV.pdf.asset.json";
 import { PageHero } from "@/components/PageHero";
 import { useSettings } from "@/lib/use-settings";
+
+function ImgLoader() {
+  return (
+    <div className="grid size-full place-items-center bg-[var(--ink)]/40">
+      <Loader2 className="size-5 animate-spin text-[var(--cream)]/60" />
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -24,7 +30,7 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const a = settings.about;
 
   const aboutTitle = (isAr ? a.title_ar : a.title_en) || t("about.title");
@@ -35,9 +41,9 @@ function AboutPage() {
   const body2 = isAr ? a.body2_ar : a.body2_en;
   const body2Paras = body2 ? body2.split(/\n\s*\n/).filter(Boolean) : null;
 
-  const img1 = a.image1_url || heroImg;
-  const img2 = a.image2_url || journey;
-  const img3 = a.image3_url || filmSet;
+  const img1 = a.image1_url;
+  const img2 = a.image2_url;
+  const img3 = a.image3_url;
   const cvUrl = a.cv_url || cvAsset.url;
   const cvTitle = (isAr ? a.cv_title_ar : a.cv_title_en) || t("about.cv_title");
   const cvSub = (isAr ? a.cv_sub_ar : a.cv_sub_en) || t("about.cv_sub");
@@ -66,16 +72,16 @@ function AboutPage() {
               </>
             )}
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative aspect-square overflow-hidden rounded-sm">
-            <img src={img1} alt="" className="size-full object-cover grayscale" loading="lazy" />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative aspect-square overflow-hidden rounded-sm bg-[var(--ink)]/40">
+            {settingsLoading || !img1 ? <ImgLoader /> : <img src={img1} alt="" className="size-full object-cover grayscale" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.35 }} />
           </motion.div>
         </section>
 
         {/* Cinema discovery */}
         <section className="mt-28 grid items-center gap-12 md:grid-cols-2">
-          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative aspect-[4/5] overflow-hidden rounded-sm md:order-2">
-            <img src={img2} alt="" className="size-full object-cover" loading="lazy" />
+          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:order-2">
+            {settingsLoading || !img2 ? <ImgLoader /> : <img src={img2} alt="" className="size-full object-cover" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.3 }} />
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
@@ -95,31 +101,39 @@ function AboutPage() {
           </motion.div>
         </section>
 
-        {/* CV */}
-        <section className="relative mt-28 overflow-hidden rounded-sm bg-[var(--cinema)] p-10 md:p-14">
+        {/* CV — compact */}
+        <section className="relative mt-20 overflow-hidden rounded-sm bg-[var(--cinema)] p-6 md:p-10">
           <div className="grain-layer" />
-          <div className="relative z-[2] grid items-center gap-10 text-[var(--cream)] md:grid-cols-5">
-            <div className="md:col-span-3">
+          <div className="relative z-[2] grid items-center gap-6 text-[var(--cream)] md:grid-cols-[1fr_auto]">
+            <div>
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">— CV</span>
-              <h2 className="mt-3 font-arabic text-3xl md:text-4xl">{cvTitle}</h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed opacity-90">{cvSub}</p>
+              <h2 className="mt-2 font-arabic text-2xl md:text-3xl">{cvTitle}</h2>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed opacity-90">{cvSub}</p>
               <a href={cvUrl} download="Ahmad_Haddad_CV.pdf" target="_blank" rel="noreferrer"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] hover:scale-[1.02]">
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] hover:scale-[1.02]">
                 <Download className="size-3.5" />
                 {t("about.cv_download")}
               </a>
             </div>
-            <div className="md:col-span-2">
-              <div className="aspect-[3/4] overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white">
-                <iframe src={`${cvUrl}#toolbar=0&view=FitH`} title="CV preview" className="size-full" />
+            <a href={cvUrl} target="_blank" rel="noreferrer" className="group relative block h-40 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white md:h-48 md:w-36">
+              <object data={cvUrl} type="application/pdf" className="size-full pointer-events-none">
+                <div className="grid size-full place-items-center bg-[var(--ink)]/10 text-[var(--ink)]">
+                  <div className="flex flex-col items-center gap-1">
+                    <FileText className="size-8" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PDF</span>
+                  </div>
+                </div>
+              </object>
+              <div className="absolute inset-0 grid place-items-center bg-[var(--ink)]/0 opacity-0 transition-all group-hover:bg-[var(--ink)]/40 group-hover:opacity-100">
+                <ExternalLink className="size-5 text-[var(--cream)]" />
               </div>
-            </div>
+            </a>
           </div>
         </section>
 
         <section className="mt-12 grid gap-4 md:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-sm">
-            <img src={img3} alt="" className="size-full object-cover" loading="lazy" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40">
+            {settingsLoading || !img3 ? <ImgLoader /> : <img src={img3} alt="" className="size-full object-cover" loading="lazy" />}
             <div className="grain-layer" style={{ opacity: 0.3 }} />
           </div>
           <div className="flex flex-col justify-center rounded-sm border border-cream/10 bg-[var(--surface)] p-8">

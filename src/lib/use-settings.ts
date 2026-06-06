@@ -10,6 +10,8 @@ export type Hero = {
   eyebrow_ar: string; eyebrow_en: string;
   title_ar: string; title_en: string;
   subtitle_ar: string; subtitle_en: string;
+  big_a_ar: string; big_a_en: string;
+  big_b_ar: string; big_b_en: string;
   portrait_url: string;
   strip_images?: string[];
 };
@@ -51,6 +53,8 @@ export const DEFAULTS: AllSettings = {
     eyebrow_ar: "إطار وَ تركيز", eyebrow_en: "Frame & Focus",
     title_ar: "حكاياتٌ تُروى بالضوء", title_en: "Stories Told in Light",
     subtitle_ar: "مخرج ومصوّر سينمائي.", subtitle_en: "Director & cinematographer.",
+    big_a_ar: "نلتقط", big_a_en: "We capture",
+    big_b_ar: "__الاستثنائي", big_b_en: "__the extraordinary",
     portrait_url: "", strip_images: [],
   },
   about: {
