@@ -10,6 +10,8 @@ export type Hero = {
   eyebrow_ar: string; eyebrow_en: string;
   title_ar: string; title_en: string;
   subtitle_ar: string; subtitle_en: string;
+  big_a_ar: string; big_a_en: string;
+  big_b_ar: string; big_b_en: string;
   portrait_url: string;
   strip_images?: string[];
 };
