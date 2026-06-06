@@ -77,8 +77,7 @@ function HomePage() {
       {/* ============ CINEMATIC HERO — fits viewport exactly ============ */}
       <section
         dir="ltr"
-        className="bg-[var(--ink)] p-3 md:p-4"
-        style={{ height: "calc(100svh - 65px)" }}
+        className="bg-[var(--ink)] p-3 md:p-4 lg:[height:calc(100svh-65px)]"
       >
         <div
           className="relative grid h-full grid-cols-1 overflow-hidden rounded-sm lg:grid-cols-[1fr_300px]"
