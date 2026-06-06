@@ -46,7 +46,7 @@ function AdminPage() {
           <div className="flex items-center gap-3">
             <Aperture className="size-7" strokeWidth={1.3} />
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-90">Haddad · Studio CMS</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-90">Haddad · CMS</div>
               <h1 className="font-display text-2xl font-bold">لوحة التحكم الشاملة</h1>
             </div>
           </div>
