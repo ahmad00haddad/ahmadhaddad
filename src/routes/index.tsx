@@ -16,10 +16,6 @@ import {
   Aperture,
   Menu,
 } from "lucide-react";
-import heroImg from "@/assets/ahmad-hero.jpg";
-import filmSet from "@/assets/film-set.jpg";
-import journey from "@/assets/journey.jpg";
-import lens from "@/assets/camera-lens.jpg";
 import { useSettings, useContent } from "@/lib/use-settings";
 import { Loader2 } from "lucide-react";
 
