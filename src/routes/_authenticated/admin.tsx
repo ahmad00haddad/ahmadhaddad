@@ -311,17 +311,32 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
       if (payload[f.key] === "") payload[f.key] = null;
     });
     if (editing.id) {
-      await supabase.from(cfg.table).update(payload).eq("id", editing.id);
+      const { error } = await supabase.from(cfg.table).update(payload).eq("id", editing.id);
+      if (error) {
+        toast.error("حدث خطأ أثناء التحديث: " + error.message);
+        return;
+      }
+      toast.success("تم التحديث بنجاح");
     } else {
       delete payload.id;
-      await supabase.from(cfg.table).insert(payload);
+      const { error } = await supabase.from(cfg.table).insert(payload);
+      if (error) {
+        toast.error("حدث خطأ أثناء الإضافة: " + error.message);
+        return;
+      }
+      toast.success("تمت الإضافة بنجاح");
     }
     setEditing(null); load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("حذف هذا العنصر؟")) return;
-    await supabase.from(cfg.table).delete().eq("id", id);
+    const { error } = await supabase.from(cfg.table).delete().eq("id", id);
+    if (error) {
+      toast.error("حدث خطأ أثناء الحذف: " + error.message);
+      return;
+    }
+    toast.success("تم الحذف بنجاح");
     load();
   };
 
