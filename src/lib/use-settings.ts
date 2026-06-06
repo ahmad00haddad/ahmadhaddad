@@ -16,6 +16,14 @@ export type Hero = {
 export type About = {
   title_ar: string; title_en: string;
   body_ar: string; body_en: string;
+  title2_ar: string; title2_en: string;
+  body2_ar: string; body2_en: string;
+  image1_url: string; image2_url: string; image3_url: string;
+  cv_url: string;
+  cv_title_ar: string; cv_title_en: string;
+  cv_sub_ar: string; cv_sub_en: string;
+  studio_name: string; studio_url: string;
+  studio_desc_ar: string; studio_desc_en: string;
 };
 export type Contact = {
   email: string; phone: string;
@@ -23,7 +31,11 @@ export type Contact = {
   instagram: string; youtube: string; vimeo: string; linkedin: string;
   facebook?: string;
 };
-export type Footer = { copyright_ar: string; copyright_en: string };
+export type Footer = {
+  copyright_ar: string; copyright_en: string;
+  blurb_ar: string; blurb_en: string;
+  blurb2_ar: string; blurb2_en: string;
+};
 
 export type AllSettings = {
   brand: Brand;
@@ -41,9 +53,27 @@ export const DEFAULTS: AllSettings = {
     subtitle_ar: "مخرج ومصوّر سينمائي.", subtitle_en: "Director & cinematographer.",
     portrait_url: "", strip_images: [],
   },
-  about: { title_ar: "عن أحمد", title_en: "About Ahmad", body_ar: "", body_en: "" },
+  about: {
+    title_ar: "عن أحمد", title_en: "About Ahmad",
+    body_ar: "", body_en: "",
+    title2_ar: "اكتشافي لعالم السينما", title2_en: "Discovering Cinema",
+    body2_ar: "", body2_en: "",
+    image1_url: "", image2_url: "", image3_url: "",
+    cv_url: "",
+    cv_title_ar: "تعرّف عليّ عن قرب", cv_title_en: "Get to know me",
+    cv_sub_ar: "حمّل سيرتي الذاتية لتطّلع على مسيرتي المهنية.", cv_sub_en: "Download my CV to see my career and skills.",
+    studio_name: "Faii House", studio_url: "https://faiihouse.lovable.app/",
+    studio_desc_ar: "الفريق الإبداعي الذي أقوده للمشاريع الإنتاجية الأكبر.",
+    studio_desc_en: "The creative team I lead for larger productions.",
+  },
   contact: { email: "", phone: "", city_ar: "", city_en: "", instagram: "", youtube: "", vimeo: "", linkedin: "", facebook: "" },
-  footer: { copyright_ar: "© أحمد حدّاد", copyright_en: "© Ahmad Haddad" },
+  footer: {
+    copyright_ar: "© أحمد حدّاد", copyright_en: "© Ahmad Haddad",
+    blurb_ar: "أتمنى أن تكونوا قد استمتعتم بمشاهدة أعمالي.",
+    blurb_en: "Hope you enjoyed exploring my work.",
+    blurb2_ar: "إذا كان لديكم أي استفسارات لا تترددوا في الاتصال.",
+    blurb2_en: "For any inquiries please get in touch.",
+  },
 };
 
 export function useSettings() {
