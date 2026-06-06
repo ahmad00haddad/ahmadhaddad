@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import * as Icons from "lucide-react";
 import {
   ArrowRight,
   Film,
