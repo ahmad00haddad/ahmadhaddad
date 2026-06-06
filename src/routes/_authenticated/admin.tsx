@@ -15,13 +15,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 type TabKey =
-  | "general" | "hero" | "about" | "services"
+  | "general" | "hero" | "about" | "stats" | "services"
   | "works" | "testimonials" | "clients" | "contact";
 
 const TABS: { key: TabKey; label: string; Icon: any }[] = [
   { key: "general", label: "العام", Icon: Settings },
   { key: "hero", label: "الهيرو", Icon: ImageIcon },
   { key: "about", label: "حول", Icon: FileText },
+  { key: "stats", label: "الأرقام", Icon: Briefcase },
   { key: "services", label: "الخدمات", Icon: Film },
   { key: "works", label: "الأعمال", Icon: Briefcase },
   { key: "testimonials", label: "الآراء", Icon: MessageSquare },
@@ -80,6 +81,7 @@ function AdminPage() {
         {tab === "general" && <SettingsForm sectionKey="brand" title="الهوية والعلامة" />}
         {tab === "hero" && <SettingsForm sectionKey="hero" title="قسم الهيرو الرئيسي" />}
         {tab === "about" && <SettingsForm sectionKey="about" title="صفحة حول" />}
+        {tab === "stats" && <SettingsForm sectionKey="stats" title="أرقام الإنجازات (الصفحة الرئيسية)" />}
         {tab === "contact" && <ContactTab />}
         {tab === "services" && <ServicesTab />}
         {tab === "works" && <WorksTab />}
@@ -494,6 +496,7 @@ function labelize(key: string) {
     cv_sub_ar: "وصف قسم السيرة (عربي)", cv_sub_en: "CV section subtitle (EN)",
     studio_name: "اسم الاستوديو", studio_url: "رابط الاستوديو",
     studio_desc_ar: "وصف الاستوديو (عربي)", studio_desc_en: "Studio description (EN)",
+    years: "سنوات الخبرة (مثل: +12)", projects: "عدد المشاريع (مثل: +175)", clients: "عدد العملاء (مثل: +100)",
   };
   return map[key] || key;
 }

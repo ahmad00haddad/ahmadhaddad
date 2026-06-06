@@ -253,9 +253,9 @@ function HomePage() {
       {/* ============ STATS STRIP ============ */}
       <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12">
         <div className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6">
-          <Stat number="10+" label={t("home.stats.years")} />
-          <Stat number="120+" label={t("home.stats.projects")} />
-          <Stat number="40+" label={t("home.stats.clients")} />
+          <Stat number={settings.stats.years} label={t("home.stats.years")} />
+          <Stat number={settings.stats.projects} label={t("home.stats.projects")} />
+          <Stat number={settings.stats.clients} label={t("home.stats.clients")} />
         </div>
       </section>
 
