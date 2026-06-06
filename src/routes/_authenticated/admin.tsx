@@ -482,6 +482,16 @@ function labelize(key: string) {
     city_ar: "المدينة (عربي)", city_en: "City (EN)",
     instagram: "Instagram", youtube: "YouTube", vimeo: "Vimeo", linkedin: "LinkedIn", facebook: "Facebook",
     copyright_ar: "حقوق النشر (عربي)", copyright_en: "Copyright (EN)",
+    blurb_ar: "نص الفوتر (عربي)", blurb_en: "Footer text (EN)",
+    blurb2_ar: "نص الفوتر الثاني (عربي)", blurb2_en: "Footer text 2 (EN)",
+    title2_ar: "العنوان الثاني (عربي)", title2_en: "Title 2 (EN)",
+    body2_ar: "النص الثاني (عربي)", body2_en: "Body 2 (EN)",
+    image1_url: "صورة 1 (عن أحمد)", image2_url: "صورة 2 (السينما)", image3_url: "صورة 3 (الاستوديو)",
+    cv_url: "ملف السيرة الذاتية (PDF)",
+    cv_title_ar: "عنوان قسم السيرة (عربي)", cv_title_en: "CV section title (EN)",
+    cv_sub_ar: "وصف قسم السيرة (عربي)", cv_sub_en: "CV section subtitle (EN)",
+    studio_name: "اسم الاستوديو", studio_url: "رابط الاستوديو",
+    studio_desc_ar: "وصف الاستوديو (عربي)", studio_desc_en: "Studio description (EN)",
   };
   return map[key] || key;
 }
