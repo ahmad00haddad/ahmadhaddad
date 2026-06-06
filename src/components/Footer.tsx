@@ -20,23 +20,23 @@ export function Footer() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="mt-24 border-t border-border bg-[var(--surface-deep)]">
+    <footer className="mt-16 border-t border-border bg-[var(--surface-deep)]">
       {clients.length > 0 && (
-        <div className="border-b border-border py-10">
+        <div className="border-b border-border py-6">
           <div className="mx-auto max-w-7xl px-6">
-            <p className="mb-6 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+            <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
               {isAr ? "عملاء وشركاء" : "Clients & Partners"}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-80">
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-80">
               {clients.map((cl) => (
                 <a
                   key={cl.id}
                   href={cl.url || "#"}
                   target={cl.url ? "_blank" : undefined}
                   rel="noreferrer"
-                  className="grid h-10 place-items-center transition-opacity hover:opacity-100"
+                  className="grid h-8 place-items-center transition-opacity hover:opacity-100"
                 >
-                  <img src={cl.logo_url} alt={cl.name} className="max-h-10 max-w-[120px] object-contain" />
+                  <img src={cl.logo_url} alt={cl.name} className="max-h-8 max-w-[100px] object-contain" />
                 </a>
               ))}
             </div>
@@ -44,18 +44,20 @@ export function Footer() {
         </div>
       )}
 
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-3">
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 md:grid-cols-3 md:py-10">
         <div>
-          <h3 className="font-arabic text-2xl font-black">{brand}</h3>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{(isAr ? settings.footer.blurb_ar : settings.footer.blurb_en) || t("footer.blurb")}</p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{(isAr ? settings.footer.blurb2_ar : settings.footer.blurb2_en) || t("footer.blurb2")}</p>
+          <h3 className="font-arabic text-lg font-black md:text-xl">{brand}</h3>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground whitespace-pre-line md:text-sm">{(isAr ? settings.footer.blurb_ar : settings.footer.blurb_en) || t("footer.blurb")}</p>
+          {((isAr ? settings.footer.blurb2_ar : settings.footer.blurb2_en) || t("footer.blurb2")) && (
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground whitespace-pre-line md:text-sm">{(isAr ? settings.footer.blurb2_ar : settings.footer.blurb2_en) || t("footer.blurb2")}</p>
+          )}
         </div>
 
         <div>
-          <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brass">
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass">
             {t("nav.home")}
           </h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <ul className="space-y-1 text-xs text-muted-foreground md:text-sm">
             <li><Link to="/" className="hover:text-foreground">{t("nav.home")}</Link></li>
             <li><Link to="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
             <li><Link to="/work" className="hover:text-foreground">{t("nav.work")}</Link></li>
@@ -65,10 +67,10 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-brass">
+          <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass">
             {t("contact.info_title")}
           </h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <ul className="space-y-1 text-xs text-muted-foreground md:text-sm">
             {(isAr ? c.city_ar : c.city_en) && <li>{isAr ? c.city_ar : c.city_en}</li>}
             {c.phone && <li dir="ltr">{c.phone}</li>}
             {c.email && (
@@ -78,7 +80,7 @@ export function Footer() {
             )}
           </ul>
           {socials.length > 0 && (
-            <div className="mt-5 flex gap-3">
+            <div className="mt-3 flex gap-2">
               {socials.map(({ href, label, Icon }) => (
                 <a
                   key={label}
@@ -86,16 +88,16 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brass hover:text-brass"
+                  className="grid size-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brass hover:text-brass"
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-3.5" />
                 </a>
               ))}
             </div>
           )}
         </div>
       </div>
-      <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
+      <div className="border-t border-border py-3 text-center text-[10px] text-muted-foreground md:text-xs">
         {copyright}
       </div>
     </footer>
