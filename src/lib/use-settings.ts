@@ -96,6 +96,8 @@ export const DEFAULTS: AllSettings = {
     blurb2_ar: "إذا كان لديكم أي استفسارات لا تترددوا في الاتصال.",
     blurb2_en: "For any inquiries please get in touch.",
   },
+  stats: { years: "12+", projects: "175+", clients: "100+" },
+
 };
 
 export function useSettings() {
