@@ -193,7 +193,7 @@ function HomePage() {
 
           {/* ============ RIGHT: real 35mm filmstrip ============ */}
           <aside className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex">
-            {/* top: capture now + menu */}
+            {/* top: capture now */}
             <div className="mb-3 flex items-center justify-between px-3">
               <Link
                 to="/contact"
@@ -201,12 +201,6 @@ function HomePage() {
               >
                 {t("home.capture_now")}
               </Link>
-              <button
-                aria-label="menu"
-                className="grid size-9 place-items-center rounded-full border border-[var(--ink)]/30 text-[var(--ink)]"
-              >
-                <Menu className="size-4" />
-              </button>
             </div>
 
             {/* 3 stacked frames, uniform sizing */}
