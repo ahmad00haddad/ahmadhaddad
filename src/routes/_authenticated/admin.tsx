@@ -112,10 +112,14 @@ function SettingsForm({ sectionKey, title }: { sectionKey: keyof AllSettings; ti
 
   const handleSave = async () => {
     setSaving(true);
-    await save(sectionKey, draft);
-    setSaving(false);
-    setOk(true);
-    setTimeout(() => setOk(false), 2000);
+    try {
+      await save(sectionKey, draft);
+      toast.success("تم الحفظ بنجاح");
+    } catch (e: any) {
+      toast.error("حدث خطأ أثناء الحفظ: " + (e.message || "غير معروف"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
