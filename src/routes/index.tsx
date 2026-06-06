@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+import { motion, useInView, animate } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Film,
@@ -251,29 +252,41 @@ function HomePage() {
       </section>
 
       {/* ============ STATS STRIP ============ */}
-      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12">
-        <div className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6">
+      <section className="border-y border-[var(--cream)]/10 bg-[var(--ink)] py-12 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, staggerChildren: 0.15 }}
+          className="mx-auto grid max-w-6xl grid-cols-3 gap-6 px-6"
+        >
           <Stat number={settings.stats.years} label={t("home.stats.years")} />
           <Stat number={settings.stats.projects} label={t("home.stats.projects")} />
           <Stat number={settings.stats.clients} label={t("home.stats.clients")} />
-        </div>
+        </motion.div>
       </section>
 
 
       {/* ============ WORK PREVIEW ============ */}
       <section className="bg-[var(--ink)] py-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-10 flex items-end justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6 }}
+            className="mb-10 flex items-end justify-between"
+          >
             <h2 className="text-3xl font-bold text-cream md:text-5xl">
               {t("home.preview_title")}
             </h2>
             <Link
               to="/work"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream story-link"
             >
-              {t("home.preview_cta")} <ArrowRight className="size-3.5" />
+              {t("home.preview_cta")} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
-          </div>
+          </motion.div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {worksLoading
               ? [0, 1, 2].map((i) => (
@@ -329,14 +342,42 @@ function HomePage() {
 }
 
 function Stat({ number, label }: { number: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+
+  // Parse prefix (e.g. "+"), numeric portion, and suffix (e.g. "+", "K")
+  const match = number.match(/^(\D*)(\d+)(.*)$/);
+  const prefix = match?.[1] ?? "";
+  const target = match ? parseInt(match[2], 10) : 0;
+  const suffix = match?.[3] ?? "";
+
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView || !match) return;
+    const controls = animate(0, target, {
+      duration: 2,
+      ease: "easeOut",
+      onUpdate: (v) => setDisplay(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, target, match]);
+
   return (
-    <div className="text-center">
-      <div className="font-display text-4xl font-bold text-cinema md:text-5xl">
-        {number}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.6 }}
+      className="text-center"
+    >
+      <div className="font-display text-4xl font-bold text-cinema md:text-5xl tabular-nums">
+        {match ? `${prefix}${display}${suffix}` : number}
       </div>
       <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
         {label}
       </div>
-    </div>
+    </motion.div>
   );
 }
