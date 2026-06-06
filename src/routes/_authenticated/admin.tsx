@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettings, type AllSettings } from "@/lib/use-settings";
 import { MediaUploader } from "@/components/MediaUploader";
+import { toast } from "sonner";
 import {
   Plus, Trash2, LogOut, Save, Pencil, X, Aperture,
   Settings, Image as ImageIcon, FileText, Briefcase,
@@ -111,10 +112,14 @@ function SettingsForm({ sectionKey, title }: { sectionKey: keyof AllSettings; ti
 
   const handleSave = async () => {
     setSaving(true);
-    await save(sectionKey, draft);
-    setSaving(false);
-    setOk(true);
-    setTimeout(() => setOk(false), 2000);
+    try {
+      await save(sectionKey, draft);
+      toast.success("تم الحفظ بنجاح");
+    } catch (e: any) {
+      toast.error("حدث خطأ أثناء الحفظ: " + (e.message || "غير معروف"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -310,17 +315,32 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
       if (payload[f.key] === "") payload[f.key] = null;
     });
     if (editing.id) {
-      await supabase.from(cfg.table).update(payload).eq("id", editing.id);
+      const { error } = await supabase.from(cfg.table).update(payload).eq("id", editing.id);
+      if (error) {
+        toast.error("حدث خطأ أثناء التحديث: " + error.message);
+        return;
+      }
+      toast.success("تم التحديث بنجاح");
     } else {
       delete payload.id;
-      await supabase.from(cfg.table).insert(payload);
+      const { error } = await supabase.from(cfg.table).insert(payload);
+      if (error) {
+        toast.error("حدث خطأ أثناء الإضافة: " + error.message);
+        return;
+      }
+      toast.success("تمت الإضافة بنجاح");
     }
     setEditing(null); load();
   };
 
   const remove = async (id: string) => {
     if (!confirm("حذف هذا العنصر؟")) return;
-    await supabase.from(cfg.table).delete().eq("id", id);
+    const { error } = await supabase.from(cfg.table).delete().eq("id", id);
+    if (error) {
+      toast.error("حدث خطأ أثناء الحذف: " + error.message);
+      return;
+    }
+    toast.success("تم الحذف بنجاح");
     load();
   };
 

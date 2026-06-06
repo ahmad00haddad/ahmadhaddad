@@ -124,7 +124,8 @@ export function useSettings() {
   }, [load]);
 
   const save = useCallback(async (key: keyof AllSettings, value: any) => {
-    await supabase.from("site_settings").upsert({ key, value }, { onConflict: "key" });
+    const { error } = await supabase.from("site_settings").upsert({ key, value }, { onConflict: "key" });
+    if (error) throw error;
     setSettings((s) => ({ ...s, [key]: value }));
   }, []);
 
