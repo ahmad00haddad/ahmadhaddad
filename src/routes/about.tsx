@@ -92,7 +92,7 @@ function Chapter({
         <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title}</h2>
         <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
           {paras.map((p, i) => (
-            <p key={i} className="whitespace-pre-line first-letter:font-display first-letter:text-3xl first-letter:text-cinema first-letter:me-1">
+            <p key={i} className="whitespace-pre-line">
               {p}
             </p>
           ))}
