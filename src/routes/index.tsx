@@ -28,6 +28,14 @@ type WorkRow = {
   image_url: string;
   external_url?: string | null;
 };
+type ServiceRow = {
+  id: string;
+  title: string;
+  title_en?: string | null;
+  description?: string | null;
+  description_en?: string | null;
+  icon: string;
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
