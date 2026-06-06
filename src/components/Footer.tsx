@@ -47,8 +47,8 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-3">
         <div>
           <h3 className="font-arabic text-2xl font-black">{brand}</h3>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{t("footer.blurb")}</p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t("footer.blurb2")}</p>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{(isAr ? settings.footer.blurb_ar : settings.footer.blurb_en) || t("footer.blurb")}</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{(isAr ? settings.footer.blurb2_ar : settings.footer.blurb2_en) || t("footer.blurb2")}</p>
         </div>
 
         <div>

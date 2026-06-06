@@ -34,7 +34,13 @@ export function MediaUploader({
         <div className="relative grid h-24 w-32 shrink-0 place-items-center overflow-hidden rounded-sm border border-[var(--cream)]/15 bg-[var(--ink)]">
           {value ? (
             <>
-              <img src={value} alt="" className="size-full object-cover" />
+              {/\.(pdf|docx?|xlsx?)(\?|$)/i.test(value) ? (
+                <a href={value} target="_blank" rel="noreferrer" className="grid size-full place-items-center text-[10px] font-bold uppercase tracking-widest text-[var(--cream)]/80">
+                  PDF<br/>عرض
+                </a>
+              ) : (
+                <img src={value} alt="" className="size-full object-cover" />
+              )}
               <button
                 type="button"
                 onClick={() => onChange("")}

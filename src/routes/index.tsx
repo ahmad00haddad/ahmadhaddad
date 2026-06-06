@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import * as Icons from "lucide-react";
 import {
   ArrowRight,
   Film,
@@ -27,6 +28,14 @@ type WorkRow = {
   title_en?: string | null;
   image_url: string;
   external_url?: string | null;
+};
+type ServiceRow = {
+  id: string;
+  title: string;
+  title_en?: string | null;
+  description?: string | null;
+  description_en?: string | null;
+  icon: string;
 };
 
 export const Route = createFileRoute("/")({
@@ -58,6 +67,7 @@ function HomePage() {
   const isAr = i18n.language === "ar";
   const { settings } = useSettings();
   const { rows: worksRows } = useContent<WorkRow>("works");
+  const { rows: servicesRows } = useContent<ServiceRow>("services");
   const previewWorks = worksRows.slice(0, 3);
   const fallbackPreview = [filmSet, journey, lens];
   const portrait = settings.hero.portrait_url || journey;
@@ -272,9 +282,19 @@ function HomePage() {
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {SERVICES.map(({ key, Icon }, i) => (
+            {(servicesRows.length ? servicesRows.slice(0, 6).map((s, i) => {
+              const Icon = (Icons as any)[s.icon] || SERVICES[i % SERVICES.length].Icon;
+              const title = (isAr ? s.title : (s.title_en || s.title)) || "";
+              const desc = (isAr ? s.description : (s.description_en || s.description)) || "";
+              return { id: s.id, Icon, title, desc };
+            }) : SERVICES.map(({ key, Icon }) => ({
+              id: key,
+              Icon,
+              title: t(`services.items.${key}.title`),
+              desc: t(`services.items.${key}.desc`),
+            }))).map((s, i) => (
               <motion.div
-                key={key}
+                key={s.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -282,14 +302,10 @@ function HomePage() {
                 className="group relative overflow-hidden rounded-sm border border-cream/10 bg-[var(--ink)] p-7 transition-all hover:border-cinema/60"
               >
                 <div className="grid size-12 place-items-center rounded-sm bg-cinema/15 text-cinema transition-colors group-hover:bg-cinema group-hover:text-cream">
-                  <Icon className="size-6" strokeWidth={1.5} />
+                  <s.Icon className="size-6" strokeWidth={1.5} />
                 </div>
-                <h3 className="mt-5 text-lg font-bold text-cream">
-                  {t(`services.items.${key}.title`)}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {t(`services.items.${key}.desc`)}
-                </p>
+                <h3 className="mt-5 text-lg font-bold text-cream">{s.title}</h3>
+                {s.desc && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>}
                 <span className="absolute -right-4 -bottom-4 font-display text-7xl font-bold text-cinema/10">
                   0{i + 1}
                 </span>
