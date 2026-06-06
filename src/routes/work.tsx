@@ -235,8 +235,8 @@ function WorkPage() {
                 type="button"
                 onClick={() => setOpenWork(null)}
                 aria-label="close"
-                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/10 text-[#2a1f12] transition-colors hover:bg-[#2a1f12]/25 ${isAr ? "ml-3 mr-auto" : "mr-3 ml-auto"}`}
-                style={{ float: isAr ? "left" : "right" }}
+                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
+                style={{ marginTop: "0.75rem" }}
               >
                 <X className="size-4" />
               </button>
