@@ -21,25 +21,32 @@ function FilmFrame({
   loading,
   ratio = "aspect-square",
   className = "",
+  plain = false,
 }: {
   src?: string;
   loading?: boolean;
   ratio?: string;
   className?: string;
+  /** when true, render the image with its true colors (no sepia, no sprocket holes, no vignette) — only a light grain overlay. */
+  plain?: boolean;
 }) {
   return (
     <div className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)]/40 ${className}`}>
-      {/* sprocket holes top/bottom */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-        ))}
-      </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-        ))}
-      </div>
+      {!plain && (
+        <>
+          {/* sprocket holes top/bottom */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
+            ))}
+          </div>
+        </>
+      )}
       {loading || !src ? (
         <ImgLoader />
       ) : (
@@ -48,15 +55,16 @@ function FilmFrame({
           alt=""
           className="size-full object-cover"
           loading="lazy"
-          style={{ filter: "sepia(0.35) contrast(1.05) saturate(0.85)" }}
+          style={plain ? undefined : { filter: "sepia(0.35) contrast(1.05) saturate(0.85)" }}
         />
       )}
-      <div className="grain-layer" style={{ opacity: 0.45 }} />
-      {/* vignette */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[2]"
-        style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
-      />
+      <div className="grain-layer" style={{ opacity: plain ? 0.25 : 0.45 }} />
+      {!plain && (
+        <div
+          className="pointer-events-none absolute inset-0 z-[2]"
+          style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
+        />
+      )}
     </div>
   );
 }
@@ -92,7 +100,7 @@ function Chapter({
         <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title}</h2>
         <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
           {paras.map((p, i) => (
-            <p key={i} className="whitespace-pre-line first-letter:font-display first-letter:text-3xl first-letter:text-cinema first-letter:me-1">
+            <p key={i} className="whitespace-pre-line">
               {p}
             </p>
           ))}
@@ -199,23 +207,31 @@ function AboutPage() {
             title={title2}
             paras={paras2}
             reverse
-            imageSlot={
-              <div className="grid grid-cols-2 gap-3">
-                <FilmFrame src={img2} loading={settingsLoading} ratio="aspect-[3/4]" />
-                <div className="mt-8">
-                  <FilmFrame src={img3} loading={settingsLoading} ratio="aspect-[3/4]" />
-                </div>
-              </div>
-            }
+            imageSlot={<FilmFrame src={img2} loading={settingsLoading} ratio="aspect-[4/5]" plain />}
           />
 
-          <Chapter
-            num="03"
-            label={isAr ? "السينما" : "Cinema"}
-            title={title3}
-            paras={paras3}
-            imageSlot={<FilmFrame src={img3} loading={settingsLoading} ratio="aspect-[4/3]" />}
-          />
+          {/* Cinema — text-only chapter, no photo (image3 belongs to the team/studio block) */}
+          <motion.section
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <div className="mb-3 flex items-center justify-center gap-3 text-cream/40">
+              <span className="h-px w-12 bg-current" />
+              <Film className="size-3.5" />
+              <span className="h-px w-12 bg-current" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-cream/60">— 03 / {isAr ? "السينما" : "Cinema"}</span>
+            <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title3}</h2>
+            <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
+              {paras3.map((p, i) => (
+                <p key={i} className="whitespace-pre-line">{p}</p>
+              ))}
+            </div>
+          </motion.section>
+
 
           {/* Vision pull-quote, full width on cinema red */}
           <motion.section
@@ -283,22 +299,31 @@ function AboutPage() {
             </a>
           </section>
 
-          {/* Studio */}
-          <section className="flex flex-col gap-4 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:flex-row md:items-center md:justify-between md:p-8">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— Studio</span>
-              <h3 className="mt-2 font-arabic text-2xl text-cream">{studioName}</h3>
-              <p className="mt-2 max-w-xl text-sm text-muted-foreground">{studioDesc}</p>
+          {/* Studio / Team — photo of the creative team */}
+          <section className="grid gap-6 md:grid-cols-2 md:items-stretch">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:aspect-auto">
+              {settingsLoading || !img3 ? (
+                <ImgLoader />
+              ) : (
+                <img src={img3} alt="" className="size-full object-cover" loading="lazy" />
+              )}
+              <div className="grain-layer" style={{ opacity: 0.25 }} />
             </div>
-            <a
-              href={studioUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
-            >
-              {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
-            </a>
+            <div className="flex flex-col justify-center rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:p-8">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— Studio / {isAr ? "الفريق" : "Team"}</span>
+              <h3 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{studioName}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{studioDesc}</p>
+              <a
+                href={studioUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
+              >
+                {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
+              </a>
+            </div>
           </section>
+
         </div>
       </div>
     </>
