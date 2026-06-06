@@ -251,7 +251,7 @@ function WorkPage() {
                   </h3>
                 </div>
                 <article
-                  className={`whitespace-pre-line text-[15px] leading-[2] sm:text-[16px] sm:leading-[2.05] ${isAr ? "font-arabic text-right" : "font-serif text-left"}`}
+                  className={`whitespace-pre-line text-[15px] leading-[2] sm:text-[16px] sm:leading-[2.05] ${isAr ? "font-arabic-body text-right" : "font-serif text-left"}`}
                   style={{ textWrap: "pretty" as any }}
                 >
                   {isAr
