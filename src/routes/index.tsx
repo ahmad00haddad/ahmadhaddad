@@ -358,38 +358,51 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {(previewWorks.length ? previewWorks : fallbackPreview.map((src, i) => ({
-              id: `fb-${i}`, title: "", title_en: "", image_url: src, external_url: null,
-            }) as WorkRow)).map((w, i) => {
-              const title = (isAr ? w.title : w.title_en || w.title) || "";
-              const card = (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-sm"
-                >
-                  <img
-                    src={w.image_url}
-                    alt={title}
-                    loading="lazy"
-                    className="size-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-cinema/90 via-cinema/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                  {title && (
-                    <div className="absolute inset-x-0 bottom-0 p-4 text-cream opacity-0 translate-y-2 transition-all group-hover:opacity-100 group-hover:translate-y-0">
-                      <div className="text-sm font-bold">{title}</div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-              return w.external_url ? (
-                <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
-              ) : (
-                <div key={w.id}>{card}</div>
-              );
-            })}
+            {worksLoading
+              ? [0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="aspect-[4/5] overflow-hidden rounded-sm bg-[var(--surface-deep)]"
+                  >
+                    <ImgLoader />
+                  </div>
+                ))
+              : previewWorks.length === 0
+              ? (
+                <p className="col-span-full text-center text-sm text-muted-foreground">
+                  {isAr ? "لا توجد أعمال منشورة بعد." : "No published works yet."}
+                </p>
+              )
+              : previewWorks.map((w: WorkRow, i: number) => {
+                  const title = (isAr ? w.title : w.title_en || w.title) || "";
+                  const card = (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--surface-deep)]"
+                    >
+                      <img
+                        src={w.image_url}
+                        alt={title}
+                        loading="lazy"
+                        className="size-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-cinema/90 via-cinema/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      {title && (
+                        <div className="absolute inset-x-0 bottom-0 p-4 text-cream opacity-0 translate-y-2 transition-all group-hover:opacity-100 group-hover:translate-y-0">
+                          <div className="text-sm font-bold">{title}</div>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                  return w.external_url ? (
+                    <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
+                  ) : (
+                    <div key={w.id}>{card}</div>
+                  );
+                })}
           </div>
 
         </div>
