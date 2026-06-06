@@ -56,7 +56,7 @@ function WorkPage() {
   const { rows } = useContent<Work>("works");
   const works = rows.length ? rows : FALLBACK;
 
-  const items = tab === "all" ? works : works.filter((w) => w.category === tab);
+  const items = tab === "all" ? works.filter((w) => w.category !== "photo") : works.filter((w) => w.category === tab);
 
 
   const TABS: { key: Tab; label: string }[] = [
