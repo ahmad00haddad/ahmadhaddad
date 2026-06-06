@@ -66,6 +66,7 @@ function HomePage() {
   const isAr = i18n.language === "ar";
   const { settings } = useSettings();
   const { rows: worksRows } = useContent<WorkRow>("works");
+  const { rows: servicesRows } = useContent<ServiceRow>("services");
   const previewWorks = worksRows.slice(0, 3);
   const fallbackPreview = [filmSet, journey, lens];
   const portrait = settings.hero.portrait_url || journey;
