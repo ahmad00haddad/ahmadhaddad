@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSettings, type AllSettings } from "@/lib/use-settings";
 import { MediaUploader } from "@/components/MediaUploader";
+import { toast } from "sonner";
 import {
   Plus, Trash2, LogOut, Save, Pencil, X, Aperture,
   Settings, Image as ImageIcon, FileText, Briefcase,
