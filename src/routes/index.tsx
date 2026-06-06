@@ -342,14 +342,42 @@ function HomePage() {
 }
 
 function Stat({ number, label }: { number: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+
+  // Parse prefix (e.g. "+"), numeric portion, and suffix (e.g. "+", "K")
+  const match = number.match(/^(\D*)(\d+)(.*)$/);
+  const prefix = match?.[1] ?? "";
+  const target = match ? parseInt(match[2], 10) : 0;
+  const suffix = match?.[3] ?? "";
+
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView || !match) return;
+    const controls = animate(0, target, {
+      duration: 2,
+      ease: "easeOut",
+      onUpdate: (v) => setDisplay(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, target, match]);
+
   return (
-    <div className="text-center">
-      <div className="font-display text-4xl font-bold text-cinema md:text-5xl">
-        {number}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.6 }}
+      className="text-center"
+    >
+      <div className="font-display text-4xl font-bold text-cinema md:text-5xl tabular-nums">
+        {match ? `${prefix}${display}${suffix}` : number}
       </div>
       <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
         {label}
       </div>
-    </div>
+    </motion.div>
   );
 }
