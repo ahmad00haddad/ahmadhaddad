@@ -20,6 +20,10 @@ export type About = {
   body_ar: string; body_en: string;
   title2_ar: string; title2_en: string;
   body2_ar: string; body2_en: string;
+  title3_ar: string; title3_en: string;
+  body3_ar: string; body3_en: string;
+  title4_ar: string; title4_en: string;
+  body4_ar: string; body4_en: string;
   image1_url: string; image2_url: string; image3_url: string;
   cv_url: string;
   cv_title_ar: string; cv_title_en: string;
@@ -59,9 +63,17 @@ export const DEFAULTS: AllSettings = {
   },
   about: {
     title_ar: "عن أحمد", title_en: "About Ahmad",
-    body_ar: "", body_en: "",
-    title2_ar: "اكتشافي لعالم السينما", title2_en: "Discovering Cinema",
-    body2_ar: "", body2_en: "",
+    body_ar: "صانع أفلام ومصور. بدأت رحلتي عام 2014 بدافع شغفٍ بسيط ومخلص: أن ألتقط جمال العالم كما أراه من حولي. لم أكن أعلم حينها أن هذه الهواية ستصبح عالمي ووظيفتي.\n\nفي عام 2016 حدثت تلك اللحظة الفارقة التي غيّرت مجرى طموحي تماماً، حين نُشرت إحدى صوري في مجلة دولية؛ كانت بمثابة تأكيدٍ خفيّ بأنني في الطريق الصحيح، وأعطتني إلهاماً لا ينضب لأرى أبعد من مجرد كادرٍ ثابت.",
+    body_en: "Filmmaker and photographer. My journey began in 2014, driven by a simple, sincere passion — to capture the beauty of the world as I see it. I didn't know then that this hobby would become my whole world, and my work.\n\nIn 2016, the turning point arrived: one of my photographs was published in an international magazine. It felt like a quiet confirmation that I was on the right path, and gave me endless inspiration to see beyond a single still frame.",
+    title2_ar: "دراستي", title2_en: "My Studies",
+    body2_ar: "دراستي لهندسة الحاسوب في جامعة اليرموك (2016 – 2022) لم تكن مجرد مرحلة أكاديمية، بل هي ما شكّل طريقة تفكيري؛ علّمتني المنطق، وكيف تُبنى الأشياء على أساساتٍ راسخة.\n\nهذا المنطق هو ما جعلني أدرك لاحقاً أن القواعد السينمائية وُجدت ليحتمي بها المبتدئ، ولا يكسرها بقوة إلا العارفُ بأصولها.",
+    body2_en: "Studying Computer Engineering at Yarmouk University (2016 – 2022) wasn't just an academic chapter — it shaped the way I think. It taught me logic, and how things are built on solid foundations.\n\nThat same logic later helped me understand that the rules of cinema exist as shelter for beginners — and only those who truly know them can break them with intention.",
+    title3_ar: "اكتشافي لعالم السينما", title3_en: "Discovering Cinema",
+    body3_ar: "في عام 2018 دخلت عالم الفيديوغرافيا والسينما من خلال شركة صغيرة. كانت مرحلة تعلّمٍ حقيقية، استوعبت فيها الأدوات والتقنيات، وأدركت أن التقليد في البداية ليس إلا سُلّماً نصعد عليه حتى نصل في النهاية إلى صوتٍ مستقل وهويةٍ خاصة.",
+    body3_en: "In 2018 I stepped into the world of videography and cinema through a small studio. It was a real learning phase — I absorbed the tools and the craft, and I understood that imitation, at first, is only a ladder we climb to eventually reach an independent voice and a personal identity.",
+    title4_ar: "رؤيتي وفلسفتي", title4_en: "Vision & Philosophy",
+    body4_ar: "اليوم، في زمنٍ امتلأ بالنسخ والتكرار والركض وراء الشهرة السريعة عبر تقنياتٍ بصريّة هوجاء وزوايا بلا معنى، أقف خلف عدستي برؤيةٍ مختلفة.\n\nلا أصنع فيلماً لمجرّد الظهور؛ بل أؤمن أن الفنّ خُلق ليُعبّر عن مشاعرَ حقيقيةٍ تنبع من طين مجتمعنا وقواسمنا المشتركة. هدفي ليس إعادة إنتاج الماضي، بل إعادة توجيه البوصلة لنصنع سينما حديثة، ناضجة، تملك الحرفة التقنية العالية، وتنبض بروحٍ تشبهنا تماماً.",
+    body4_en: "Today, in a time crowded with copies and a race for quick fame through reckless visuals and meaningless angles, I stand behind my lens with a different vision.\n\nI don't make films just to be seen. I believe art was made to express real feelings — ones that rise from the soil of our community and our shared experiences. My goal isn't to reproduce the past, but to redirect the compass toward a modern, mature cinema: one with serious technical craft, beating with a soul that looks exactly like us.",
     image1_url: "", image2_url: "", image3_url: "",
     cv_url: "",
     cv_title_ar: "تعرّف عليّ عن قرب", cv_title_en: "Get to know me",
