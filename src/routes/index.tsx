@@ -29,14 +29,6 @@ type WorkRow = {
   image_url: string;
   external_url?: string | null;
 };
-type ServiceRow = {
-  id: string;
-  title: string;
-  title_en?: string | null;
-  description?: string | null;
-  description_en?: string | null;
-  icon: string;
-};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,22 +44,12 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const SERVICES = [
-  { key: "shorts", Icon: Film },
-  { key: "ads", Icon: Sparkles },
-  { key: "color", Icon: Palette },
-  { key: "photo", Icon: Camera },
-  { key: "edit", Icon: Video },
-] as const;
-
-
-
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
-  const { rows: servicesRows, loading: servicesLoading } = useContent<ServiceRow>("services");
+
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
   const strip = [0, 1, 2].map((i) => settings.hero.strip_images?.[i] || "");
