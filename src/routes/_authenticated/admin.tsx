@@ -301,36 +301,79 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
   };
   useEffect(() => { load(); }, [cfg.table]);
 
+  // Required NOT NULL columns per table — must be filled before insert/update
+  const REQUIRED: Record<string, { key: string; label: string }[]> = {
+    works: [
+      { key: "title", label: "العنوان" },
+      { key: "image_url", label: "صورة الغلاف" },
+      { key: "category", label: "الفئة" },
+    ],
+    services: [
+      { key: "title", label: "العنوان" },
+      { key: "icon", label: "الأيقونة" },
+    ],
+    testimonials: [
+      { key: "name", label: "الاسم" },
+      { key: "quote", label: "الاقتباس" },
+    ],
+    clients: [
+      { key: "name", label: "الاسم" },
+      { key: "logo_url", label: "الشعار" },
+    ],
+  };
+
   const empty = () => {
     const e: any = { published: true, sort_order: 0 };
-    cfg.fields.forEach((f) => { if (!(f.key in e)) e[f.key] = f.type === "bool" ? true : f.type === "number" ? 0 : ""; });
+    cfg.fields.forEach((f) => {
+      if (f.key in e) return;
+      if (f.type === "bool") e[f.key] = true;
+      else if (f.type === "number") e[f.key] = 0;
+      else if (f.type === "select") e[f.key] = f.options?.[0] ?? "";
+      else e[f.key] = "";
+    });
     return e;
   };
 
   const save = async () => {
     if (!editing) return;
-    const payload = { ...editing };
-    cfg.fields.forEach((f) => {
-      if (f.type === "number") payload[f.key] = Number(payload[f.key] || 0);
-      if (payload[f.key] === "") payload[f.key] = null;
-    });
-    if (editing.id) {
-      const { error } = await supabase.from(cfg.table).update(payload).eq("id", editing.id);
-      if (error) {
-        toast.error("حدث خطأ أثناء التحديث: " + error.message);
+
+    // Validate required fields first
+    const required = REQUIRED[cfg.table] ?? [];
+    for (const r of required) {
+      const v = editing[r.key];
+      if (v === undefined || v === null || String(v).trim() === "") {
+        toast.error(`الحقل مطلوب: ${r.label}`);
         return;
       }
-      toast.success("تم التحديث بنجاح");
-    } else {
-      delete payload.id;
-      const { error } = await supabase.from(cfg.table).insert(payload);
-      if (error) {
-        toast.error("حدث خطأ أثناء الإضافة: " + error.message);
-        return;
-      }
-      toast.success("تمت الإضافة بنجاح");
     }
-    setEditing(null); load();
+
+    const payload: any = { ...editing };
+    const requiredKeys = new Set(required.map((r) => r.key));
+    cfg.fields.forEach((f) => {
+      if (f.type === "number") {
+        payload[f.key] = Number(payload[f.key] || 0);
+      } else if (payload[f.key] === "" && !requiredKeys.has(f.key)) {
+        payload[f.key] = null;
+      }
+    });
+
+    try {
+      if (editing.id) {
+        const { error } = await supabase.from(cfg.table).update(payload).eq("id", editing.id);
+        if (error) throw error;
+        toast.success("تم التحديث بنجاح");
+      } else {
+        delete payload.id;
+        const { error } = await supabase.from(cfg.table).insert(payload);
+        if (error) throw error;
+        toast.success("تمت الإضافة بنجاح");
+      }
+      setEditing(null);
+      load();
+    } catch (e: any) {
+      console.error("Save error:", e);
+      toast.error("حدث خطأ أثناء الحفظ: " + (e?.message || "غير معروف"));
+    }
   };
 
   const remove = async (id: string) => {
