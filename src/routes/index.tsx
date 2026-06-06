@@ -74,15 +74,12 @@ const FALLBACK_STRIP = [heroImg, filmSet, lens];
 function HomePage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
-  const { settings } = useSettings();
-  const { rows: worksRows } = useContent<WorkRow>("works");
-  const { rows: servicesRows } = useContent<ServiceRow>("services");
+  const { settings, loading: settingsLoading } = useSettings();
+  const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
+  const { rows: servicesRows, loading: servicesLoading } = useContent<ServiceRow>("services");
   const previewWorks = worksRows.slice(0, 3);
-  const fallbackPreview = [filmSet, journey, lens];
-  const portrait = settings.hero.portrait_url || journey;
-  const strip = [0, 1, 2].map(
-    (i) => settings.hero.strip_images?.[i] || FALLBACK_STRIP[i],
-  );
+  const portrait = settings.hero.portrait_url;
+  const strip = [0, 1, 2].map((i) => settings.hero.strip_images?.[i] || "");
   const brandTag = isAr
     ? settings.brand.tagline_ar || t("home.brand_tag")
     : settings.brand.tagline_en || t("home.brand_tag");
