@@ -299,22 +299,31 @@ function AboutPage() {
             </a>
           </section>
 
-          {/* Studio */}
-          <section className="flex flex-col gap-4 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:flex-row md:items-center md:justify-between md:p-8">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— Studio</span>
-              <h3 className="mt-2 font-arabic text-2xl text-cream">{studioName}</h3>
-              <p className="mt-2 max-w-xl text-sm text-muted-foreground">{studioDesc}</p>
+          {/* Studio / Team — photo of the creative team */}
+          <section className="grid gap-6 md:grid-cols-2 md:items-stretch">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:aspect-auto">
+              {settingsLoading || !img3 ? (
+                <ImgLoader />
+              ) : (
+                <img src={img3} alt="" className="size-full object-cover" loading="lazy" />
+              )}
+              <div className="grain-layer" style={{ opacity: 0.25 }} />
             </div>
-            <a
-              href={studioUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
-            >
-              {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
-            </a>
+            <div className="flex flex-col justify-center rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:p-8">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— Studio / {isAr ? "الفريق" : "Team"}</span>
+              <h3 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{studioName}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{studioDesc}</p>
+              <a
+                href={studioUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
+              >
+                {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
+              </a>
+            </div>
           </section>
+
         </div>
       </div>
     </>
