@@ -171,16 +171,29 @@ export function useContent<T = any>(
   table: "services" | "works" | "testimonials" | "clients",
   opts: { publishedOnly?: boolean } = { publishedOnly: true },
 ) {
-  const [rows, setRows] = useState<T[]>([]);
+  const cacheKey = `content_cache_${table}_${opts.publishedOnly ? "pub" : "all"}_v1`;
+  const readCache = (): T[] => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(cacheKey);
+      return raw ? (JSON.parse(raw) as T[]) : [];
+    } catch { return []; }
+  };
+
+  const [rows, setRows] = useState<T[]>(() => readCache());
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     let q = supabase.from(table).select("*").order("sort_order").order("created_at", { ascending: false });
     if (opts.publishedOnly) q = q.eq("published", true);
     const { data } = await q;
-    setRows((data ?? []) as T[]);
+    const next = (data ?? []) as T[];
+    setRows(next);
     setLoading(false);
-  }, [table, opts.publishedOnly]);
+    if (typeof window !== "undefined") {
+      try { localStorage.setItem(cacheKey, JSON.stringify(next)); } catch {}
+    }
+  }, [table, opts.publishedOnly, cacheKey]);
 
   useEffect(() => {
     load();
