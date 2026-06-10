@@ -100,18 +100,44 @@ export const DEFAULTS: AllSettings = {
 
 };
 
+const SETTINGS_CACHE_KEY = "site_settings_cache_v1";
+
+function readSettingsCache(): AllSettings {
+  if (typeof window === "undefined") return DEFAULTS;
+  try {
+    const raw = localStorage.getItem(SETTINGS_CACHE_KEY);
+    if (!raw) return DEFAULTS;
+    const parsed = JSON.parse(raw);
+    const merged = { ...DEFAULTS };
+    Object.keys(parsed).forEach((k) => {
+      (merged as any)[k] = { ...(DEFAULTS as any)[k], ...parsed[k] };
+    });
+    return merged;
+  } catch {
+    return DEFAULTS;
+  }
+}
+
+function writeSettingsCache(raw: Record<string, any>) {
+  if (typeof window === "undefined") return;
+  try { localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(raw)); } catch {}
+}
+
 export function useSettings() {
-  const [settings, setSettings] = useState<AllSettings>(DEFAULTS);
+  const [settings, setSettings] = useState<AllSettings>(() => readSettingsCache());
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     const { data } = await supabase.from("site_settings").select("key,value");
     const merged = { ...DEFAULTS };
+    const raw: Record<string, any> = {};
     (data ?? []).forEach((r: any) => {
       (merged as any)[r.key] = { ...(DEFAULTS as any)[r.key], ...r.value };
+      raw[r.key] = r.value;
     });
     setSettings(merged);
     setLoading(false);
+    writeSettingsCache(raw);
   }, []);
 
   useEffect(() => {
@@ -126,7 +152,15 @@ export function useSettings() {
   const save = useCallback(async (key: keyof AllSettings, value: any) => {
     const { error } = await supabase.from("site_settings").upsert({ key, value }, { onConflict: "key" });
     if (error) throw error;
-    setSettings((s) => ({ ...s, [key]: value }));
+    setSettings((s) => {
+      const next = { ...s, [key]: value };
+      try {
+        const raw = JSON.parse((typeof window !== "undefined" && localStorage.getItem(SETTINGS_CACHE_KEY)) || "{}");
+        raw[key] = value;
+        writeSettingsCache(raw);
+      } catch {}
+      return next;
+    });
   }, []);
 
   return { settings, loading, save, reload: load };
