@@ -15,6 +15,7 @@ import "../i18n";
 import { I18nBoundary } from "../components/I18nBoundary";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { PageTransition } from "../components/PageTransition";
 
 function NotFoundComponent() {
   return (
@@ -144,6 +145,7 @@ function RootComponent() {
             <Outlet />
           </main>
           <Footer />
+          <PageTransition />
         </div>
       </I18nBoundary>
     </QueryClientProvider>
