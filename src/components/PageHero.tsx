@@ -1,5 +1,7 @@
 import { type ReactNode } from "react";
 import { Aperture } from "lucide-react";
+import { useSettings } from "@/lib/use-settings";
+import { useTranslation } from "react-i18next";
 
 /**
  * Cinematic page header — red canvas with grain, matching the hero on /.
@@ -15,6 +17,14 @@ export function PageHero({
   subtitle?: ReactNode;
   children?: ReactNode;
 }) {
+  const { settings } = useSettings();
+  const { i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
+
+  const defaultKicker = isAr
+    ? `${settings.brand.name_ar} · ${settings.brand.tagline_ar}`
+    : "HADDAD · CINEMATOGRAPHER";
+
   return (
     <section dir="rtl" className="bg-[var(--ink)] p-3 md:p-4">
       <div
@@ -26,7 +36,7 @@ export function PageHero({
           <div className="mb-6 flex items-center gap-3">
             <Aperture className="size-8" strokeWidth={1.3} />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-              {kicker ?? "Haddad · Studio"}
+              {kicker ?? defaultKicker}
             </span>
           </div>
           <h1 className="font-arabic text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] tracking-tight">

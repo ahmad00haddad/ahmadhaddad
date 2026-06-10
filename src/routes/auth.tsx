@@ -66,7 +66,7 @@ function AuthPage() {
             <Aperture className="size-9" strokeWidth={1.3} />
             <div>
               <div className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                Haddad · Studio
+                HADDAD · CINEMATOGRAPHER
               </div>
               <div className="font-display text-2xl font-bold tracking-tight">
                 ADMIN ACCESS
