@@ -183,3 +183,142 @@ html[dir="rtl"] .animate-film-sweep {
   100% { transform: translateX(-450vw); }
 }
 
+
+/* ===== Magnetic button ===== */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease, box-shadow 200ms ease;
+}
+.magnetic-btn .magnetic-btn__inner {
+  will-change: transform;
+  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: none) {
+  .magnetic-btn,
+  .magnetic-btn .magnetic-btn__inner { transform: none !important; }
+}
+
+/* ===== Slate clapperboard form ===== */
+.clapper {
+  position: relative;
+  background: #0a0a0a;
+  border: 2px solid #111;
+  border-radius: 4px;
+  box-shadow:
+    0 30px 60px -25px rgba(0,0,0,0.8),
+    inset 0 0 0 1px rgba(242,228,212,0.06);
+  overflow: hidden;
+}
+/* Diagonal-striped clapper bar at the top */
+.clapper__sticks {
+  position: relative;
+  height: 38px;
+  background-image: repeating-linear-gradient(
+    -55deg,
+    var(--cream) 0 22px,
+    #0a0a0a 22px 44px
+  );
+  border-bottom: 3px solid #050505;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.6);
+}
+.clapper__sticks::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.25));
+  pointer-events: none;
+}
+/* Hinge dot on the clapper sticks */
+.clapper__hinge {
+  position: absolute;
+  top: 50%;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  box-shadow: 0 0 0 2px var(--cream), inset 0 0 0 2px #050505;
+  transform: translateY(-50%);
+}
+
+/* Chalkboard body */
+.clapper__board {
+  background:
+    radial-gradient(ellipse at top, rgba(255,255,255,0.04), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 6px),
+    #0e0e0e;
+  padding: 1.75rem 1.5rem 1.5rem;
+}
+
+.clapper__field {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: stretch;
+  border-bottom: 1px dashed rgba(242,228,212,0.18);
+}
+.clapper__field:last-of-type { border-bottom: 0; }
+.clapper__field > .clapper__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--cream);
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.25)),
+    #141414;
+  border-right: 1px dashed rgba(242,228,212,0.18);
+  text-transform: uppercase;
+}
+html[dir="rtl"] .clapper__field > .clapper__label {
+  border-right: 0;
+  border-left: 1px dashed rgba(242,228,212,0.18);
+  font-family: var(--font-arabic);
+  letter-spacing: 0.08em;
+}
+.clapper__input,
+.clapper__textarea {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 0.85rem 1rem;
+  color: var(--cream);
+  font-family: "Caveat", "Permanent Marker", var(--font-arabic-body);
+  font-size: 1.25rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  caret-color: var(--cinema);
+}
+.clapper__textarea { resize: none; min-height: 130px; }
+.clapper__input::placeholder,
+.clapper__textarea::placeholder {
+  color: rgba(242,228,212,0.35);
+  font-style: italic;
+}
+
+.clapper__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #141414;
+  border-top: 1px dashed rgba(242,228,212,0.18);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(242,228,212,0.7);
+  text-transform: uppercase;
+}
+.clapper__meta .dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cinema); box-shadow: 0 0 0 2px rgba(183,37,52,0.25);
+  margin-inline-end: 8px; vertical-align: middle;
+}
