@@ -157,3 +157,29 @@
   background-position: 0 center;
   background-repeat: repeat-x;
 }
+
+/* ===== Cinematic page-cut transition ===== */
+@keyframes film-flash {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  55%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+@keyframes film-sweep {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(450vw); }
+}
+.animate-film-flash {
+  animation: film-flash 420ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.animate-film-sweep {
+  animation: film-sweep 520ms cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+html[dir="rtl"] .animate-film-sweep {
+  animation-name: film-sweep-rtl;
+}
+@keyframes film-sweep-rtl {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-450vw); }
+}
+
