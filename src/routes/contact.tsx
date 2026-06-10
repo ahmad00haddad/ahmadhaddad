@@ -204,14 +204,15 @@ function MagneticSocial({
   children: React.ReactNode;
 }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
-      <MagneticButton
-        type="button"
-        strength={0.5}
-        className="size-10 rounded-full bg-[var(--ink)] text-[var(--cream)]"
-      >
-        {children}
-      </MagneticButton>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="grid size-10 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform duration-300 hover:scale-110"
+    >
+      {children}
     </a>
   );
 }
+
