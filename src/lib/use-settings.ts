@@ -58,7 +58,7 @@ export type AllSettings = {
 };
 
 export const DEFAULTS: AllSettings = {
-  brand: { name_ar: "أحمد حدّاد", name_en: "Ahmad Haddad", tagline_ar: "استوديو", tagline_en: "Studio", logo_url: "" },
+  brand: { name_ar: "أحمد حدّاد", name_en: "HADDAD", tagline_ar: "سينمائي", tagline_en: "CINEMATOGRAPHER", logo_url: "" },
   hero: {
     eyebrow_ar: "إطار وَ تركيز", eyebrow_en: "Frame & Focus",
     title_ar: "حكاياتٌ تُروى بالضوء", title_en: "Stories Told in Light",
