@@ -55,8 +55,8 @@ function HomePage() {
   const portrait = settings.hero.portrait_url;
   const strip = [0, 1, 2].map((i) => settings.hero.strip_images?.[i] || "");
   const brandTag = isAr
-    ? settings.brand.tagline_ar || t("home.brand_tag")
-    : settings.brand.tagline_en || t("home.brand_tag");
+    ? `${settings.brand.name_ar} · ${settings.brand.tagline_ar}`
+    : "HADDAD · CINEMATOGRAPHER";
   const heroTitle = (isAr ? settings.hero.title_ar : settings.hero.title_en)
     || `${t("home.hero_title_a")} ${t("home.hero_title_b")}`;
   const heroSubtitle = (isAr ? settings.hero.subtitle_ar : settings.hero.subtitle_en)
