@@ -133,7 +133,7 @@ function HomePage() {
                 initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="relative mx-auto aspect-square w-full max-w-[340px] md:max-w-[380px]"
+                className="relative mx-auto aspect-square w-full max-w-[340px] md:max-w-[420px] lg:max-w-[480px]"
               >
                 <div className="absolute inset-0 rounded-full border-[10px] border-[var(--ink)]/15" />
                 <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
