@@ -56,6 +56,7 @@ function HomePage() {
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
+  const [openWork, setOpenWork] = useState<WorkRow | null>(null);
 
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
