@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
+import { Magnetic } from "@/components/MagneticButton";
 
 
 function ImgLoader({ className = "" }: { className?: string }) {
