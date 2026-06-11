@@ -191,14 +191,16 @@ function SocialIcon({
   children: React.ReactNode;
 }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={label}
-      className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
-    >
-      {children}
-    </a>
+    <Magnetic strength={0.15} radius={60}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={label}
+        className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
+      >
+        {children}
+      </a>
+    </Magnetic>
   );
 }
