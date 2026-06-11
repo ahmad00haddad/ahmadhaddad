@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -11,6 +11,8 @@ import {
   Youtube,
   Aperture,
   Loader2,
+  Play,
+  X,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
 import { Magnetic } from "@/components/MagneticButton";
