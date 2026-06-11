@@ -9,7 +9,6 @@ import {
   Instagram,
   Facebook,
   Youtube,
-  Aperture,
   Loader2,
   Play,
   X,
