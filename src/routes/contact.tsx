@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, Facebook, Send } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { Magnetic } from "@/components/MagneticButton";
 import { useSettings } from "@/lib/use-settings";
 
 export const Route = createFileRoute("/contact")({
@@ -82,13 +83,15 @@ function ContactPage() {
                 className={`${inputCls} resize-none`}
               />
             </Field>
-            <button
-              type="submit"
-              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cinema px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-cream transition-transform hover:scale-[1.01]"
-            >
-              <Send className="size-3.5" />
-              {t("contact.send")}
-            </button>
+            <Magnetic strength={0.12} radius={90}>
+              <button
+                type="submit"
+                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cinema px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-cream transition-transform hover:scale-[1.01]"
+              >
+                <Send className="size-3.5" />
+                {t("contact.send")}
+              </button>
+            </Magnetic>
           </form>
 
           <aside className="md:col-span-2">
@@ -188,14 +191,16 @@ function SocialIcon({
   children: React.ReactNode;
 }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={label}
-      className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
-    >
-      {children}
-    </a>
+    <Magnetic strength={0.15} radius={60}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={label}
+        className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
+      >
+        {children}
+      </a>
+    </Magnetic>
   );
 }

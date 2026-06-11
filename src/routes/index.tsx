@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
+import { Magnetic } from "@/components/MagneticButton";
 
 
 function ImgLoader({ className = "" }: { className?: string }) {
@@ -173,12 +174,14 @@ function HomePage() {
           <aside className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex">
             {/* top: capture now */}
             <div className="mb-3 flex items-center justify-between px-3">
-              <Link
-                to="/contact"
-                className="rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-105"
-              >
-                {t("home.capture_now")}
-              </Link>
+              <Magnetic strength={0.12} radius={80}>
+                <Link
+                  to="/contact"
+                  className="inline-block rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-105"
+                >
+                  {t("home.capture_now")}
+                </Link>
+              </Magnetic>
             </div>
 
             {/* 3 stacked frames, uniform sizing */}
@@ -229,14 +232,14 @@ function HomePage() {
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-2">
-                {[
-                  { Icon: Linkedin, href: "https://www.linkedin.com/in/ahmad00haddad/" },
-                  { Icon: Instagram, href: "https://www.instagram.com/ahmad00haddad/" },
-                  { Icon: Facebook, href: "https://www.facebook.com/ahmad00haddad/" },
-                  { Icon: Youtube, href: "https://www.youtube.com/@ahmad00haddad" },
-                ].map(({ Icon, href }, i) => (
+              {[
+                { Icon: Linkedin, href: "https://www.linkedin.com/in/ahmad00haddad/" },
+                { Icon: Instagram, href: "https://www.instagram.com/ahmad00haddad/" },
+                { Icon: Facebook, href: "https://www.facebook.com/ahmad00haddad/" },
+                { Icon: Youtube, href: "https://www.youtube.com/@ahmad00haddad" },
+              ].map(({ Icon, href }, i) => (
+                <Magnetic key={i} strength={0.15} radius={60}>
                   <a
-                    key={i}
                     href={href}
                     target="_blank"
                     rel="noreferrer"
@@ -244,7 +247,8 @@ function HomePage() {
                   >
                     <Icon className="size-3.5" />
                   </a>
-                ))}
+                </Magnetic>
+              ))}
               </div>
             </div>
           </aside>
