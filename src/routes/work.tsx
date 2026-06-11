@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Instagram, Youtube, ExternalLink, Play, X } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { Magnetic } from "@/components/MagneticButton";
 import { useContent } from "@/lib/use-settings";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
@@ -73,18 +74,19 @@ function WorkPage() {
       <div dir="rtl" className="mx-auto max-w-7xl px-6 py-16">
         <div className="mb-10 flex flex-wrap justify-center gap-2">
           {TABS.map((tb) => (
-            <button
-              key={tb.key}
-              onClick={() => setTab(tb.key)}
-              className={
-                "rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors " +
-                (tab === tb.key
-                  ? "bg-cinema text-cream"
-                  : "border border-cream/15 text-muted-foreground hover:text-cream")
-              }
-            >
-              {tb.label}
-            </button>
+            <Magnetic key={tb.key} strength={0.1} radius={70}>
+              <button
+                onClick={() => setTab(tb.key)}
+                className={
+                  "rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors " +
+                  (tab === tb.key
+                    ? "bg-cinema text-cream"
+                    : "border border-cream/15 text-muted-foreground hover:text-cream")
+                }
+              >
+                {tb.label}
+              </button>
+            </Magnetic>
           ))}
         </div>
 
@@ -148,63 +150,69 @@ function WorkPage() {
         </motion.div>
 
         <div className="mt-14 flex justify-center">
-          <a
-            href="https://www.behance.net/ahmad00haddad"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-[1.03]"
-          >
-            {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
-            <ExternalLink className="size-3.5" />
-          </a>
+          <Magnetic strength={0.12} radius={90}>
+            <a
+              href="https://www.behance.net/ahmad00haddad"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-[1.03]"
+            >
+              {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
+              <ExternalLink className="size-3.5" />
+            </a>
+          </Magnetic>
         </div>
 
 
         {/* social CTAs */}
         <section className="mt-20 grid gap-4 md:grid-cols-2">
-          <a
-            href="https://www.youtube.com/@ahmad00haddad"
-            target="_blank"
-            rel="noreferrer"
-            className="group block rounded-sm border border-cream/10 bg-[var(--surface)] p-8 transition-all hover:border-cinema/60"
-          >
-            <div className="flex items-center gap-3 text-cinema">
-              <Youtube className="size-7" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                YouTube
-              </span>
-            </div>
-            <h3 className="mt-4 font-arabic text-2xl text-cream">
-              {t("work.youtube_title")}
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">{t("work.youtube_sub")}</p>
-            <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
-              @ahmad00haddad <ExternalLink className="size-3.5" />
-            </span>
-          </a>
-          <a
-            href="https://www.instagram.com/ahmad00haddad/"
-            target="_blank"
-            rel="noreferrer"
-            className="group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-8 transition-transform hover:scale-[1.01]"
-          >
-            <div className="grain-layer" />
-            <div className="relative z-[2] text-[var(--cream)]">
-              <div className="flex items-center gap-3">
-                <Instagram className="size-7" />
+          <Magnetic strength={0.08} radius={120}>
+            <a
+              href="https://www.youtube.com/@ahmad00haddad"
+              target="_blank"
+              rel="noreferrer"
+              className="group block rounded-sm border border-cream/10 bg-[var(--surface)] p-8 transition-all hover:border-cinema/60"
+            >
+              <div className="flex items-center gap-3 text-cinema">
+                <Youtube className="size-7" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  Instagram
+                  YouTube
                 </span>
               </div>
-              <h3 className="mt-4 font-arabic text-2xl">
-                {t("work.instagram_title")}
+              <h3 className="mt-4 font-arabic text-2xl text-cream">
+                {t("work.youtube_title")}
               </h3>
-              <p className="mt-2 text-sm opacity-90">{t("work.instagram_sub")}</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
-                {t("work.instagram_cta")} <ExternalLink className="size-3.5" />
+              <p className="mt-2 text-sm text-muted-foreground">{t("work.youtube_sub")}</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
+                @ahmad00haddad <ExternalLink className="size-3.5" />
               </span>
-            </div>
-          </a>
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.08} radius={120}>
+            <a
+              href="https://www.instagram.com/ahmad00haddad/"
+              target="_blank"
+              rel="noreferrer"
+              className="group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-8 transition-transform hover:scale-[1.01]"
+            >
+              <div className="grain-layer" />
+              <div className="relative z-[2] text-[var(--cream)]">
+                <div className="flex items-center gap-3">
+                  <Instagram className="size-7" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+                    Instagram
+                  </span>
+                </div>
+                <h3 className="mt-4 font-arabic text-2xl">
+                  {t("work.instagram_title")}
+                </h3>
+                <p className="mt-2 text-sm opacity-90">{t("work.instagram_sub")}</p>
+                <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
+                  {t("work.instagram_cta")} <ExternalLink className="size-3.5" />
+                </span>
+              </div>
+            </a>
+          </Magnetic>
         </section>
       </div>
 
