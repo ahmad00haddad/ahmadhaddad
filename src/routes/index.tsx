@@ -87,12 +87,9 @@ function HomePage() {
           <div className="relative z-[2] flex flex-col justify-between p-5 md:p-10">
             {/* top nav row */}
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 text-[var(--cream)]">
-                <Aperture className="size-9" strokeWidth={1.3} />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  {brandTag}
-                </span>
-              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]">
+                {brandTag}
+              </span>
               <div className="hidden items-center gap-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]/90 md:flex">
                 <span>{t("home.hero_top_label")}</span>
                 <span className="h-px w-20 bg-[var(--cream)]/40" />
