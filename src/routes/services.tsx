@@ -64,7 +64,7 @@ function ServicesPage() {
           </div>
         )}
 
-        <section className="mt-20 grid gap-4 md:grid-cols-2">
+        <section className="mt-20 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <a
             href="https://haddad-rate-card.lovable.app/"
             target="_blank"
@@ -93,6 +93,22 @@ function ServicesPage() {
             <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
               {t("services.company_cta")} <ExternalLink className="size-3.5" />
             </span>
+          </a>
+          <a
+            href="https://haddad-rate-card.lovable.app/equipment"
+            target="_blank"
+            rel="noreferrer"
+            className="group relative block overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
+          >
+            <div className="grain-layer" />
+            <div className="relative z-[2]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">Gear</span>
+              <h3 className="mt-3 font-arabic text-3xl text-cream">{t("services.equipment_title")}</h3>
+              <p className="mt-3 text-sm text-muted-foreground">{t("services.equipment_sub")}</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
+                {t("services.equipment_cta")} <ExternalLink className="size-3.5" />
+              </span>
+            </div>
           </a>
         </section>
       </div>
