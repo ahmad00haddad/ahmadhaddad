@@ -56,7 +56,11 @@
     "rate_card_cta": "Open rate card",
     "company_title": "Faii House",
     "company_sub": "The creative team I lead — for larger production projects.",
-    "company_cta": "Visit the company"
+    "company_cta": "Visit the company",
+    "equipment_title": "Equipment",
+    "equipment_sub": "Browse available gear for rent and use in your production projects.",
+    "equipment_cta": "View equipment"
+
   },
   "work": {
     "title": "Work",
