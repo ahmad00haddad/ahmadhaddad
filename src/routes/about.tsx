@@ -265,7 +265,7 @@ function AboutPage() {
           {/* CV — compact vintage card */}
           <section className="grid items-center gap-6 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:grid-cols-[1fr_auto] md:p-10">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— CV / السيرة الذاتية</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— {isAr ? "CV / السيرة الذاتية" : "Curriculum Vitae"}</span>
               <h2 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{cvTitle}</h2>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{cvSub}</p>
               <a

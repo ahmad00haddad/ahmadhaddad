@@ -61,7 +61,7 @@ function WorkPage() {
 
 
   const TABS: { key: Tab; label: string }[] = [
-    { key: "all", label: "الكل" },
+    { key: "all", label: t("work.tabs.all") },
     { key: "films", label: t("work.tabs.films") },
     { key: "ads", label: t("work.tabs.ads") },
     { key: "photo", label: t("work.tabs.photo") },

@@ -53,8 +53,8 @@ function ContactPage() {
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">
               — Message
             </span>
-            <h2 className="mt-2 mb-6 font-arabic text-3xl text-cream">
-              ابعت رسالة
+            <h2 className={`mt-2 mb-6 text-3xl text-cream ${isAr ? "font-arabic" : ""}`}>
+              {t("contact.form_title")}
             </h2>
             <Field label={t("contact.name")}>
               <input

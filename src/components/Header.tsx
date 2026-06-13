@@ -29,19 +29,15 @@ export function Header() {
           className="flex items-center gap-3 text-foreground"
           onClick={() => setOpen(false)}
         >
-          {settings.brand.logo_url ? (
+          {settings.brand.logo_url && (
             <img
               src={settings.brand.logo_url}
               alt={isAr ? brandAr : brandEn}
               className="h-9 w-auto md:h-10"
             />
-          ) : (
-            <span className="font-arabic text-2xl font-black tracking-tight">
-              {isAr ? brandAr : brandEn}
-            </span>
           )}
-          <span className="hidden text-sm font-normal text-muted-foreground sm:inline">
-            {isAr ? brandEn : brandAr}
+          <span className={`text-xl font-black tracking-tight md:text-2xl ${isAr ? "font-arabic" : ""}`}>
+            {isAr ? brandAr : brandEn}
           </span>
         </Link>
 
