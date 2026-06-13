@@ -65,7 +65,7 @@
   "work": {
     "title": "Work",
     "subtitle": "Whether you need a short or a feature, let me help turn your vision into a striking cinematic experience.",
-    "tabs": { "films": "Films", "ads": "Commercials", "photo": "Photography" },
+    "tabs": { "all": "All", "films": "Films", "ads": "Commercials", "photo": "Photography" },
     "youtube_title": "From my YouTube channel",
     "youtube_sub": "Recent releases — tap to watch.",
     "instagram_title": "Instagram",
@@ -75,6 +75,7 @@
   "contact": {
     "title": "Get in touch",
     "subtitle": "Whether you're interested in working together or just want to say hi, I'd love to hear from you.",
+    "form_title": "Send a message",
     "name": "Full name",
     "email": "Email address",
     "message": "Your message",
