@@ -27,6 +27,9 @@ export function PageTransition() {
 
   if (playKey === 0) return null;
 
+  const isRtl =
+    typeof document !== "undefined" && document.documentElement.dir === "rtl";
+
   return (
     <div
       key={playKey}
@@ -34,7 +37,11 @@ export function PageTransition() {
       className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden"
     >
       <div className="absolute inset-0 bg-[var(--cream)] animate-film-flash" />
-      <div className="absolute inset-y-0 -left-1/3 w-1/3 filmstrip-vertical animate-film-sweep" />
+      <div
+        className={`absolute inset-y-0 w-1/3 filmstrip-vertical animate-film-sweep ${
+          isRtl ? "-right-1/3" : "-left-1/3"
+        }`}
+      />
     </div>
   );
 }
