@@ -55,6 +55,7 @@ function HomePage() {
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
+  const { rows: clientsRows } = useContent<{ id: string; name: string; logo_url: string; url?: string | null }>("clients");
   const [openWork, setOpenWork] = useState<WorkRow | null>(null);
 
   const previewWorks = worksRows.slice(0, 3);
@@ -353,7 +354,72 @@ function HomePage() {
         </div>
       </section>
 
+      {/* ============ TRUSTED BY — marquee logos ============ */}
+      {clientsRows.length > 0 && (
+        <section className="relative overflow-hidden border-t border-[var(--cream)]/10 bg-[var(--ink)] py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.6 }}
+            className="mx-auto mb-12 max-w-3xl px-6 text-center"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--cinema)]">
+              — {t("home.trusted_eyebrow")} —
+            </span>
+            <h2
+              className={
+                isAr
+                  ? "font-arabic mt-4 text-4xl font-bold text-[var(--cream)] md:text-5xl"
+                  : "font-display mt-4 text-4xl font-bold text-[var(--cream)] md:text-5xl"
+              }
+            >
+              {t("home.trusted_title")}
+            </h2>
+            <p className={`mt-3 text-sm text-[var(--cream)]/60 ${isAr ? "font-arabic" : ""}`}>
+              +{clientsRows.length} {t("home.trusted_sub")}
+            </p>
+          </motion.div>
+
+          <div
+            dir="ltr"
+            className="marquee-pause group relative"
+            style={{
+              maskImage:
+                "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            }}
+          >
+            <div className="marquee-track flex items-center gap-16 px-8">
+              {[...clientsRows, ...clientsRows].map((c, i) => {
+                const img = (
+                  <img
+                    src={c.logo_url}
+                    alt={c.name}
+                    loading="lazy"
+                    className="h-16 w-auto max-w-[180px] object-contain opacity-70 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0 md:h-20"
+                  />
+                );
+                return (
+                  <div key={`${c.id}-${i}`} className="shrink-0">
+                    {c.url ? (
+                      <a href={c.url} target="_blank" rel="noreferrer">
+                        {img}
+                      </a>
+                    ) : (
+                      img
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       <AnimatePresence>
+
         {openWork && (
           <motion.div
             className="fixed inset-0 z-[100] grid place-items-center p-4 sm:p-8"
