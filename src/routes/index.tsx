@@ -377,7 +377,7 @@ function HomePage() {
               {t("home.trusted_title")}
             </h2>
             <p className={`mt-3 text-sm text-[var(--cream)]/60 ${isAr ? "font-arabic" : ""}`}>
-              +{clientsRows.length} {t("home.trusted_sub")}
+              {t("home.trusted_sub")}
             </p>
           </motion.div>
 
