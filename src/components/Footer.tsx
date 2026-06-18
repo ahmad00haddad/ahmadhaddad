@@ -21,29 +21,6 @@ export function Footer() {
 
   return (
     <footer className="mt-16 border-t border-border bg-[var(--surface-deep)]">
-      {clients.length > 0 && (
-        <div className="border-b border-border py-6">
-          <div className="mx-auto max-w-7xl px-6">
-            <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
-              {isAr ? "عملاء وشركاء" : "Clients & Partners"}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 opacity-80">
-              {clients.map((cl) => (
-                <a
-                  key={cl.id}
-                  href={cl.url || "#"}
-                  target={cl.url ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="grid h-8 place-items-center transition-opacity hover:opacity-100"
-                >
-                  <img src={cl.logo_url} alt={cl.name} className="max-h-8 max-w-[100px] object-contain" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 md:grid-cols-3 md:py-10">
         <div>
           <h3 className="font-arabic text-lg font-black md:text-xl">{brand}</h3>
