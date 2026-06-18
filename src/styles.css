@@ -183,3 +183,15 @@ html[dir="rtl"] .animate-film-sweep {
   100% { transform: translateX(-450vw); }
 }
 
+
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-x 50s linear infinite;
+  width: max-content;
+}
+.marquee-pause:hover .marquee-track {
+  animation-play-state: paused;
+}
