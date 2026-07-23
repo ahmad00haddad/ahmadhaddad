@@ -45,7 +45,11 @@ export const Route = createFileRoute("/")({
         content:
           "أحمد حدّاد، مصور سينمائي وصانع أفلام من الأردن. أفلام قصيرة، إعلانات سينمائية، تصوير فوتوغراف، وتلوين.",
       },
+      { property: "og:title", content: "أحمد حدّاد — مصور سينمائي وصانع أفلام" },
+      { property: "og:description", content: "أعمال سينمائية، إعلانات، تصوير فوتوغراف، وتلوين سينمائي." },
+      { property: "og:url", content: "https://ahmadhaddad.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/" }],
   }),
   component: HomePage,
 });

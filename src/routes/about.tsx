@@ -131,7 +131,9 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "رحلة أحمد حدّاد في عالم التصوير والسينما — من 2014 إلى اليوم." },
       { property: "og:title", content: "نبذة عن أحمد حدّاد" },
       { property: "og:description", content: "مصور سينمائي وصانع أفلام من الأردن." },
+      { property: "og:url", content: "https://ahmadhaddad.lovable.app/about" },
     ],
+    links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/about" }],
   }),
   component: AboutPage,
 });

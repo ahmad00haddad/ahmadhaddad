@@ -9,11 +9,13 @@ import { useContent } from "@/lib/use-settings";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "الخدمات — أحمد حدّاد" },
-      { name: "description", content: "خدمات الإنتاج السينمائي والتصوير من أحمد حدّاد." },
-      { property: "og:title", content: "خدمات الإنتاج السينمائي" },
+      { title: "الخدمات والأسعار — أحمد حدّاد" },
+      { name: "description", content: "خدمات الإنتاج السينمائي والتصوير والأسعار من أحمد حدّاد." },
+      { property: "og:title", content: "الخدمات والأسعار" },
       { property: "og:description", content: "أفلام، إعلانات، تلوين، تصوير، ومونتاج." },
+      { property: "og:url", content: "https://ahmadhaddad.lovable.app/services" },
     ],
+    links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/services" }],
   }),
   component: ServicesPage,
 });
