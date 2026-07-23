@@ -97,11 +97,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Ahmad Haddad - Cinematographer" },
-      { name: "description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
-      { property: "og:description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
-      { name: "twitter:description", content: "Ahmad Haddad's Digital Hub is a personal website showcasing professional information and projects." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cbd0f487-f812-4877-9656-e472e32ee681/id-preview-58dec9e7--093ccc0d-cb06-4429-b0af-c514a1310e4c.lovable.app-1780563310511.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cbd0f487-f812-4877-9656-e472e32ee681/id-preview-58dec9e7--093ccc0d-cb06-4429-b0af-c514a1310e4c.lovable.app-1780563310511.png" },
+      { name: "twitter:description", content: "أعمال سينمائية، إعلانات، تصوير فوتوغراف، وتلوين سينمائي." },
+      { property: "og:site_name", content: "Ahmad Haddad" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

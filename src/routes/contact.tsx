@@ -16,7 +16,9 @@ export const Route = createFileRoute("/contact")({
       },
       { property: "og:title", content: "تواصل مع أحمد حدّاد" },
       { property: "og:description", content: "للتعاون والمشاريع الإنتاجية." },
+      { property: "og:url", content: "https://ahmadhaddad.lovable.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/contact" }],
   }),
   component: ContactPage,
 });

@@ -21,7 +21,9 @@ export const Route = createFileRoute("/work")({
       },
       { property: "og:title", content: "أعمال أحمد حدّاد" },
       { property: "og:description", content: "مختارات من الأفلام والإعلانات والتصوير." },
+      { property: "og:url", content: "https://ahmadhaddad.lovable.app/work" },
     ],
+    links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/work" }],
   }),
   component: WorkPage,
 });
