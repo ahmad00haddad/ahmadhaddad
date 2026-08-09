@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -11,6 +11,7 @@ import {
   Youtube,
   Loader2,
   Play,
+  X,
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
 import { Magnetic } from "@/components/MagneticButton";
@@ -59,6 +60,7 @@ function HomePage() {
   const { settings, loading: settingsLoading } = useSettings();
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
   const { rows: clientsRows } = useContent<{ id: string; name: string; logo_url: string; url?: string | null }>("clients");
+  const [openWork, setOpenWork] = useState<WorkRow | null>(null);
 
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
@@ -315,7 +317,7 @@ function HomePage() {
               : previewWorks.map((w: WorkRow, i: number) => {
                   const title = (isAr ? w.title : w.title_en || w.title) || "";
                   const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
-                  const hasLetter = desc.trim().length > 80;
+                  const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
                   const card = (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -333,7 +335,7 @@ function HomePage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-cinema/90 via-cinema/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                       {hasLetter && (
                         <div className="absolute right-3 top-3 z-[2] rounded-full border border-cream/30 bg-[var(--ink)]/70 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-cream opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                          {t("work.read_letter")}
+                          {isAr ? "اقرأ الرسالة" : "Read the letter"}
                         </div>
                       )}
                       {title && (
@@ -343,10 +345,12 @@ function HomePage() {
                       )}
                     </motion.div>
                   );
-                  return hasLetter || !w.external_url ? (
-                    <Link key={w.id} to="/work/$id" params={{ id: w.id }} className="text-right">{card}</Link>
-                  ) : (
+                  return w.external_url ? (
                     <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
+                  ) : hasLetter ? (
+                    <button key={w.id} type="button" onClick={() => setOpenWork(w)} className="text-right">{card}</button>
+                  ) : (
+                    <div key={w.id}>{card}</div>
                   );
                 })}
           </div>
@@ -418,6 +422,69 @@ function HomePage() {
         </section>
       )}
 
+      <AnimatePresence>
+
+        {openWork && (
+          <motion.div
+            className="fixed inset-0 z-[100] grid place-items-center p-4 sm:p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpenWork(null)}
+          >
+            <div className="absolute inset-0 bg-[var(--ink)]/85 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              dir={isAr ? "rtl" : "ltr"}
+              className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm border border-[var(--cream)]/15 bg-[#f3ecdc] text-[#2a1f12] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 20% 10%, rgba(120,80,40,0.08), transparent 50%), radial-gradient(circle at 80% 90%, rgba(80,40,20,0.10), transparent 55%)",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setOpenWork(null)}
+                aria-label="close"
+                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
+                style={{ marginTop: "0.75rem" }}
+              >
+                <X className="size-4" />
+              </button>
+              <div className="relative px-7 py-10 sm:px-12 sm:py-14">
+                <div className="grain-layer pointer-events-none absolute inset-0" style={{ opacity: 0.35, mixBlendMode: "multiply" }} />
+                <div className="mb-6 text-center">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7a5a30]">
+                    {isAr ? "رسالة" : "A Letter"}
+                  </span>
+                  <div className="mx-auto mt-3 h-px w-16 bg-[#7a5a30]/40" />
+                  <h3 className={`mt-4 text-2xl sm:text-3xl ${isAr ? "font-arabic" : "font-serif italic"}`}>
+                    {isAr ? openWork.title : (openWork.title_en || openWork.title)}
+                  </h3>
+                </div>
+                <article
+                  className={`whitespace-pre-line text-[15px] leading-[2] sm:text-[16px] sm:leading-[2.05] ${isAr ? "font-arabic-body text-right" : "font-serif text-left"}`}
+                  style={{ textWrap: "pretty" as any }}
+                >
+                  {isAr
+                    ? (openWork.description || "")
+                    : (openWork.description_en || openWork.description || "")}
+                </article>
+                <div className="mt-10 text-center">
+                  <div className="mx-auto h-px w-12 bg-[#7a5a30]/40" />
+                  <p className={`mt-4 text-[11px] uppercase tracking-[0.35em] text-[#7a5a30] ${isAr ? "font-arabic" : ""}`}>
+                    — {isAr ? "أحمد حدّاد" : "Ahmad Haddad"}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

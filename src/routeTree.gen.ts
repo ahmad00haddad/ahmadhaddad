@@ -17,8 +17,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorkIndexRouteImport } from './routes/work.index'
-import { Route as WorkIdRouteImport } from './routes/work.$id'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const WorkRoute = WorkRouteImport.update({
@@ -60,16 +58,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkIndexRoute = WorkIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => WorkRoute,
-} as any)
-const WorkIdRoute = WorkIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => WorkRoute,
-} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -83,10 +71,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/work': typeof WorkRouteWithChildren
+  '/work': typeof WorkRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/work/$id': typeof WorkIdRoute
-  '/work/': typeof WorkIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -95,9 +81,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/work': typeof WorkRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/work/$id': typeof WorkIdRoute
-  '/work': typeof WorkIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -108,10 +93,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/work': typeof WorkRouteWithChildren
+  '/work': typeof WorkRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/work/$id': typeof WorkIdRoute
-  '/work/': typeof WorkIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -124,8 +107,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/work'
     | '/admin'
-    | '/work/$id'
-    | '/work/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -134,9 +115,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/services'
     | '/sitemap.xml'
-    | '/admin'
-    | '/work/$id'
     | '/work'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -148,8 +128,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/work'
     | '/_authenticated/admin'
-    | '/work/$id'
-    | '/work/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -160,7 +138,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  WorkRoute: typeof WorkRouteWithChildren
+  WorkRoute: typeof WorkRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -221,20 +199,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/work/': {
-      id: '/work/'
-      path: '/'
-      fullPath: '/work/'
-      preLoaderRoute: typeof WorkIndexRouteImport
-      parentRoute: typeof WorkRoute
-    }
-    '/work/$id': {
-      id: '/work/$id'
-      path: '/$id'
-      fullPath: '/work/$id'
-      preLoaderRoute: typeof WorkIdRouteImport
-      parentRoute: typeof WorkRoute
-    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -256,18 +220,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface WorkRouteChildren {
-  WorkIdRoute: typeof WorkIdRoute
-  WorkIndexRoute: typeof WorkIndexRoute
-}
-
-const WorkRouteChildren: WorkRouteChildren = {
-  WorkIdRoute: WorkIdRoute,
-  WorkIndexRoute: WorkIndexRoute,
-}
-
-const WorkRouteWithChildren = WorkRoute._addFileChildren(WorkRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -276,18 +228,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  WorkRoute: WorkRouteWithChildren,
+  WorkRoute: WorkRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
