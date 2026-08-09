@@ -8,7 +8,7 @@ import { Magnetic } from "@/components/MagneticButton";
 import { getWorkById } from "@/lib/works.functions";
 
 export const Route = createFileRoute("/work/$id")({
-  head: ({ params, loaderData }) => {
+  head: ({ params, loaderData }: { params: { id: string }; loaderData?: any }) => {
     const imageUrl = loaderData?.work?.image_url;
     const meta: any[] = [
       { title: "عمل — أحمد حدّاد" },
