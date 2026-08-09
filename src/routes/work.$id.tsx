@@ -8,8 +8,9 @@ import { Magnetic } from "@/components/MagneticButton";
 import { getWorkById } from "@/lib/works.functions";
 
 export const Route = createFileRoute("/work/$id")({
-  head: ({ params }) => ({
-    meta: [
+  head: ({ params, loaderData }) => {
+    const imageUrl = loaderData?.work?.image_url;
+    const meta: any[] = [
       { title: "عمل — أحمد حدّاد" },
       {
         name: "description",
@@ -18,9 +19,18 @@ export const Route = createFileRoute("/work/$id")({
       { property: "og:title", content: "عمل — أحمد حدّاد" },
       { property: "og:description", content: "اطّلع على هذا العمل والاقتباس المرافق له." },
       { property: "og:url", content: `https://ahmadhaddad.lovable.app/work/${params.id}` },
-    ],
-    links: [{ rel: "canonical", href: `https://ahmadhaddad.lovable.app/work/${params.id}` }],
-  }),
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ];
+    if (imageUrl) {
+      meta.push({ property: "og:image", content: imageUrl });
+      meta.push({ name: "twitter:image", content: imageUrl });
+    }
+    return {
+      meta,
+      links: [{ rel: "canonical", href: `https://ahmadhaddad.lovable.app/work/${params.id}` }],
+    };
+  },
   loader: async ({ params }) => {
     const work = await getWorkById({ data: { id: params.id } });
     if (!work) throw notFound();
