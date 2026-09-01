@@ -396,8 +396,8 @@ function HomePage() {
             }}
           >
             <div
-              className="marquee-track flex items-center gap-16 px-8"
-              style={{ "--marquee-duration": `${Math.max(30, clientsRows.length * 6)}s` } as React.CSSProperties}
+              className="marquee-track flex items-center gap-8 px-6"
+              style={{ "--marquee-duration": `${Math.max(18, clientsRows.length * 3)}s` } as React.CSSProperties}
             >
               {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => {
                 const img = (
