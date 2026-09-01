@@ -186,11 +186,13 @@ html[dir="rtl"] .animate-film-sweep {
 
 @keyframes marquee-x {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(-33.333%); }
 }
 .marquee-track {
-  animation: marquee-x 50s linear infinite;
+  animation: marquee-x var(--marquee-duration, 45s) linear infinite;
   width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 .marquee-pause:hover .marquee-track {
   animation-play-state: paused;

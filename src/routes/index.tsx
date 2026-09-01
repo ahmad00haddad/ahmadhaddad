@@ -395,20 +395,28 @@ function HomePage() {
                 "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
             }}
           >
-            <div className="marquee-track flex items-center gap-16 px-8">
-              {[...clientsRows, ...clientsRows].map((c, i) => {
+            <div
+              className="marquee-track flex items-center gap-16 px-8"
+              style={{ "--marquee-duration": `${Math.max(30, clientsRows.length * 6)}s` } as React.CSSProperties}
+            >
+              {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => {
                 const img = (
                   <img
                     src={c.logo_url}
                     alt={c.name}
-                    loading="lazy"
-                    className="h-16 w-auto max-w-[180px] object-contain opacity-70 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0 md:h-20"
+                    width={180}
+                    height={80}
+                    decoding="async"
+                    className="h-full w-full object-contain opacity-70 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0"
                   />
                 );
                 return (
-                  <div key={`${c.id}-${i}`} className="shrink-0">
+                  <div
+                    key={`${c.id}-${i}`}
+                    className="flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]"
+                  >
                     {c.url ? (
-                      <a href={c.url} target="_blank" rel="noreferrer">
+                      <a href={c.url} target="_blank" rel="noreferrer" className="block h-full w-full">
                         {img}
                       </a>
                     ) : (
