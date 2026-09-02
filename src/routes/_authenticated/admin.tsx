@@ -270,22 +270,209 @@ function TestimonialsTab() {
   );
 }
 
+const CLIENT_FIELDS: CrudConfig["fields"] = [
+  { key: "name", label: "الاسم", type: "text", dir: "rtl" },
+  { key: "logo_url", label: "الشعار", type: "media" },
+  { key: "url", label: "الموقع الإلكتروني", type: "text", dir: "ltr" },
+  { key: "sort_order", label: "الترتيب", type: "number" },
+  { key: "published", label: "منشور", type: "bool" },
+];
+
 function ClientsTab() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
+  const [editing, setEditing] = useState<any | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("clients").select("*").order("sort_order").order("name");
+    setRows(data ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const visible = rows.filter((r) => {
+    const term = q.trim().toLowerCase();
+    const matchQ = !term || (r.name ?? "").toLowerCase().includes(term) || (r.url ?? "").toLowerCase().includes(term);
+    const matchF = filter === "all" || (filter === "published" ? r.published : !r.published);
+    return matchQ && matchF;
+  });
+
+  const togglePublish = async (r: any) => {
+    setBusy(r.id);
+    const { error } = await supabase.from("clients").update({ published: !r.published }).eq("id", r.id);
+    setBusy(null);
+    if (error) { toast.error("تعذّر التحديث: " + error.message); return; }
+    setRows((p) => p.map((x) => (x.id === r.id ? { ...x, published: !r.published } : x)));
+  };
+
+  const remove = async (r: any) => {
+    if (!confirm(`حذف "${r.name}"؟`)) return;
+    const { error } = await supabase.from("clients").delete().eq("id", r.id);
+    if (error) { toast.error("تعذّر الحذف: " + error.message); return; }
+    toast.success("تم الحذف");
+    setRows((p) => p.filter((x) => x.id !== r.id));
+  };
+
+  const save = async () => {
+    if (!editing) return;
+    if (!String(editing.name ?? "").trim()) { toast.error("الحقل مطلوب: الاسم"); return; }
+    if (!String(editing.logo_url ?? "").trim()) { toast.error("الحقل مطلوب: الشعار"); return; }
+    const payload: any = {
+      name: editing.name,
+      logo_url: editing.logo_url,
+      url: editing.url ? editing.url : null,
+      sort_order: Number(editing.sort_order || 0),
+      published: !!editing.published,
+    };
+    try {
+      if (editing.id) {
+        const { error } = await supabase.from("clients").update(payload).eq("id", editing.id);
+        if (error) throw error;
+        toast.success("تم التحديث");
+      } else {
+        const { error } = await supabase.from("clients").insert(payload);
+        if (error) throw error;
+        toast.success("تمت الإضافة");
+      }
+      setEditing(null);
+      load();
+    } catch (e: any) {
+      toast.error("حدث خطأ أثناء الحفظ: " + (e?.message || "غير معروف"));
+    }
+  };
+
+  if (loading) return <Loading />;
+
+  const chip = (key: typeof filter, label: string, n: number) => (
+    <button
+      key={key}
+      onClick={() => setFilter(key)}
+      className={`rounded-full px-4 py-1.5 text-[11px] font-bold tracking-wider transition ${
+        filter === key
+          ? "bg-[var(--cinema)] text-[var(--cream)]"
+          : "border border-[var(--cream)]/20 text-muted-foreground hover:text-[var(--cream)]"
+      }`}
+    >
+      {label} ({n})
+    </button>
+  );
+
   return (
-    <CrudList
-      cfg={{
-        table: "clients",
-        title: "العملاء والشركاء (شعارات)",
-        fields: [
-          { key: "name", label: "الاسم", type: "text", dir: "rtl" },
-          { key: "logo_url", label: "الشعار", type: "media" },
-          { key: "url", label: "الموقع الإلكتروني", type: "text", dir: "ltr" },
-          { key: "sort_order", label: "الترتيب", type: "number" },
-          { key: "published", label: "منشور", type: "bool" },
-        ],
-        display: (r) => ({ title: r.name, image: r.logo_url, sub: r.url }),
-      }}
-    />
+    <Section
+      title={`العملاء والشركاء (${rows.length})`}
+      action={
+        <button
+          onClick={() => setEditing({ name: "", logo_url: "", url: "", sort_order: rows.length, published: true })}
+          className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] hover:scale-[1.02]"
+        >
+          <Plus className="size-4" /> جديد
+        </button>
+      }
+    >
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="ابحث بالاسم أو الرابط..."
+            dir="rtl"
+            className="w-full rounded-full border border-[var(--cream)]/15 bg-[var(--ink)] py-2.5 pr-10 pl-4 text-sm text-[var(--cream)] outline-none focus:border-[var(--cinema)]"
+          />
+        </div>
+        {chip("all", "الكل", rows.length)}
+        {chip("published", "منشور", rows.filter((r) => r.published).length)}
+        {chip("draft", "مسودة", rows.filter((r) => !r.published).length)}
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="rounded-sm border border-dashed border-[var(--cream)]/20 p-12 text-center text-sm text-muted-foreground">
+          {rows.length === 0 ? "لا يوجد عملاء بعد." : "لا نتائج مطابقة للبحث."}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+          {visible.map((r) => (
+            <article
+              key={r.id}
+              className={`group relative overflow-hidden rounded-sm border bg-[var(--surface)] transition ${
+                r.published ? "border-[var(--cream)]/10" : "border-dashed border-[var(--cream)]/25 opacity-60"
+              }`}
+            >
+              <div className="grid aspect-[3/2] place-items-center bg-[var(--ink)] p-3">
+                <img src={r.logo_url} alt={r.name} loading="lazy" decoding="async" className="max-h-full max-w-full object-contain" />
+              </div>
+
+              <div className="flex items-center justify-between gap-1 px-2.5 py-2">
+                <span className="truncate text-xs font-bold text-[var(--cream)]" title={r.name}>{r.name}</span>
+                <span className="shrink-0 text-[10px] text-muted-foreground">#{r.sort_order}</span>
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-1 bg-[var(--ink)]/95 p-2 transition-transform duration-200 group-hover:translate-y-0 group-focus-within:translate-y-0">
+                <button onClick={() => setEditing(r)} title="تعديل" className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
+                  <Pencil className="size-3.5" />
+                </button>
+                <button onClick={() => togglePublish(r)} title={r.published ? "إخفاء" : "نشر"} className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
+                  {busy === r.id ? <Loader2 className="size-3.5 animate-spin" /> : r.published ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                </button>
+                {r.url && (
+                  <a href={r.url} target="_blank" rel="noreferrer" title="فتح الموقع" className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                )}
+                <button onClick={() => remove(r)} title="حذف" className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-destructive">
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {editing && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={() => setEditing(null)}>
+          <div dir="rtl" className="my-8 w-full max-w-xl overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]" onClick={(e) => e.stopPropagation()}>
+            <header className="flex items-center justify-between px-6 py-4" style={{ backgroundColor: "var(--cinema)" }}>
+              <h3 className="font-display text-xl font-bold text-[var(--cream)]">{editing.id ? "تعديل عميل" : "عميل جديد"}</h3>
+              <button onClick={() => setEditing(null)} className="text-[var(--cream)]"><X className="size-5" /></button>
+            </header>
+            <div className="grid gap-4 p-6 md:grid-cols-2">
+              {CLIENT_FIELDS.map((f) => (
+                <div key={f.key} className={f.type === "media" ? "md:col-span-2" : ""}>
+                  {f.type === "media" ? (
+                    <MediaUploader label={f.label} value={editing[f.key] || ""} onChange={(v) => setEditing({ ...editing, [f.key]: v })} />
+                  ) : f.type === "bool" ? (
+                    <label className="flex items-center gap-2 text-sm text-[var(--cream)]">
+                      <input type="checkbox" checked={!!editing[f.key]} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.checked })} />
+                      {f.label}
+                    </label>
+                  ) : (
+                    <Field label={f.label}>
+                      <input
+                        type={f.type === "number" ? "number" : "text"}
+                        value={editing[f.key] ?? ""}
+                        onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })}
+                        className={inputCls}
+                        dir={f.dir}
+                      />
+                    </Field>
+                  )}
+                </div>
+              ))}
+            </div>
+            <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
+              <button onClick={() => setEditing(null)} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
+              <button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">
+                <Save className="size-3.5" /> حفظ
+              </button>
+            </footer>
+          </div>
+        </div>
+      )}
+    </Section>
   );
 }
 
