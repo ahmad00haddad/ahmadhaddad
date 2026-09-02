@@ -8,6 +8,7 @@ import {
   Plus, Trash2, LogOut, Save, Pencil, X, Aperture,
   Settings, Image as ImageIcon, FileText, Briefcase,
   MessageSquare, Building2, Phone, Film, Loader2,
+  Search, Eye, EyeOff, ExternalLink,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
