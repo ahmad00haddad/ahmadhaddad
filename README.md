@@ -1,40 +1,50 @@
-# Ahmad Haddad's portfolio
+# Ahmad Haddad - Personal Portfolio & Dashboard 🚀
 
-بدي اعمل ويبسايت خاص بي , يتكلم عني " أحمد حدّاد " , ويبسايت لغته الافتراضية هيه العربيه , وامكانيه التحويل اللغة الى انجليزيه ايضا...
-ارفقت لك صور بيانات عني مفيدة لك لمعرفتي ومعرفة بعض المعلومات عني ...
-الروابط التي تهمك : 
-https://behance.com/ahmad00haddad
-https://www.linkedin.com/in/ahmad00haddad/
-https://www.instagram.com/ahmad00haddad/
-https://www.youtube.com/@ahmad00haddad
-https://www.facebook.com/ahmad00haddad/
-و ارفقت لك ايضا cv خاص بي اريد ارفاقه كما بالصور وامكانية التنزيل موجوده ...
-اريد صفحة ادمن داشبورد : صفحة الادمن بدي اياها تكون اشمل شيء ممكن , تشمل جميع الداتا الموجوده , جميع الصور , جميع السكشنات والصفحات , بدي اقدر اعدل كل شيء من كلام وصور وبيانات وداتا وخدمات وكل شيء...
-صفحة الاعمال هل من الممكن ربطها مع الانستاجرام او مع البيهانس ؟ بمعنى انها تأخذ المشاريع من هناك لوحده من دون رفع دوري للمشاريع في الويبسايت...
-الشركة التي لدي : https://faiihouse.lovable.app/ 
-انا ceo لهذه الشركة او هذا الفريق المتواضع وليس شركة اصلية حقيقيه ...
-ال rate card الخاص بي : 
-https://haddad-rate-card.lovable.app/
+Welcome to the official repository of **Ahmad Haddad's Personal Portfolio**. 
+This project is a dynamic, bilingual (Arabic & English) personal website designed to showcase my creative work, services, and professional journey, complete with a comprehensive Admin Dashboard for seamless content management.
 
-This project was built with [Lovable](https://lovable.dev).
+## 🌟 الفكرة الرئيسية (The Vision)
 
-**Live app**: https://ahmadhaddad.lovable.app
+تم بناء هذا الموقع ليكون المنصة الرسمية والواجهة الرقمية الشاملة لـ **أحمد حدّاد**. 
+الموقع مبني ليكون باللغة العربية كلغة افتراضية مع دعم كامل للغة الإنجليزية، ويهدف إلى عرض الأعمال، المهارات، والسيرة الذاتية بشكل احترافي وجذاب. يرافق الموقع لوحة تحكم (Admin Dashboard) متكاملة تتيح إدارة وتعديل كافة محتويات الموقع بسهولة وبدون تعقيد.
 
-## Build with Lovable
+## ✨ المميزات (Key Features)
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/093ccc0d-cb06-4429-b0af-c514a1310e4c).
+- 🌐 **ثنائي اللغة (Bilingual):** واجهة تدعم اللغتين العربية والإنجليزية لتجربة مستخدم مخصصة.
+- 🛠️ **لوحة تحكم شاملة (Full Admin Dashboard):** تحكم كامل في جميع النصوص، الصور، الأقسام، الخدمات، وبيانات الموقع.
+- 🎨 **معرض أعمال ذكي (Smart Portfolio):** عرض احترافي للمشاريع مع إمكانية ربطها وعرضها مباشرة من Behance و Instagram.
+- 📄 **السيرة الذاتية (CV & Resume):** عرض السيرة الذاتية مع إمكانية تحميلها بصيغة PDF.
+- 🏢 **مشاريع أخرى:** تسليط الضوء على دوري كمؤسس لـ [Faii House](https://faiihouse.lovable.app/).
+- 💳 **أسعار الخدمات (Rate Card):** وصول سريع ومباشر إلى [Rate Card الخاص بي](https://haddad-rate-card.lovable.app/).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## 🔗 روابط التواصل (Connect With Me)
 
-## Development
+- [Behance](https://behance.com/ahmad00haddad)
+- [LinkedIn](https://www.linkedin.com/in/ahmad00haddad/)
+- [Instagram](https://www.instagram.com/ahmad00haddad/)
+- [YouTube](https://www.youtube.com/@ahmad00haddad)
+- [Facebook](https://www.facebook.com/ahmad00haddad/)
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## 🚀 المعاينة المباشرة (Live Demo)
+
+**يمكنك زيارة الموقع من خلال الرابط التالي:** [ahmadhaddad.lovable.app](https://ahmadhaddad.lovable.app)
+
+---
+
+## 💻 التطوير والتقنيات (Development)
+
+This project was built with modern web technologies and [Lovable](https://lovable.dev) to ensure high performance and a great developer experience.
+
+### التشغيل المحلي (Local Development)
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+# استنساخ المستودع
+git clone https://github.com/ahmad00haddad/ahmadhaddad.git
+cd ahmadhaddad
+
+# تثبيت الحزم
+npm install
+
+# تشغيل خادم التطوير
 npm run dev
 ```
