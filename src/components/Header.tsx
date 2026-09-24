@@ -38,12 +38,14 @@ export function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 flex justify-center w-full px-2 pt-2 md:pt-4 pointer-events-none">
+    <header className="sticky top-0 z-50 flex justify-center w-full px-0 pt-0 md:pt-2 pointer-events-none">
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className={`pointer-events-auto flex items-center justify-between overflow-hidden backdrop-blur-md border border-[var(--border)]/40 bg-[var(--surface-deep)]/85 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] ${
-          isPill ? "rounded-full px-5 py-2 gap-4" : "rounded-sm px-6 py-4 w-full max-w-7xl gap-6"
+        className={`pointer-events-auto flex items-center justify-between overflow-hidden transition-all duration-300 ${
+          isPill
+            ? "rounded-full px-5 py-2 gap-4 backdrop-blur-md border border-[var(--border)]/40 bg-[var(--surface-deep)]/85 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
+            : "px-6 py-4 w-full max-w-7xl gap-6 bg-transparent border-transparent"
         }`}
       >
         <Link
