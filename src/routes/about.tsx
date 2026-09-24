@@ -329,15 +329,22 @@ function AboutPage() {
               rel="noreferrer"
               className="group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white md:h-52 md:w-40"
             >
-              <object data={cvUrl} type="application/pdf" className="size-full pointer-events-none">
-                <div className="grid size-full place-items-center bg-[var(--ink)]/10 text-[var(--ink)]">
-                  <div className="flex flex-col items-center gap-1">
-                    <FileText className="size-8" />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PDF</span>
-                  </div>
+              {/* Fallback background */}
+              <div className="absolute inset-0 grid place-items-center bg-[var(--ink)]/10 text-[var(--ink)]">
+                <div className="flex flex-col items-center gap-1">
+                  <FileText className="size-8" />
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PDF</span>
                 </div>
-              </object>
-              <div className="absolute inset-0 grid place-items-center bg-[var(--ink)]/0 opacity-0 transition-all group-hover:bg-[var(--ink)]/40 group-hover:opacity-100">
+              </div>
+              
+              {/* PDF Preview */}
+              <iframe
+                src={`${cvUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                className="absolute inset-0 z-[1] size-full pointer-events-none border-none bg-transparent"
+                title="CV Preview"
+              />
+
+              <div className="absolute inset-0 z-[2] grid place-items-center bg-[var(--ink)]/0 opacity-0 transition-all group-hover:bg-[var(--ink)]/40 group-hover:opacity-100">
                 <ExternalLink className="size-5 text-[var(--cream)]" />
               </div>
             </a>
