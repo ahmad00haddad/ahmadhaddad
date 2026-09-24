@@ -62,6 +62,22 @@ function HomePage() {
   const { rows: clientsRows } = useContent<{ id: string; name: string; logo_url: string; url?: string | null }>("clients");
   const [openWork, setOpenWork] = useState<WorkRow | null>(null);
   const [marqueeSpeed, setMarqueeSpeed] = useState(1);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const animations = trackRef.current.getAnimations();
+    const anim = animations.find((a: any) => a.animationName === "marquee-x");
+    if (anim) {
+      animate(anim.playbackRate, marqueeSpeed, {
+        duration: 0.8,
+        ease: "easeInOut",
+        onUpdate: (v) => {
+          anim.playbackRate = v;
+        },
+      });
+    }
+  }, [marqueeSpeed]);
 
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
@@ -385,7 +401,7 @@ function HomePage() {
               {t("home.trusted_sub")}
             </p>
             <div className="mt-8 flex justify-center gap-2" dir="ltr">
-              {[0, 1, 2, 5, 10].map((speed) => (
+              {[1, 2, 5].map((speed) => (
                 <button
                   key={speed}
                   onClick={() => setMarqueeSpeed(speed)}
@@ -395,7 +411,7 @@ function HomePage() {
                       : "bg-transparent text-[var(--cream)]/60 border-[var(--cream)]/20 hover:border-[var(--cream)]/60 hover:text-[var(--cream)]"
                   }`}
                 >
-                  {speed === 0 ? "0x" : `${speed}x`}
+                  {`${speed}x`}
                 </button>
               ))}
             </div>
@@ -412,11 +428,9 @@ function HomePage() {
             }}
           >
             <div
+              ref={trackRef}
               className="marquee-track flex items-center gap-8 px-6"
-              style={{
-                "--marquee-duration": `${Math.max(12, clientsRows.length * 2) / (marqueeSpeed || 1)}s`,
-                animationPlayState: marqueeSpeed === 0 ? "paused" : undefined
-              } as React.CSSProperties}
+              style={{ "--marquee-duration": `${Math.max(12, clientsRows.length * 2)}s` } as React.CSSProperties}
             >
               {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => {
                 const img = (
