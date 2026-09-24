@@ -56,12 +56,23 @@ export function Header() {
               layout
               src={settings.brand.logo_url}
               alt={isAr ? brandAr : brandEn}
-              className={`${isPill ? "h-6 md:h-7" : "h-9 md:h-10"} w-auto transition-all`}
+              className={`${isPill ? "h-7 md:h-8" : "h-9 md:h-10"} w-auto transition-all`}
             />
           )}
-          <motion.span layout className={`${isPill ? "text-lg md:text-xl" : "text-xl md:text-2xl"} font-black tracking-tight transition-all ${isAr ? "font-arabic" : ""}`}>
-            {isAr ? brandAr : brandEn}
-          </motion.span>
+          <AnimatePresence mode="popLayout">
+            {(!isPill || !settings.brand.logo_url) && (
+              <motion.span
+                layout
+                initial={{ opacity: 0, width: 0, filter: "blur(4px)" }}
+                animate={{ opacity: 1, width: "auto", filter: "blur(0px)" }}
+                exit={{ opacity: 0, width: 0, filter: "blur(4px)" }}
+                transition={{ duration: 0.2 }}
+                className={`text-xl md:text-2xl font-black tracking-tight whitespace-nowrap overflow-hidden ${isAr ? "font-arabic" : ""}`}
+              >
+                {isAr ? brandAr : brandEn}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Link>
 
         <AnimatePresence mode="popLayout">
