@@ -123,7 +123,7 @@ function writeSettingsCache(raw: Record<string, any>) {
   try { localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(raw)); } catch {}
 }
 
-export function useSettings() {
+export function useSettings(enableRealtime: boolean = false) {
   const [settings, setSettings] = useState<AllSettings>(() => readSettingsCache());
   const [loading, setLoading] = useState(true);
 
@@ -142,12 +142,13 @@ export function useSettings() {
 
   useEffect(() => {
     load();
+    if (!enableRealtime) return;
     const ch = supabase
       .channel(`site_settings-live-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [load]);
+  }, [load, enableRealtime]);
 
   const save = useCallback(async (key: keyof AllSettings, value: any) => {
     const { error } = await supabase.from("site_settings").upsert({ key, value }, { onConflict: "key" });
@@ -169,7 +170,7 @@ export function useSettings() {
 /** Live list of rows from a content table — auto-refreshes via realtime. */
 export function useContent<T = any>(
   table: "services" | "works" | "testimonials" | "clients",
-  opts: { publishedOnly?: boolean } = { publishedOnly: true },
+  opts: { publishedOnly?: boolean; enableRealtime?: boolean } = { publishedOnly: true, enableRealtime: false },
 ) {
   const cacheKey = `content_cache_${table}_${opts.publishedOnly ? "pub" : "all"}_v1`;
   const readCache = (): T[] => {
@@ -197,12 +198,13 @@ export function useContent<T = any>(
 
   useEffect(() => {
     load();
+    if (!opts.enableRealtime) return;
     const ch = supabase
       .channel(`${table}-live-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [table, load]);
+  }, [table, load, opts.enableRealtime]);
 
   return { rows, loading, reload: load };
 }

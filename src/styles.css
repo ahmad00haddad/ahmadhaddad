@@ -112,7 +112,6 @@
   ::selection { background: var(--cinema); color: var(--cream); }
 }
 
-/* Heavy film grain overlay — apply as <div className="grain-layer" /> absolutely positioned */
 @utility grain-layer {
   position: absolute;
   inset: 0;
@@ -122,6 +121,14 @@
   mix-blend-mode: multiply;
   opacity: 0.55;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    mix-blend-mode: normal;
+    opacity: 0.15;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
 }
 
 @utility grain-layer-soft {
@@ -133,6 +140,14 @@
   mix-blend-mode: overlay;
   opacity: 0.35;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    mix-blend-mode: normal;
+    opacity: 0.1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
 }
 
 /* Authentic 35mm film sprocket strip — small red rectangles on all 4 sides */

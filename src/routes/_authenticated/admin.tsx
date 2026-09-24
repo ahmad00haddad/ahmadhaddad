@@ -98,7 +98,7 @@ function AdminPage() {
    Generic settings form (brand, hero, about)
    ============================================================ */
 function SettingsForm({ sectionKey, title }: { sectionKey: keyof AllSettings; title: string }) {
-  const { settings, loading, save } = useSettings();
+  const { settings, loading, save } = useSettings(true);
   const [draft, setDraft] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [ok, setOk] = useState(false);
