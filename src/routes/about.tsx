@@ -85,7 +85,7 @@ function FilmFrame({
   plain?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, { once: true, amount: 0.4 });
 
   return (
     <div ref={ref} className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)] ${className}`}>
