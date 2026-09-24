@@ -25,13 +25,8 @@ export function Header() {
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() || 0;
     if (latest > 120 && !open) {
-      if (latest > previous && latest > 150) {
-        setIsPill(true);
-      } else if (latest < previous - 15) {
-        setIsPill(false);
-      }
+      setIsPill(true);
     } else {
       setIsPill(false);
     }
