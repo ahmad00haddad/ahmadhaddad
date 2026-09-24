@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -94,16 +94,38 @@ function HomePage() {
   const heroSubtitle = (isAr ? settings.hero.subtitle_ar : settings.hero.subtitle_en)
     || t("home.hero_tagline");
 
+  // Interactive Lens State
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+  const springConfig = { damping: 30, stiffness: 100, mass: 0.5 };
+  const portraitX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-25, 25]), springConfig);
+  const portraitY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-25, 25]), springConfig);
+  const lensRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [12, -12]), springConfig);
+  const lensRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-12, 12]), springConfig);
+
   return (
     <>
       {/* ============ CINEMATIC HERO — fits viewport exactly ============ */}
       <section
         dir="ltr"
         className="bg-[var(--ink)] p-3 md:p-4 lg:[height:calc(100svh-65px)]"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
         <div
           className="relative grid h-full grid-cols-1 overflow-hidden rounded-sm lg:grid-cols-[1fr_300px]"
-          style={{ backgroundColor: "var(--cinema)" }}
+          style={{ backgroundColor: "var(--cinema)", perspective: 1200 }}
         >
           {/* Heavy grain overlay */}
           <div className="grain-layer" />
@@ -155,7 +177,8 @@ function HomePage() {
                 initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="relative mx-auto aspect-square w-full max-w-[340px] md:max-w-[420px] lg:max-w-[480px]"
+                style={{ rotateX: lensRotateX, rotateY: lensRotateY }}
+                className="relative mx-auto aspect-square w-full max-w-[340px] md:max-w-[420px] lg:max-w-[480px] transform-gpu"
               >
                 <div className="absolute inset-0 rounded-full border-[10px] border-[var(--ink)]/15" />
                 <div className="absolute inset-4 rounded-full border border-dashed border-[var(--ink)]/35" />
@@ -164,7 +187,8 @@ function HomePage() {
                     <ImgLoader />
                   ) : portrait ? (
                     <>
-                      <img
+                      <motion.img
+                        style={{ x: portraitX, y: portraitY, scale: 1.15 }}
                         src={portrait}
                         alt=""
                         loading="lazy"
@@ -548,6 +572,7 @@ function Stat({ number, label }: { number: string; label: string }) {
   const suffix = match?.[3] ?? "";
 
   const [display, setDisplay] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!inView || !target) return;
@@ -555,6 +580,7 @@ function Stat({ number, label }: { number: string; label: string }) {
       duration: 2,
       ease: "easeOut",
       onUpdate: (v) => setDisplay(Math.round(v)),
+      onComplete: () => setDone(true),
     });
     return () => controls.stop();
   }, [inView, target]);
@@ -568,8 +594,19 @@ function Stat({ number, label }: { number: string; label: string }) {
       transition={{ duration: 0.6 }}
       className="text-center"
     >
-      <div className="font-display text-4xl font-bold text-cinema md:text-5xl tabular-nums">
+      <div className="font-display text-4xl font-bold text-cinema md:text-5xl tabular-nums relative inline-block">
         {match ? `${prefix}${display}${suffix}` : number}
+        <AnimatePresence>
+          {done && (
+            <motion.div
+              initial={{ opacity: 0.7, scale: 1, filter: "blur(0px)" }}
+              animate={{ opacity: 0, scale: 2.2, filter: "blur(8px)" }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="absolute inset-0 z-[-1] rounded-full bg-cinema mix-blend-screen"
+            />
+          )}
+        </AnimatePresence>
       </div>
       <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
         {label}
