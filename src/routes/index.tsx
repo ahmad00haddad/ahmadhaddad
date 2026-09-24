@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate, AnimatePresence } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -63,6 +63,10 @@ function HomePage() {
   const [openWork, setOpenWork] = useState<WorkRow | null>(null);
   const [marqueeSpeed, setMarqueeSpeed] = useState(1);
   const trackRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollY } = useScroll();
+  const sprocketOffset = useTransform(scrollY, [0, 1000], [0, -250]);
+  const sprocketOffsetString = useTransform(sprocketOffset, (val) => `${val}px`);
 
   useEffect(() => {
     if (!trackRef.current) return;
@@ -195,7 +199,10 @@ function HomePage() {
           </div>
 
           {/* ============ RIGHT: real 35mm filmstrip ============ */}
-          <aside className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex">
+          <motion.aside
+            className="relative z-[2] hidden h-full flex-col filmstrip-vertical p-3 lg:flex"
+            style={{ "--sprocket-offset": sprocketOffsetString } as any}
+          >
             {/* top: capture now */}
             <div className="mb-3 flex items-center justify-between px-3">
               <Magnetic strength={0.12} radius={80}>
@@ -275,7 +282,7 @@ function HomePage() {
               ))}
               </div>
             </div>
-          </aside>
+          </motion.aside>
         </div>
       </section>
 

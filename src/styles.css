@@ -144,7 +144,7 @@
     /* right column of small red rectangles */
     linear-gradient(to bottom, var(--cinema) 0 6px, transparent 6px 18px);
   background-size: 10px 18px, 10px 18px;
-  background-position: 6px 0, calc(100% - 6px) 0;
+  background-position: 6px var(--sprocket-offset, 0px), calc(100% - 6px) var(--sprocket-offset, 0px);
   background-repeat: repeat-y, repeat-y;
 }
 
