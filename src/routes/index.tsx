@@ -61,6 +61,7 @@ function HomePage() {
   const { rows: worksRows, loading: worksLoading } = useContent<WorkRow>("works");
   const { rows: clientsRows } = useContent<{ id: string; name: string; logo_url: string; url?: string | null }>("clients");
   const [openWork, setOpenWork] = useState<WorkRow | null>(null);
+  const [marqueeSpeed, setMarqueeSpeed] = useState(1);
 
   const previewWorks = worksRows.slice(0, 3);
   const portrait = settings.hero.portrait_url;
@@ -383,6 +384,21 @@ function HomePage() {
             <p className={`mt-3 text-sm text-[var(--cream)]/60 ${isAr ? "font-arabic" : ""}`}>
               {t("home.trusted_sub")}
             </p>
+            <div className="mt-8 flex justify-center gap-2" dir="ltr">
+              {[0, 1, 2, 5, 10].map((speed) => (
+                <button
+                  key={speed}
+                  onClick={() => setMarqueeSpeed(speed)}
+                  className={`px-3 py-1 text-xs font-bold rounded-sm border transition-colors ${
+                    marqueeSpeed === speed
+                      ? "bg-[var(--cinema)] text-[var(--cream)] border-[var(--cinema)]"
+                      : "bg-transparent text-[var(--cream)]/60 border-[var(--cream)]/20 hover:border-[var(--cream)]/60 hover:text-[var(--cream)]"
+                  }`}
+                >
+                  {speed === 0 ? "0x" : `${speed}x`}
+                </button>
+              ))}
+            </div>
           </motion.div>
 
           <div
@@ -397,7 +413,10 @@ function HomePage() {
           >
             <div
               className="marquee-track flex items-center gap-8 px-6"
-              style={{ "--marquee-duration": `${Math.max(12, clientsRows.length * 2)}s` } as React.CSSProperties}
+              style={{
+                "--marquee-duration": `${Math.max(12, clientsRows.length * 2) / (marqueeSpeed || 1)}s`,
+                animationPlayState: marqueeSpeed === 0 ? "paused" : undefined
+              } as React.CSSProperties}
             >
               {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => {
                 const img = (
