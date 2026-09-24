@@ -18,27 +18,6 @@ import { Magnetic } from "@/components/MagneticButton";
 
 
 function LogoItem({ c }: { c: any }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isCenter, setIsCenter] = useState(false);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsCenter(entry.isIntersecting);
-        });
-      },
-      {
-        root: null, // viewport
-        rootMargin: "0px -40% 0px -40%", // Middle 20% of screen horizontally
-        threshold: 0,
-      }
-    );
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
   const img = (
     <img
       src={c.logo_url}
@@ -46,17 +25,12 @@ function LogoItem({ c }: { c: any }) {
       width={180}
       height={80}
       decoding="async"
-      className={`h-full w-full object-contain transition-all duration-500 ${
-        isCenter ? "opacity-100 grayscale-0 scale-[1.15]" : "opacity-30 grayscale scale-100"
-      }`}
+      className="logo-img h-full w-full object-contain opacity-30 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0 hover:scale-[1.05]"
     />
   );
 
   return (
-    <div
-      ref={ref}
-      className="flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]"
-    >
+    <div className="logo-item flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]">
       {c.url ? (
         <a href={c.url} target="_blank" rel="noreferrer" className="block h-full w-full">
           {img}
@@ -118,6 +92,29 @@ function HomePage() {
   const { scrollY } = useScroll();
   const sprocketOffset = useTransform(scrollY, [0, 1000], [0, -250]);
   const sprocketOffsetString = useTransform(sprocketOffset, (val) => `${val}px`);
+
+  useEffect(() => {
+    let raf: number;
+    const checkCenter = () => {
+      const centerX = window.innerWidth / 2;
+      const items = document.querySelectorAll(".logo-item");
+      const imgs = document.querySelectorAll(".logo-img");
+      
+      items.forEach((item, i) => {
+        const rect = item.getBoundingClientRect();
+        const itemCenter = rect.left + rect.width / 2;
+        const dist = Math.abs(centerX - itemCenter);
+        if (dist < 150) {
+          imgs[i]?.classList.add("is-center");
+        } else {
+          imgs[i]?.classList.remove("is-center");
+        }
+      });
+      raf = requestAnimationFrame(checkCenter);
+    };
+    raf = requestAnimationFrame(checkCenter);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     if (!trackRef.current) return;
