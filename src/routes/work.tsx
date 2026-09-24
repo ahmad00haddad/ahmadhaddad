@@ -97,18 +97,21 @@ function WorkPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="grid gap-4 grid-cols-1 md:grid-cols-4 auto-rows-[300px] md:auto-rows-[280px]"
+          className="grid gap-4 grid-cols-2 md:grid-cols-4 auto-rows-[250px] md:auto-rows-[340px]"
         >
           {items.map((w, i) => {
             const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
             const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
             
-            // Bento Box Pattern
-            const mod = i % 5;
-            let bentoClass = "md:col-span-1 md:row-span-1"; // default
-            if (mod === 0) bentoClass = "md:col-span-2 md:row-span-2";
-            else if (mod === 3) bentoClass = "md:col-span-2 md:row-span-1";
-            else if (mod === 4) bentoClass = "md:col-span-4 md:row-span-1";
+            // Bento Box Pattern exactly matching the screenshot
+            // Pattern repeats every 7 items:
+            // 0: 1 col, 1: 1 col, 2: 2 cols (Row 1)
+            // 3, 4, 5, 6: 1 col each (Row 2)
+            const mod = i % 7;
+            let bentoClass = "col-span-1 md:col-span-1 md:row-span-1";
+            if (mod === 2) {
+              bentoClass = "col-span-2 md:col-span-2 md:row-span-1";
+            }
             const Wrapper = (props: any) =>
               w.external_url || w.video_url ? (
                 <a
