@@ -97,11 +97,18 @@ function WorkPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 grid-cols-1 md:grid-cols-4 auto-rows-[300px] md:auto-rows-[280px]"
         >
-          {items.map((w) => {
+          {items.map((w, i) => {
             const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
             const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
+            
+            // Bento Box Pattern
+            const mod = i % 5;
+            let bentoClass = "md:col-span-1 md:row-span-1"; // default
+            if (mod === 0) bentoClass = "md:col-span-2 md:row-span-2";
+            else if (mod === 3) bentoClass = "md:col-span-2 md:row-span-1";
+            else if (mod === 4) bentoClass = "md:col-span-4 md:row-span-1";
             const Wrapper = (props: any) =>
               w.external_url || w.video_url ? (
                 <a
@@ -118,7 +125,7 @@ function WorkPage() {
             return (
               <Wrapper
                 key={w.id}
-                className="group relative aspect-[4/5] overflow-hidden rounded-sm text-right"
+                className={`group relative overflow-hidden rounded-sm text-right ${bentoClass}`}
               >
                 <img
                   src={w.image_url}
