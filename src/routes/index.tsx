@@ -17,6 +17,57 @@ import { useSettings, useContent } from "@/lib/use-settings";
 import { Magnetic } from "@/components/MagneticButton";
 
 
+function LogoItem({ c }: { c: any }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isCenter, setIsCenter] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsCenter(entry.isIntersecting);
+        });
+      },
+      {
+        root: null, // viewport
+        rootMargin: "0px -40% 0px -40%", // Middle 20% of screen horizontally
+        threshold: 0,
+      }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const img = (
+    <img
+      src={c.logo_url}
+      alt={c.name}
+      width={180}
+      height={80}
+      decoding="async"
+      className={`h-full w-full object-contain transition-all duration-500 ${
+        isCenter ? "opacity-100 grayscale-0 scale-[1.15]" : "opacity-30 grayscale scale-100"
+      }`}
+    />
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]"
+    >
+      {c.url ? (
+        <a href={c.url} target="_blank" rel="noreferrer" className="block h-full w-full">
+          {img}
+        </a>
+      ) : (
+        img
+      )}
+    </div>
+  );
+}
+
 function ImgLoader({ className = "" }: { className?: string }) {
   return (
     <div className={`grid size-full place-items-center bg-[var(--ink)]/40 ${className}`}>
@@ -463,32 +514,9 @@ function HomePage() {
               className="marquee-track flex items-center gap-8 px-6"
               style={{ "--marquee-duration": `${Math.max(12, clientsRows.length * 2)}s` } as React.CSSProperties}
             >
-              {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => {
-                const img = (
-                  <img
-                    src={c.logo_url}
-                    alt={c.name}
-                    width={180}
-                    height={80}
-                    decoding="async"
-                    className="h-full w-full object-contain opacity-70 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0"
-                  />
-                );
-                return (
-                  <div
-                    key={`${c.id}-${i}`}
-                    className="flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]"
-                  >
-                    {c.url ? (
-                      <a href={c.url} target="_blank" rel="noreferrer" className="block h-full w-full">
-                        {img}
-                      </a>
-                    ) : (
-                      img
-                    )}
-                  </div>
-                );
-              })}
+              {[...clientsRows, ...clientsRows, ...clientsRows].map((c, i) => (
+                <LogoItem key={`${c.id}-${i}`} c={c} />
+              ))}
             </div>
           </div>
         </section>
