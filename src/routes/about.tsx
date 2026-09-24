@@ -71,7 +71,6 @@ function ImgLoader() {
   );
 }
 
-/* A vintage frame with sprocket-hole edges, sepia tint and grain — like a 35mm cell. */
 function FilmFrame({
   src,
   loading,
@@ -83,20 +82,21 @@ function FilmFrame({
   loading?: boolean;
   ratio?: string;
   className?: string;
-  /** when true, render the image with its true colors (no sepia, no sprocket holes, no vignette) — only a light grain overlay. */
   plain?: boolean;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   return (
-    <div className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)]/40 ${className}`}>
+    <div ref={ref} className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)] ${className}`}>
       {!plain && (
         <>
-          {/* sprocket holes top/bottom */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[5] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
             {Array.from({ length: 14 }).map((_, i) => (
               <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
             ))}
           </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
             {Array.from({ length: 14 }).map((_, i) => (
               <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
             ))}
@@ -106,18 +106,33 @@ function FilmFrame({
       {loading || !src ? (
         <ImgLoader />
       ) : (
-        <img
-          src={src}
-          alt=""
-          className="size-full object-cover"
-          loading="lazy"
-          style={plain ? undefined : { filter: "sepia(0.35) contrast(1.05) saturate(0.85)" }}
-        />
+        <>
+          <motion.img
+            src={src}
+            alt=""
+            className="size-full object-cover"
+            loading="lazy"
+            initial={{ filter: "brightness(0) contrast(1.5) saturate(0) sepia(0)" }}
+            animate={{ 
+              filter: isInView 
+                ? (plain ? "brightness(1) contrast(1) saturate(1) sepia(0)" : "brightness(1) contrast(1.05) saturate(0.85) sepia(0.35)")
+                : "brightness(0) contrast(1.5) saturate(0) sepia(0)"
+            }}
+            transition={{ duration: 4, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+          />
+          {/* Chemical wash fade effect */}
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isInView ? 0 : 1 }}
+            transition={{ duration: 3, ease: "easeOut", delay: 0.2 }}
+            className="pointer-events-none absolute inset-0 z-[4] bg-[#0a0908] mix-blend-color"
+          />
+        </>
       )}
-      <div className="grain-layer" style={{ opacity: plain ? 0.25 : 0.45 }} />
+      <div className="grain-layer z-[6]" style={{ opacity: plain ? 0.25 : 0.45 }} />
       {!plain && (
         <div
-          className="pointer-events-none absolute inset-0 z-[2]"
+          className="pointer-events-none absolute inset-0 z-[7]"
           style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
         />
       )}
@@ -327,25 +342,29 @@ function AboutPage() {
               href={cvUrl}
               target="_blank"
               rel="noreferrer"
-              className="group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-white md:h-52 md:w-40"
+              className="group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-[#f3ecdc] md:h-52 md:w-40 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
             >
-              {/* Fallback background */}
-              <div className="absolute inset-0 grid place-items-center bg-[var(--ink)]/10 text-[var(--ink)]">
-                <div className="flex flex-col items-center gap-1">
-                  <FileText className="size-8" />
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em]">PDF</span>
+              <div className="absolute inset-0 p-3 md:p-4 opacity-60 transition-opacity duration-500 group-hover:opacity-100">
+                <div className="h-1.5 w-1/2 bg-[#2a1f12]/30 rounded-full mb-4" />
+                <div className="space-y-1.5">
+                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
+                  <div className="h-1 w-5/6 bg-[#2a1f12]/15 rounded-full" />
+                  <div className="h-1 w-4/6 bg-[#2a1f12]/15 rounded-full" />
+                </div>
+                <div className="mt-4 space-y-1.5">
+                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
+                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
+                  <div className="h-1 w-3/4 bg-[#2a1f12]/15 rounded-full" />
                 </div>
               </div>
-              
-              {/* PDF Preview */}
-              <iframe
-                src={`${cvUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                className="absolute inset-0 z-[1] size-full pointer-events-none border-none bg-transparent"
-                title="CV Preview"
-              />
-
-              <div className="absolute inset-0 z-[2] grid place-items-center bg-[var(--ink)]/0 opacity-0 transition-all group-hover:bg-[var(--ink)]/40 group-hover:opacity-100">
-                <ExternalLink className="size-5 text-[var(--cream)]" />
+              <div className="absolute inset-0 grid place-items-center">
+                <div className="flex flex-col items-center gap-1.5 drop-shadow-md">
+                  <FileText className="size-7 text-[var(--cinema)]" />
+                  <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#2a1f12] bg-[#f3ecdc]/80 px-1 rounded">CV.pdf</span>
+                </div>
+              </div>
+              <div className="absolute inset-0 z-[2] bg-[var(--ink)]/0 opacity-0 transition-all duration-300 group-hover:bg-[#2a1f12]/5">
+                <ExternalLink className="size-4 text-[#2a1f12] absolute top-2 right-2" />
               </div>
             </a>
           </section>
