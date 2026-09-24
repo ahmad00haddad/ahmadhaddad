@@ -1,11 +1,67 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+import { motion, useInView, animate } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import { Download, ExternalLink, Loader2, FileText, Film } from "lucide-react";
 import cvAsset from "@/assets/Ahmad_Haddad_CV.pdf.asset.json";
 import { PageHero } from "@/components/PageHero";
 import { useSettings } from "@/lib/use-settings";
 import type { ReactNode } from "react";
+
+const TYPING_SPEED = 0.015; // seconds per character
+
+function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [displayedText, setDisplayedText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+
+  useEffect(() => {
+    if (!isInView || !text) return;
+    setIsTyping(true);
+    const duration = text.length * TYPING_SPEED;
+    const controls = animate(0, text.length, {
+      duration,
+      delay,
+      ease: "linear",
+      onUpdate: (latest) => {
+        setDisplayedText(text.substring(0, Math.floor(latest)));
+      },
+      onComplete: () => {
+        setIsTyping(false);
+        setIsDone(true);
+      },
+    });
+    return controls.stop;
+  }, [isInView, text, delay]);
+
+  return (
+    <span ref={ref} className="relative block">
+      <span className="opacity-0 pointer-events-none select-none" aria-hidden="true">{text}</span>
+      <span className="absolute inset-0">
+        {displayedText}
+        {isTyping && <span className="animate-pulse inline-block w-1.5 h-[0.9em] bg-[var(--cinema)] align-middle ml-1" />}
+      </span>
+    </span>
+  );
+}
+
+function TypewriterBlock({ paras, className = "" }: { paras: string[], className?: string }) {
+  return (
+    <div className={`space-y-4 ${className}`}>
+      {paras.map((p, i) => {
+        const prevLength = paras.slice(0, i).reduce((sum, t) => sum + t.length, 0);
+        const delay = prevLength * TYPING_SPEED;
+        return (
+          <p key={i} className="whitespace-pre-line">
+            <TypewriterText text={p} delay={delay} />
+          </p>
+        );
+      })}
+    </div>
+  );
+}
 
 function ImgLoader() {
   return (
@@ -98,13 +154,7 @@ function Chapter({
           <span className="text-[10px] font-bold uppercase tracking-[0.35em]">— {label}</span>
         </div>
         <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title}</h2>
-        <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
-          {paras.map((p, i) => (
-            <p key={i} className="whitespace-pre-line">
-              {p}
-            </p>
-          ))}
-        </div>
+        <TypewriterBlock paras={paras} className="mt-5 text-[15px] leading-loose text-muted-foreground" />
         <div className="mt-6 flex items-center gap-2 text-cream/30">
           <span className="h-px w-12 bg-current" />
           <Film className="size-3.5" />
@@ -227,11 +277,7 @@ function AboutPage() {
             </div>
             <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-cream/60">— 03 / {isAr ? "السينما" : "Cinema"}</span>
             <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title3}</h2>
-            <div className="mt-5 space-y-4 text-[15px] leading-loose text-muted-foreground">
-              {paras3.map((p, i) => (
-                <p key={i} className="whitespace-pre-line">{p}</p>
-              ))}
-            </div>
+            <TypewriterBlock paras={paras3} className="mt-5 text-[15px] leading-loose text-muted-foreground text-center" />
           </motion.section>
 
 
@@ -256,11 +302,7 @@ function AboutPage() {
               </div>
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-80">— {isAr ? "رؤيتي" : "Vision"}</span>
               <h2 className="mt-3 font-arabic text-3xl leading-tight md:text-5xl">{title4}</h2>
-              <div className="mx-auto mt-6 max-w-2xl space-y-4 text-[15px] leading-loose opacity-95 md:text-base">
-                {paras4.map((p, i) => (
-                  <p key={i} className="whitespace-pre-line">{p}</p>
-                ))}
-              </div>
+              <TypewriterBlock paras={paras4} className="mx-auto mt-6 max-w-2xl text-[15px] leading-loose opacity-95 md:text-base text-center" />
             </div>
           </motion.section>
 
