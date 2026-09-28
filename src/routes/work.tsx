@@ -251,6 +251,7 @@ function WorkPage() {
                         }}
                         onMouseLeave={(e) => { e.currentTarget.dataset.isDown = "false"; }}
                         onMouseUp={(e) => { e.currentTarget.dataset.isDown = "false"; }}
+                        onDragStart={(e) => e.preventDefault()}
                         onMouseMove={(e) => {
                           const slider = e.currentTarget;
                           if (slider.dataset.isDown !== "true") return;
@@ -264,14 +265,15 @@ function WorkPage() {
                       >
                         {equipment[w.id].map((eq) => (
                           <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center">
+                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none">
                               <img
                                 src={eq.image_url}
                                 alt={eq.name}
-                                className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/eq:scale-110"
+                                draggable={false}
+                                className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
                               />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors">
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
                               {eq.name}
                             </span>
                           </div>
