@@ -229,7 +229,7 @@ function WorkPage() {
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
                       onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                      className="absolute inset-x-0 bottom-0 z-[4] bg-[#DDD0C1] p-4 text-[var(--ink)] shadow-2xl"
+                      className="absolute inset-x-0 bottom-0 z-[4] bg-[#DDD0C1] p-4 text-[var(--ink)] shadow-2xl isolate"
                     >
                       <div className="flex items-center justify-between mb-3 border-b border-[var(--ink)]/10 pb-2">
                         <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
@@ -298,12 +298,13 @@ function WorkPage() {
                       >
                         {equipment[w.id].map((eq) => (
                           <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none">
+                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-multiply" style={{ WebkitMixBlendMode: 'multiply', mixBlendMode: 'multiply' }}>
                               <img
                                 src={eq.image_url}
                                 alt={eq.name}
                                 draggable={false}
                                 className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
+                                style={{ WebkitMixBlendMode: 'multiply', mixBlendMode: 'multiply' }}
                               />
                             </div>
                             <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
