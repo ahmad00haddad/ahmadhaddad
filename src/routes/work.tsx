@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Instagram, Youtube, ExternalLink, Play, X } from "lucide-react";
+import { Instagram, Youtube, ExternalLink, Play, X, Camera } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Magnetic } from "@/components/MagneticButton";
 import { useContent } from "@/lib/use-settings";
+import { supabase } from "@/integrations/supabase/client";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
 import lens from "@/assets/camera-lens.jpg";
@@ -51,13 +52,29 @@ const FALLBACK: Work[] = [
 
 type Tab = "all" | "films" | "ads" | "photo";
 
+type Equipment = { id: string; work_id: string; name: string; image_url: string };
+
 function WorkPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const [tab, setTab] = useState<Tab>("all");
   const [openWork, setOpenWork] = useState<Work | null>(null);
+  const [gearOpen, setGearOpen] = useState<string | null>(null);
+  const [equipment, setEquipment] = useState<Record<string, Equipment[]>>({});
   const { rows } = useContent<Work>("works");
   const works = rows.length ? rows : FALLBACK;
+
+  useEffect(() => {
+    supabase.from("work_equipment").select("*").then(({ data }) => {
+      if (!data) return;
+      const grouped: Record<string, Equipment[]> = {};
+      data.forEach((eq: any) => {
+        if (!grouped[eq.work_id]) grouped[eq.work_id] = [];
+        grouped[eq.work_id].push(eq);
+      });
+      setEquipment(grouped);
+    });
+  }, []);
 
   const items = tab === "all" ? works.filter((w) => w.category !== "photo") : works.filter((w) => w.category === tab);
 
@@ -156,6 +173,63 @@ function WorkPage() {
                   </span>
                   <h3 className="mt-1 font-arabic text-xl">{isAr ? w.title : (w.title_en || w.title)}</h3>
                 </div>
+                {/* Equipment gear button */}
+                {equipment[w.id] && equipment[w.id].length > 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setGearOpen(gearOpen === w.id ? null : w.id);
+                    }}
+                    className="absolute left-3 top-3 z-[3] grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm transition-all hover:bg-cinema hover:text-cream hover:border-cinema"
+                    title={isAr ? "عرض المعدات" : "View gear"}
+                  >
+                    <Camera className="size-3.5" />
+                  </button>
+                )}
+                {/* Equipment Drawer */}
+                <AnimatePresence>
+                  {gearOpen === w.id && equipment[w.id] && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute inset-x-0 bottom-0 z-[4] bg-[var(--ink)]/95 backdrop-blur-md border-t border-cream/10 p-4"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-cinema">
+                          {isAr ? "المعدات المستخدمة" : "Gear Used"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setGearOpen(null); }}
+                          className="grid size-5 place-items-center rounded-full bg-cream/10 text-cream/60 hover:bg-cream/20 hover:text-cream"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                      <div className="flex gap-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                        {equipment[w.id].map((eq) => (
+                          <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
+                            <div className="relative size-14 md:size-16 rounded-sm bg-white/10 p-1.5 overflow-hidden">
+                              <img
+                                src={eq.image_url}
+                                alt={eq.name}
+                                className="size-full object-contain"
+                              />
+                            </div>
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-cream/60 text-center max-w-[80px] leading-tight group-hover/eq:text-cream transition-colors">
+                              {eq.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Wrapper>
             );
           })}
