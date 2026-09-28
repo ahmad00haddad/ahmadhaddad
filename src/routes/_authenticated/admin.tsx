@@ -432,15 +432,17 @@ function WorksTab() {
                   </div>
                 )}
 
-                <div className="flex gap-2 items-end">
-                  <Field label="اسم المعدة">
-                    <input type="text" value={eqDraft.name} onChange={(e) => setEqDraft({ ...eqDraft, name: e.target.value })} className={inputCls} dir="ltr" placeholder="Nikon Z R" />
-                  </Field>
-                  <Field label="رابط صورة المعدة (URL)">
-                    <input type="text" value={eqDraft.image_url} onChange={(e) => setEqDraft({ ...eqDraft, image_url: e.target.value })} className={inputCls} dir="ltr" placeholder="https://..." />
-                  </Field>
-                  <button onClick={addEquipment} className="shrink-0 mb-0.5 inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-3 py-2 text-[10px] font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
-                    <Plus className="size-3" /> إضافة
+                <div className="flex flex-col gap-3 items-end">
+                  <div className="w-full">
+                    <Field label="اسم المعدة">
+                      <input type="text" value={eqDraft.name} onChange={(e) => setEqDraft({ ...eqDraft, name: e.target.value })} className={inputCls} dir="ltr" placeholder="Nikon Z R" />
+                    </Field>
+                  </div>
+                  <div className="w-full">
+                    <MediaUploader label="صورة المعدة" value={eqDraft.image_url} onChange={(v: string) => setEqDraft({ ...eqDraft, image_url: v })} />
+                  </div>
+                  <button onClick={addEquipment} className="inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
+                    <Plus className="size-4" /> إضافة
                   </button>
                 </div>
               </div>
