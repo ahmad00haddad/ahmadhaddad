@@ -244,6 +244,7 @@ function WorkPage() {
                         className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth cursor-grab active:cursor-grabbing" 
                         style={{ scrollbarWidth: "none" }}
                         onMouseDown={(e) => {
+                          e.preventDefault();
                           const slider = e.currentTarget;
                           slider.dataset.isDown = "true";
                           slider.dataset.startX = (e.pageX - slider.offsetLeft).toString();
