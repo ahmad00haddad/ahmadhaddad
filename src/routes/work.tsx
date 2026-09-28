@@ -197,10 +197,10 @@ function WorkPage() {
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
                       onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                      className="absolute inset-x-0 bottom-0 z-[4] bg-[var(--ink)]/95 backdrop-blur-md border-t border-cream/10 p-4"
+                      className="absolute inset-x-0 bottom-0 z-[4] bg-[#DDD0C1] p-4 text-[var(--ink)] shadow-2xl"
                     >
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-cinema">
+                      <div className="flex items-center justify-between mb-3 border-b border-[var(--ink)]/10 pb-2">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
                           {isAr ? "المعدات المستخدمة" : "Gear Used"}
                         </span>
                         <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ function WorkPage() {
                                   const el = document.getElementById(`eq-scroll-${w.id}`);
                                   if (el) el.scrollBy({ left: isAr ? 150 : -150, behavior: 'smooth' });
                                 }}
-                                className="grid size-5 place-items-center rounded-full bg-cream/5 text-cream/40 hover:bg-cream/10 hover:text-cream"
+                                className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
                               >
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
                               </button>
@@ -224,7 +224,7 @@ function WorkPage() {
                                   const el = document.getElementById(`eq-scroll-${w.id}`);
                                   if (el) el.scrollBy({ left: isAr ? -150 : 150, behavior: 'smooth' });
                                 }}
-                                className="grid size-5 place-items-center rounded-full bg-cream/5 text-cream/40 hover:bg-cream/10 hover:text-cream"
+                                className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
                               >
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                               </button>
@@ -233,7 +233,7 @@ function WorkPage() {
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
-                            className="grid size-5 place-items-center rounded-full bg-cream/10 text-cream/60 hover:bg-cream/20 hover:text-cream"
+                            className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
                           >
                             <X className="size-3" />
                           </button>
@@ -241,20 +241,19 @@ function WorkPage() {
                       </div>
                       <div 
                         id={`eq-scroll-${w.id}`}
-                        className="flex gap-4 overflow-x-auto pb-1 scroll-smooth" 
+                        className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth" 
                         style={{ scrollbarWidth: "none" }}
                       >
-                        {/* Auto-scroll behavior via CSS animation like marquee or we can just let users use arrows. Wait, I will use a simple trick with useEffect for auto-scroll if needed, but for now CSS infinite animation is better. Actually, to keep arrows working, we just let it scroll natively. */}
                         {equipment[w.id].map((eq) => (
                           <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                            <div className="relative size-16 md:size-20 rounded-[4px] bg-[#e3ded3] p-2 overflow-hidden shadow-inner flex items-center justify-center">
+                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center">
                               <img
                                 src={eq.image_url}
                                 alt={eq.name}
                                 className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/eq:scale-110"
                               />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-wider text-cream/60 text-center max-w-[80px] leading-tight group-hover/eq:text-cream transition-colors">
+                            <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors">
                               {eq.name}
                             </span>
                           </div>
