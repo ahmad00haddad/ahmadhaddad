@@ -241,8 +241,26 @@ function WorkPage() {
                       </div>
                       <div 
                         id={`eq-scroll-${w.id}`}
-                        className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth" 
+                        className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth cursor-grab active:cursor-grabbing" 
                         style={{ scrollbarWidth: "none" }}
+                        onMouseDown={(e) => {
+                          const slider = e.currentTarget;
+                          slider.dataset.isDown = "true";
+                          slider.dataset.startX = (e.pageX - slider.offsetLeft).toString();
+                          slider.dataset.scrollLeft = slider.scrollLeft.toString();
+                        }}
+                        onMouseLeave={(e) => { e.currentTarget.dataset.isDown = "false"; }}
+                        onMouseUp={(e) => { e.currentTarget.dataset.isDown = "false"; }}
+                        onMouseMove={(e) => {
+                          const slider = e.currentTarget;
+                          if (slider.dataset.isDown !== "true") return;
+                          e.preventDefault();
+                          const x = e.pageX - slider.offsetLeft;
+                          const startX = parseFloat(slider.dataset.startX || "0");
+                          const scrollLeft = parseFloat(slider.dataset.scrollLeft || "0");
+                          const walk = (x - startX) * 2;
+                          slider.scrollLeft = scrollLeft - walk;
+                        }}
                       >
                         {equipment[w.id].map((eq) => (
                           <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
