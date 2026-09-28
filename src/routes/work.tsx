@@ -196,7 +196,7 @@ function WorkPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
                       className="absolute inset-x-0 bottom-0 z-[4] bg-[var(--ink)]/95 backdrop-blur-md border-t border-cream/10 p-4"
                     >
                       <div className="flex items-center justify-between mb-3">
@@ -205,7 +205,7 @@ function WorkPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); setGearOpen(null); }}
+                          onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
                           className="grid size-5 place-items-center rounded-full bg-cream/10 text-cream/60 hover:bg-cream/20 hover:text-cream"
                         >
                           <X className="size-3" />
