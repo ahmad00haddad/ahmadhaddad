@@ -229,89 +229,91 @@ function WorkPage() {
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
                       onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                      className="absolute inset-x-0 bottom-0 z-[4] bg-[#DDD0C1] p-4 text-[var(--ink)] shadow-2xl isolate"
+                      className="absolute inset-x-0 bottom-0 z-[4] shadow-2xl"
                     >
-                      <div className="flex items-center justify-between mb-3 border-b border-[var(--ink)]/10 pb-2">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
-                          {isAr ? "المعدات المستخدمة" : "Gear Used"}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {equipment[w.id].length > 3 && (
-                            <div className="flex gap-1 mr-4">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation(); e.preventDefault();
-                                  const el = document.getElementById(`eq-scroll-${w.id}`);
-                                  if (el) el.scrollBy({ left: isAr ? 150 : -150, behavior: 'smooth' });
-                                }}
-                                className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
-                              >
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation(); e.preventDefault();
-                                  const el = document.getElementById(`eq-scroll-${w.id}`);
-                                  if (el) el.scrollBy({ left: isAr ? -150 : 150, behavior: 'smooth' });
-                                }}
-                                className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
-                              >
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-                              </button>
-                            </div>
-                          )}
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
-                            className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
-                          >
-                            <X className="size-3" />
-                          </button>
-                        </div>
-                      </div>
-                      <div 
-                        id={`eq-scroll-${w.id}`}
-                        className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth cursor-grab active:cursor-grabbing" 
-                        style={{ scrollbarWidth: "none" }}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          const slider = e.currentTarget;
-                          slider.dataset.isDown = "true";
-                          slider.dataset.startX = (e.pageX - slider.offsetLeft).toString();
-                          slider.dataset.scrollLeft = slider.scrollLeft.toString();
-                        }}
-                        onMouseLeave={(e) => { e.currentTarget.dataset.isDown = "false"; }}
-                        onMouseUp={(e) => { e.currentTarget.dataset.isDown = "false"; }}
-                        onDragStart={(e) => e.preventDefault()}
-                        onMouseMove={(e) => {
-                          const slider = e.currentTarget;
-                          if (slider.dataset.isDown !== "true") return;
-                          e.preventDefault();
-                          const x = e.pageX - slider.offsetLeft;
-                          const startX = parseFloat(slider.dataset.startX || "0");
-                          const scrollLeft = parseFloat(slider.dataset.scrollLeft || "0");
-                          const walk = (x - startX) * 2;
-                          slider.scrollLeft = scrollLeft - walk;
-                        }}
-                      >
-                        {equipment[w.id].map((eq) => (
-                          <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                            <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-multiply" style={{ WebkitMixBlendMode: 'multiply', mixBlendMode: 'multiply' }}>
-                              <img
-                                src={eq.image_url}
-                                alt={eq.name}
-                                draggable={false}
-                                className="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
-                                style={{ WebkitMixBlendMode: 'multiply', mixBlendMode: 'multiply' }}
-                              />
-                            </div>
-                            <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
-                              {eq.name}
-                            </span>
+                      <div className="w-full h-full bg-[#DDD0C1] p-4 text-[var(--ink)] isolate relative z-[1]">
+                        <div className="flex items-center justify-between mb-3 border-b border-[var(--ink)]/10 pb-2">
+                          <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
+                            {isAr ? "المعدات المستخدمة" : "Gear Used"}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {equipment[w.id].length > 3 && (
+                              <div className="flex gap-1 mr-4">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); e.preventDefault();
+                                    const el = document.getElementById(`eq-scroll-${w.id}`);
+                                    if (el) el.scrollBy({ left: isAr ? 150 : -150, behavior: 'smooth' });
+                                  }}
+                                  className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
+                                >
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); e.preventDefault();
+                                    const el = document.getElementById(`eq-scroll-${w.id}`);
+                                    if (el) el.scrollBy({ left: isAr ? -150 : 150, behavior: 'smooth' });
+                                  }}
+                                  className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
+                                >
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                                </button>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
+                              className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
+                            >
+                              <X className="size-3" />
+                            </button>
                           </div>
-                        ))}
+                        </div>
+                        <div 
+                          id={`eq-scroll-${w.id}`}
+                          className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth cursor-grab active:cursor-grabbing" 
+                          style={{ scrollbarWidth: "none" }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            const slider = e.currentTarget;
+                            slider.dataset.isDown = "true";
+                            slider.dataset.startX = (e.pageX - slider.offsetLeft).toString();
+                            slider.dataset.scrollLeft = slider.scrollLeft.toString();
+                          }}
+                          onMouseLeave={(e) => { e.currentTarget.dataset.isDown = "false"; }}
+                          onMouseUp={(e) => { e.currentTarget.dataset.isDown = "false"; }}
+                          onDragStart={(e) => e.preventDefault()}
+                          onMouseMove={(e) => {
+                            const slider = e.currentTarget;
+                            if (slider.dataset.isDown !== "true") return;
+                            e.preventDefault();
+                            const x = e.pageX - slider.offsetLeft;
+                            const startX = parseFloat(slider.dataset.startX || "0");
+                            const scrollLeft = parseFloat(slider.dataset.scrollLeft || "0");
+                            const walk = (x - startX) * 2;
+                            slider.scrollLeft = scrollLeft - walk;
+                          }}
+                        >
+                          {equipment[w.id].map((eq) => (
+                            <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
+                              <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-darken" style={{ WebkitMixBlendMode: 'darken', mixBlendMode: 'darken' }}>
+                                <img
+                                  src={eq.image_url}
+                                  alt={eq.name}
+                                  draggable={false}
+                                  className="max-h-full max-w-full object-contain mix-blend-darken transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
+                                  style={{ WebkitMixBlendMode: 'darken', mixBlendMode: 'darken', transform: 'translateZ(0)' }}
+                                />
+                              </div>
+                              <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
+                                {eq.name}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </motion.div>
                   )}
