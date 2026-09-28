@@ -229,6 +229,7 @@ function WorksTab() {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
+  const [original, setOriginal] = useState<any | null>(null);
   const [eqList, setEqList] = useState<any[]>([]);
   const [eqDraft, setEqDraft] = useState({ id: "", name: "", image_url: "" });
 
@@ -270,9 +271,17 @@ function WorksTab() {
 
   const openEdit = (r: any) => {
     setEditing(r);
+    setOriginal(r);
     setEqDraft({ id: "", name: "", image_url: "" });
     if (r.id) loadEquipment(r.id);
     else setEqList([]);
+  };
+
+  const closeEdit = () => {
+    if (JSON.stringify(editing) !== JSON.stringify(original)) {
+      if (!confirm("هل أنت متأكد أنك تريد الإغلاق بدون حفظ؟ ستفقد جميع البيانات التي أدخلتها.")) return;
+    }
+    setEditing(null);
   };
 
   const addEquipment = async () => {
@@ -397,11 +406,11 @@ function WorksTab() {
       )}
 
       {editing && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={() => setEditing(null)}>
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={closeEdit}>
           <div dir="rtl" className="my-8 w-full max-w-2xl overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]" onClick={(e) => e.stopPropagation()}>
             <header className="flex items-center justify-between px-6 py-4" style={{ backgroundColor: "var(--cinema)" }}>
               <h3 className="font-display text-xl font-bold text-[var(--cream)]">{editing.id ? "تعديل العمل" : "عمل جديد"}</h3>
-              <button onClick={() => setEditing(null)} className="text-[var(--cream)]"><X className="size-5" /></button>
+              <button onClick={closeEdit} className="text-[var(--cream)]"><X className="size-5" /></button>
             </header>
             <div className="grid gap-4 p-6 md:grid-cols-2">
               {FIELDS.map((f) => {
@@ -508,7 +517,7 @@ function WorksTab() {
             )}
 
             <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
-              <button onClick={() => setEditing(null)} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
+              <button onClick={closeEdit} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
               <button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">
                 <Save className="size-3.5" /> حفظ
               </button>
@@ -555,7 +564,20 @@ function ClientsTab() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
   const [editing, setEditing] = useState<any | null>(null);
+  const [original, setOriginal] = useState<any | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+
+  const openEdit = (r: any) => {
+    setEditing(r);
+    setOriginal(r);
+  };
+
+  const closeEdit = () => {
+    if (JSON.stringify(editing) !== JSON.stringify(original)) {
+      if (!confirm("هل أنت متأكد أنك تريد الإغلاق بدون حفظ؟ ستفقد التعديلات.")) return;
+    }
+    setEditing(null);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -637,7 +659,7 @@ function ClientsTab() {
       title={`العملاء والشركاء (${rows.length})`}
       action={
         <button
-          onClick={() => setEditing({ name: "", logo_url: "", url: "", sort_order: rows.length, published: true })}
+          onClick={() => openEdit({ name: "", logo_url: "", url: "", sort_order: rows.length, published: true })}
           className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] hover:scale-[1.02]"
         >
           <Plus className="size-4" /> جديد
@@ -683,7 +705,7 @@ function ClientsTab() {
               </div>
 
               <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-1 bg-[var(--ink)]/95 p-2 transition-transform duration-200 group-hover:translate-y-0 group-focus-within:translate-y-0">
-                <button onClick={() => setEditing(r)} title="تعديل" className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
+                <button onClick={() => openEdit(r)} title="تعديل" className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
                   <Pencil className="size-3.5" />
                 </button>
                 <button onClick={() => togglePublish(r)} title={r.published ? "إخفاء" : "نشر"} className="grid size-8 place-items-center rounded-sm text-[var(--cream)] hover:bg-[var(--cinema)]">
@@ -704,11 +726,11 @@ function ClientsTab() {
       )}
 
       {editing && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={() => setEditing(null)}>
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={closeEdit}>
           <div dir="rtl" className="my-8 w-full max-w-xl overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]" onClick={(e) => e.stopPropagation()}>
             <header className="flex items-center justify-between px-6 py-4" style={{ backgroundColor: "var(--cinema)" }}>
               <h3 className="font-display text-xl font-bold text-[var(--cream)]">{editing.id ? "تعديل عميل" : "عميل جديد"}</h3>
-              <button onClick={() => setEditing(null)} className="text-[var(--cream)]"><X className="size-5" /></button>
+              <button onClick={closeEdit} className="text-[var(--cream)]"><X className="size-5" /></button>
             </header>
             <div className="grid gap-4 p-6 md:grid-cols-2">
               {CLIENT_FIELDS.map((f) => (
@@ -735,7 +757,7 @@ function ClientsTab() {
               ))}
             </div>
             <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
-              <button onClick={() => setEditing(null)} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
+              <button onClick={closeEdit} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
               <button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">
                 <Save className="size-3.5" /> حفظ
               </button>
@@ -751,6 +773,19 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
+  const [original, setOriginal] = useState<any | null>(null);
+
+  const openEdit = (r: any) => {
+    setEditing(r);
+    setOriginal(r);
+  };
+
+  const closeEdit = () => {
+    if (JSON.stringify(editing) !== JSON.stringify(original)) {
+      if (!confirm("هل أنت متأكد أنك تريد الإغلاق بدون حفظ؟ ستفقد التعديلات.")) return;
+    }
+    setEditing(null);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -852,7 +887,7 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
     <Section
       title={`${cfg.title} (${rows.length})`}
       action={
-        <button onClick={() => setEditing(empty())} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] hover:scale-[1.02]">
+        <button onClick={() => openEdit(empty())} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] hover:scale-[1.02]">
           <Plus className="size-4" /> جديد
         </button>
       }
@@ -880,7 +915,7 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
                   <h3 className="mt-2 text-lg font-bold text-[var(--cream)]">{d.title}</h3>
                   {d.sub && <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{d.sub}</p>}
                   <div className="mt-4 flex gap-2">
-                    <button onClick={() => setEditing(r)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-sm bg-[var(--ink)] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--cream)] hover:bg-[var(--cinema)]">
+                    <button onClick={() => openEdit(r)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-sm bg-[var(--ink)] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--cream)] hover:bg-[var(--cinema)]">
                       <Pencil className="size-3" /> تعديل
                     </button>
                     <button onClick={() => remove(r.id)} className="grid size-9 place-items-center rounded-sm border border-[var(--cream)]/20 text-[var(--cream)] hover:bg-destructive">
@@ -895,11 +930,11 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
       )}
 
       {editing && (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={() => setEditing(null)}>
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={closeEdit}>
           <div dir="rtl" className="my-8 w-full max-w-2xl overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]" onClick={(e) => e.stopPropagation()}>
             <header className="flex items-center justify-between px-6 py-4" style={{ backgroundColor: "var(--cinema)" }}>
               <h3 className="font-display text-xl font-bold text-[var(--cream)]">{editing.id ? "تعديل" : "جديد"}</h3>
-              <button onClick={() => setEditing(null)} className="text-[var(--cream)]"><X className="size-5" /></button>
+              <button onClick={closeEdit} className="text-[var(--cream)]"><X className="size-5" /></button>
             </header>
             <div className="grid gap-4 p-6 md:grid-cols-2">
               {cfg.fields.map((f) => {
@@ -931,7 +966,7 @@ function CrudList({ cfg }: { cfg: CrudConfig }) {
               })}
             </div>
             <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
-              <button onClick={() => setEditing(null)} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
+              <button onClick={closeEdit} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
               <button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">
                 <Save className="size-3.5" /> حفظ
               </button>
