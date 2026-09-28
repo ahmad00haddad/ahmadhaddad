@@ -230,7 +230,7 @@ function WorksTab() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
   const [eqList, setEqList] = useState<any[]>([]);
-  const [eqDraft, setEqDraft] = useState({ name: "", image_url: "" });
+  const [eqDraft, setEqDraft] = useState({ id: "", name: "", image_url: "" });
 
   const FIELDS = [
     { key: "title", label: "العنوان (عربي)", type: "text", dir: "rtl" },
@@ -260,7 +260,7 @@ function WorksTab() {
 
   const openEdit = (r: any) => {
     setEditing(r);
-    setEqDraft({ name: "", image_url: "" });
+    setEqDraft({ id: "", name: "", image_url: "" });
     if (r.id) loadEquipment(r.id);
     else setEqList([]);
   };
@@ -270,22 +270,38 @@ function WorksTab() {
       toast.error("يرجى ملء اسم المعدة ورابط الصورة");
       return;
     }
-    const { error } = await supabase.from("work_equipment").insert({
-      work_id: editing.id,
-      name: eqDraft.name.trim(),
-      image_url: eqDraft.image_url.trim(),
-    });
-    if (error) { toast.error("خطأ: " + error.message); return; }
-    toast.success("تمت إضافة المعدة");
-    setEqDraft({ name: "", image_url: "" });
+    
+    if (eqDraft.id) {
+      const { error } = await supabase.from("work_equipment").update({
+        name: eqDraft.name.trim(),
+        image_url: eqDraft.image_url.trim(),
+      }).eq("id", eqDraft.id);
+      if (error) { toast.error("خطأ: " + error.message); return; }
+      toast.success("تم التعديل");
+    } else {
+      const { error } = await supabase.from("work_equipment").insert({
+        work_id: editing.id,
+        name: eqDraft.name.trim(),
+        image_url: eqDraft.image_url.trim(),
+      });
+      if (error) { toast.error("خطأ: " + error.message); return; }
+      toast.success("تمت إضافة المعدة");
+    }
+    
+    setEqDraft({ id: "", name: "", image_url: "" });
     loadEquipment(editing.id);
   };
 
   const removeEquipment = async (eqId: string) => {
     if (!confirm("حذف هذه المعدة؟")) return;
     await supabase.from("work_equipment").delete().eq("id", eqId);
+    if (eqDraft.id === eqId) setEqDraft({ id: "", name: "", image_url: "" });
     toast.success("تم الحذف");
     loadEquipment(editing.id);
+  };
+
+  const editEquipment = (eq: any) => {
+    setEqDraft({ id: eq.id, name: eq.name, image_url: eq.image_url });
   };
 
   const save = async () => {
@@ -309,7 +325,6 @@ function WorksTab() {
         const { error, data } = await supabase.from("works").insert(payload).select("id").single();
         if (error) throw error;
         toast.success("تمت الإضافة");
-        // If there are equipment drafts pending, update editing with the new id
         if (data) setEditing({ ...editing, id: data.id });
       }
       setEditing(null);
@@ -410,29 +425,41 @@ function WorksTab() {
             {/* ===== Equipment Section ===== */}
             {editing.id && (
               <div className="border-t border-[var(--cream)]/10 px-6 py-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Camera className="size-4 text-[var(--cinema)]" />
-                  <h4 className="text-sm font-bold text-[var(--cream)]">المعدات المستخدمة</h4>
-                  <span className="text-[10px] text-muted-foreground">({eqList.length})</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Camera className="size-4 text-[var(--cinema)]" />
+                    <h4 className="text-sm font-bold text-[var(--cream)]">المعدات المستخدمة</h4>
+                    <span className="text-[10px] text-muted-foreground">({eqList.length})</span>
+                  </div>
+                  {eqDraft.id && (
+                    <button onClick={() => setEqDraft({ id: "", name: "", image_url: "" })} className="text-[10px] uppercase text-[var(--cream)]/60 hover:text-[var(--cream)]">
+                      إلغاء التعديل
+                    </button>
+                  )}
                 </div>
 
                 {eqList.length > 0 && (
                   <div className="grid gap-3 mb-4 grid-cols-2 md:grid-cols-3">
                     {eqList.map((eq) => (
-                      <div key={eq.id} className="group relative flex items-center gap-3 rounded-sm border border-[var(--cream)]/10 bg-[var(--ink)] p-2">
+                      <div key={eq.id} className={`group relative flex items-center gap-3 rounded-sm border bg-[var(--ink)] p-2 transition-colors ${eqDraft.id === eq.id ? 'border-[var(--cinema)]' : 'border-[var(--cream)]/10'}`}>
                         <div className="size-10 shrink-0 overflow-hidden rounded-sm bg-white/10 p-1">
                           <img src={eq.image_url} alt="" className="size-full object-contain" />
                         </div>
                         <span className="text-[11px] text-[var(--cream)] truncate flex-1">{eq.name}</span>
-                        <button onClick={() => removeEquipment(eq.id)} className="shrink-0 grid size-6 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-destructive hover:text-white">
-                          <Trash2 className="size-3" />
-                        </button>
+                        <div className="flex flex-col shrink-0">
+                          <button onClick={() => editEquipment(eq)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-[var(--cinema)] hover:text-white mb-0.5">
+                            <Pencil className="size-2.5" />
+                          </button>
+                          <button onClick={() => removeEquipment(eq.id)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-destructive hover:text-white">
+                            <Trash2 className="size-2.5" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="flex flex-col gap-3 items-end">
+                <div className="flex flex-col gap-3 items-end bg-[var(--ink)]/50 p-4 border border-[var(--cream)]/5 rounded-sm">
                   <div className="w-full">
                     <Field label="اسم المعدة">
                       <input type="text" value={eqDraft.name} onChange={(e) => setEqDraft({ ...eqDraft, name: e.target.value })} className={inputCls} dir="ltr" placeholder="Nikon Z R" />
@@ -442,7 +469,8 @@ function WorksTab() {
                     <MediaUploader label="صورة المعدة" value={eqDraft.image_url} onChange={(v: string) => setEqDraft({ ...eqDraft, image_url: v })} />
                   </div>
                   <button onClick={addEquipment} className="inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
-                    <Plus className="size-4" /> إضافة
+                    {eqDraft.id ? <Save className="size-4" /> : <Plus className="size-4" />}
+                    {eqDraft.id ? "حفظ التعديل" : "إضافة معدة"}
                   </button>
                 </div>
               </div>
