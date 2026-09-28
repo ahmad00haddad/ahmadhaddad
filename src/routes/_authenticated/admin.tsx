@@ -290,6 +290,19 @@ function WorksTab() {
       return;
     }
     
+    if (!editing.id) {
+      if (eqDraft.id) {
+        setEqList(eqList.map(e => e.id === eqDraft.id ? { ...e, name: eqDraft.name.trim(), image_url: eqDraft.image_url.trim() } : e));
+        toast.success("تم تعديل المعدة");
+      } else {
+        setEqList([...eqList, { id: `draft_${Date.now()}`, name: eqDraft.name.trim(), image_url: eqDraft.image_url.trim() }]);
+        toast.success("تمت إضافة المعدة");
+      }
+      setEqDraft({ id: "", name: "", image_url: "" });
+      loadAllEquipment();
+      return;
+    }
+
     if (eqDraft.id) {
       const { error } = await supabase.from("work_equipment").update({
         name: eqDraft.name.trim(),
@@ -314,6 +327,14 @@ function WorksTab() {
 
   const removeEquipment = async (eqId: string) => {
     if (!confirm("حذف هذه المعدة؟")) return;
+    
+    if (!editing.id || eqId.startsWith("draft_")) {
+      setEqList(eqList.filter(e => e.id !== eqId));
+      if (eqDraft.id === eqId) setEqDraft({ id: "", name: "", image_url: "" });
+      toast.success("تم الحذف");
+      return;
+    }
+
     await supabase.from("work_equipment").delete().eq("id", eqId);
     if (eqDraft.id === eqId) setEqDraft({ id: "", name: "", image_url: "" });
     toast.success("تم الحذف");
@@ -344,6 +365,10 @@ function WorksTab() {
         delete payload.id;
         const { error, data } = await supabase.from("works").insert(payload).select("id").single();
         if (error) throw error;
+        if (data && eqList.length > 0) {
+          const toInsert = eqList.map(e => ({ work_id: data.id, name: e.name, image_url: e.image_url }));
+          await supabase.from("work_equipment").insert(toInsert);
+        }
         toast.success("تمت الإضافة");
         if (data) setEditing({ ...editing, id: data.id });
       }
@@ -443,78 +468,76 @@ function WorksTab() {
             </div>
 
             {/* ===== Equipment Section ===== */}
-            {editing.id && (
-              <div className="border-t border-[var(--cream)]/10 px-6 py-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Camera className="size-4 text-[var(--cinema)]" />
-                    <h4 className="text-sm font-bold text-[var(--cream)]">المعدات المستخدمة</h4>
-                    <span className="text-[10px] text-muted-foreground">({eqList.length})</span>
-                  </div>
-                  {eqDraft.id && (
-                    <button onClick={() => setEqDraft({ id: "", name: "", image_url: "" })} className="text-[10px] uppercase text-[var(--cream)]/60 hover:text-[var(--cream)]">
-                      إلغاء التعديل
-                    </button>
-                  )}
+            <div className="border-t border-[var(--cream)]/10 px-6 py-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Camera className="size-4 text-[var(--cinema)]" />
+                  <h4 className="text-sm font-bold text-[var(--cream)]">المعدات المستخدمة</h4>
+                  <span className="text-[10px] text-muted-foreground">({eqList.length})</span>
                 </div>
-
-                {eqList.length > 0 && (
-                  <div className="grid gap-3 mb-4 grid-cols-2 md:grid-cols-3">
-                    {eqList.map((eq) => (
-                      <div key={eq.id} className={`group relative flex items-center gap-3 rounded-sm border bg-[var(--ink)] p-2 transition-colors ${eqDraft.id === eq.id ? 'border-[var(--cinema)]' : 'border-[var(--cream)]/10'}`}>
-                        <div className="size-10 shrink-0 overflow-hidden rounded-sm bg-white/10 p-1">
-                          <img src={eq.image_url} alt="" className="size-full object-contain" />
-                        </div>
-                        <span className="text-[11px] text-[var(--cream)] truncate flex-1">{eq.name}</span>
-                        <div className="flex flex-col shrink-0">
-                          <button onClick={() => editEquipment(eq)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-[var(--cinema)] hover:text-white mb-0.5">
-                            <Pencil className="size-2.5" />
-                          </button>
-                          <button onClick={() => removeEquipment(eq.id)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-destructive hover:text-white">
-                            <Trash2 className="size-2.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-3 items-end bg-[var(--ink)]/50 p-4 border border-[var(--cream)]/5 rounded-sm">
-                  <div className="w-full">
-                    <Field label="اسم المعدة">
-                      <input 
-                        type="text" 
-                        list="eq-list"
-                        value={eqDraft.name} 
-                        onChange={(e) => {
-                          const name = e.target.value;
-                          const match = allEquipment.find(eq => eq.name.toLowerCase() === name.toLowerCase());
-                          if (match && !eqDraft.id && !eqDraft.image_url) {
-                            setEqDraft({ ...eqDraft, name, image_url: match.image_url });
-                          } else {
-                            setEqDraft({ ...eqDraft, name });
-                          }
-                        }} 
-                        className={inputCls} 
-                        dir="ltr" 
-                        placeholder="Nikon Z R" 
-                        autoComplete="off"
-                      />
-                      <datalist id="eq-list">
-                        {allEquipment.map(eq => <option key={eq.name} value={eq.name} />)}
-                      </datalist>
-                    </Field>
-                  </div>
-                  <div className="w-full">
-                    <MediaUploader label="صورة المعدة" value={eqDraft.image_url} onChange={(v: string) => setEqDraft({ ...eqDraft, image_url: v })} />
-                  </div>
-                  <button onClick={addEquipment} className="inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
-                    {eqDraft.id ? <Save className="size-4" /> : <Plus className="size-4" />}
-                    {eqDraft.id ? "حفظ التعديل" : "إضافة معدة"}
+                {eqDraft.id && (
+                  <button onClick={() => setEqDraft({ id: "", name: "", image_url: "" })} className="text-[10px] uppercase text-[var(--cream)]/60 hover:text-[var(--cream)]">
+                    إلغاء التعديل
                   </button>
-                </div>
+                )}
               </div>
-            )}
+
+              {eqList.length > 0 && (
+                <div className="grid gap-3 mb-4 grid-cols-2 md:grid-cols-3">
+                  {eqList.map((eq) => (
+                    <div key={eq.id} className={`group relative flex items-center gap-3 rounded-sm border bg-[var(--ink)] p-2 transition-colors ${eqDraft.id === eq.id ? 'border-[var(--cinema)]' : 'border-[var(--cream)]/10'}`}>
+                      <div className="size-10 shrink-0 overflow-hidden rounded-sm bg-white/10 p-1">
+                        <img src={eq.image_url} alt="" className="size-full object-contain" />
+                      </div>
+                      <span className="text-[11px] text-[var(--cream)] truncate flex-1">{eq.name}</span>
+                      <div className="flex flex-col shrink-0">
+                        <button onClick={() => editEquipment(eq)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-[var(--cinema)] hover:text-white mb-0.5">
+                          <Pencil className="size-2.5" />
+                        </button>
+                        <button onClick={() => removeEquipment(eq.id)} className="grid size-5 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-destructive hover:text-white">
+                          <Trash2 className="size-2.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3 items-end bg-[var(--ink)]/50 p-4 border border-[var(--cream)]/5 rounded-sm">
+                <div className="w-full">
+                  <Field label="اسم المعدة">
+                    <input 
+                      type="text" 
+                      list="eq-list"
+                      value={eqDraft.name} 
+                      onChange={(e) => {
+                        const name = e.target.value;
+                        const match = allEquipment.find(eq => eq.name.toLowerCase() === name.toLowerCase());
+                        if (match && !eqDraft.id && !eqDraft.image_url) {
+                          setEqDraft({ ...eqDraft, name, image_url: match.image_url });
+                        } else {
+                          setEqDraft({ ...eqDraft, name });
+                        }
+                      }} 
+                      className={inputCls} 
+                      dir="ltr" 
+                      placeholder="Nikon Z R" 
+                      autoComplete="off"
+                    />
+                    <datalist id="eq-list">
+                      {allEquipment.map(eq => <option key={eq.name} value={eq.name} />)}
+                    </datalist>
+                  </Field>
+                </div>
+                <div className="w-full">
+                  <MediaUploader label="صورة المعدة" value={eqDraft.image_url} onChange={(v: string) => setEqDraft({ ...eqDraft, image_url: v })} />
+                </div>
+                <button onClick={addEquipment} className="inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
+                  {eqDraft.id ? <Save className="size-4" /> : <Plus className="size-4" />}
+                  {eqDraft.id ? "حفظ التعديل" : "إضافة معدة"}
+                </button>
+              </div>
+            </div>
 
             <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
               <button onClick={closeEdit} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
