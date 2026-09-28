@@ -232,6 +232,8 @@ function WorksTab() {
   const [eqList, setEqList] = useState<any[]>([]);
   const [eqDraft, setEqDraft] = useState({ id: "", name: "", image_url: "" });
 
+  const [allEquipment, setAllEquipment] = useState<{name: string, image_url: string}[]>([]);
+
   const FIELDS = [
     { key: "title", label: "العنوان (عربي)", type: "text", dir: "rtl" },
     { key: "title_en", label: "Title (EN)", type: "text", dir: "ltr" },
@@ -245,13 +247,21 @@ function WorksTab() {
     { key: "published", label: "منشور", type: "bool" },
   ] as const;
 
+  const loadAllEquipment = async () => {
+    const { data } = await supabase.from("work_equipment").select("name, image_url");
+    if (data) {
+      const unique = Array.from(new Map(data.map(item => [item.name.toLowerCase().trim(), item])).values());
+      setAllEquipment(unique);
+    }
+  };
+
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("works").select("*").order("sort_order").order("created_at", { ascending: false });
     setRows(data ?? []);
     setLoading(false);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); loadAllEquipment(); }, []);
 
   const loadEquipment = async (workId: string) => {
     const { data } = await supabase.from("work_equipment").select("*").eq("work_id", workId);
@@ -290,6 +300,7 @@ function WorksTab() {
     
     setEqDraft({ id: "", name: "", image_url: "" });
     loadEquipment(editing.id);
+    loadAllEquipment();
   };
 
   const removeEquipment = async (eqId: string) => {
@@ -462,7 +473,27 @@ function WorksTab() {
                 <div className="flex flex-col gap-3 items-end bg-[var(--ink)]/50 p-4 border border-[var(--cream)]/5 rounded-sm">
                   <div className="w-full">
                     <Field label="اسم المعدة">
-                      <input type="text" value={eqDraft.name} onChange={(e) => setEqDraft({ ...eqDraft, name: e.target.value })} className={inputCls} dir="ltr" placeholder="Nikon Z R" />
+                      <input 
+                        type="text" 
+                        list="eq-list"
+                        value={eqDraft.name} 
+                        onChange={(e) => {
+                          const name = e.target.value;
+                          const match = allEquipment.find(eq => eq.name.toLowerCase() === name.toLowerCase());
+                          if (match && !eqDraft.id && !eqDraft.image_url) {
+                            setEqDraft({ ...eqDraft, name, image_url: match.image_url });
+                          } else {
+                            setEqDraft({ ...eqDraft, name });
+                          }
+                        }} 
+                        className={inputCls} 
+                        dir="ltr" 
+                        placeholder="Nikon Z R" 
+                        autoComplete="off"
+                      />
+                      <datalist id="eq-list">
+                        {allEquipment.map(eq => <option key={eq.name} value={eq.name} />)}
+                      </datalist>
                     </Field>
                   </div>
                   <div className="w-full">
