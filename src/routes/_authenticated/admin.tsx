@@ -5,7 +5,7 @@ import { useSettings, type AllSettings } from "@/lib/use-settings";
 import { MediaUploader } from "@/components/MediaUploader";
 import { toast } from "sonner";
 import {
-  Plus, Trash2, LogOut, Save, Pencil, X, Aperture,
+  Plus, Trash2, LogOut, Save, Pencil, X, Aperture, Camera,
   Settings, Image as ImageIcon, FileText, Briefcase,
   MessageSquare, Building2, Phone, Film, Loader2,
   Search, Eye, EyeOff, ExternalLink,
@@ -226,26 +226,236 @@ function ServicesTab() {
 }
 
 function WorksTab() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [eqList, setEqList] = useState<any[]>([]);
+  const [eqDraft, setEqDraft] = useState({ name: "", image_url: "" });
+
+  const FIELDS = [
+    { key: "title", label: "العنوان (عربي)", type: "text", dir: "rtl" },
+    { key: "title_en", label: "Title (EN)", type: "text", dir: "ltr" },
+    { key: "category", label: "الفئة", type: "select", options: ["films", "ads", "photo"] },
+    { key: "image_url", label: "صورة الغلاف", type: "media" },
+    { key: "video_url", label: "رابط الفيديو (YouTube/Vimeo)", type: "text", dir: "ltr" },
+    { key: "external_url", label: "رابط خارجي", type: "text", dir: "ltr" },
+    { key: "sort_order", label: "الترتيب", type: "number" },
+    { key: "description", label: "الرسالة / النص الأدبي (عربي) — يظهر عند النقر على الصورة", type: "textarea", dir: "rtl" },
+    { key: "description_en", label: "Literary text (EN) — shown on image click", type: "textarea", dir: "ltr" },
+    { key: "published", label: "منشور", type: "bool" },
+  ] as const;
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("works").select("*").order("sort_order").order("created_at", { ascending: false });
+    setRows(data ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const loadEquipment = async (workId: string) => {
+    const { data } = await supabase.from("work_equipment").select("*").eq("work_id", workId);
+    setEqList(data ?? []);
+  };
+
+  const openEdit = (r: any) => {
+    setEditing(r);
+    setEqDraft({ name: "", image_url: "" });
+    if (r.id) loadEquipment(r.id);
+    else setEqList([]);
+  };
+
+  const addEquipment = async () => {
+    if (!eqDraft.name.trim() || !eqDraft.image_url.trim()) {
+      toast.error("يرجى ملء اسم المعدة ورابط الصورة");
+      return;
+    }
+    const { error } = await supabase.from("work_equipment").insert({
+      work_id: editing.id,
+      name: eqDraft.name.trim(),
+      image_url: eqDraft.image_url.trim(),
+    });
+    if (error) { toast.error("خطأ: " + error.message); return; }
+    toast.success("تمت إضافة المعدة");
+    setEqDraft({ name: "", image_url: "" });
+    loadEquipment(editing.id);
+  };
+
+  const removeEquipment = async (eqId: string) => {
+    if (!confirm("حذف هذه المعدة؟")) return;
+    await supabase.from("work_equipment").delete().eq("id", eqId);
+    toast.success("تم الحذف");
+    loadEquipment(editing.id);
+  };
+
+  const save = async () => {
+    if (!editing) return;
+    if (!editing.title?.trim() || !editing.image_url?.trim() || !editing.category?.trim()) {
+      toast.error("يرجى ملء العنوان وصورة الغلاف والفئة");
+      return;
+    }
+    const payload = { ...editing };
+    FIELDS.forEach((f) => {
+      if (f.type === "number") payload[f.key] = Number(payload[f.key] || 0);
+      else if (payload[f.key] === "" && f.key !== "title" && f.key !== "image_url" && f.key !== "category") payload[f.key] = null;
+    });
+    try {
+      if (editing.id) {
+        const { error } = await supabase.from("works").update(payload).eq("id", editing.id);
+        if (error) throw error;
+        toast.success("تم التحديث");
+      } else {
+        delete payload.id;
+        const { error, data } = await supabase.from("works").insert(payload).select("id").single();
+        if (error) throw error;
+        toast.success("تمت الإضافة");
+        // If there are equipment drafts pending, update editing with the new id
+        if (data) setEditing({ ...editing, id: data.id });
+      }
+      setEditing(null);
+      load();
+    } catch (e: any) {
+      toast.error("خطأ: " + (e?.message || "غير معروف"));
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("حذف هذا العمل؟")) return;
+    const { error } = await supabase.from("works").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("تم الحذف");
+    load();
+  };
+
+  const empty = () => ({ title: "", title_en: "", category: "films", image_url: "", video_url: "", external_url: "", sort_order: 0, description: "", description_en: "", published: true });
+
+  if (loading) return <Loading />;
+
   return (
-    <CrudList
-      cfg={{
-        table: "works",
-        title: "الأعمال (أفلام / إعلانات / صور)",
-        fields: [
-          { key: "title", label: "العنوان (عربي)", type: "text", dir: "rtl" },
-          { key: "title_en", label: "Title (EN)", type: "text", dir: "ltr" },
-          { key: "category", label: "الفئة", type: "select", options: ["films", "ads", "photo"] },
-          { key: "image_url", label: "صورة الغلاف", type: "media" },
-          { key: "video_url", label: "رابط الفيديو (YouTube/Vimeo)", type: "text", dir: "ltr" },
-          { key: "external_url", label: "رابط خارجي", type: "text", dir: "ltr" },
-          { key: "sort_order", label: "الترتيب", type: "number" },
-          { key: "description", label: "الرسالة / النص الأدبي (عربي) — يظهر عند النقر على الصورة", type: "textarea", dir: "rtl" },
-          { key: "description_en", label: "Literary text (EN) — shown on image click", type: "textarea", dir: "ltr" },
-          { key: "published", label: "منشور", type: "bool" },
-        ],
-        display: (r) => ({ title: r.title, sub: r.description, image: r.image_url, tag: r.category }),
-      }}
-    />
+    <Section
+      title={`الأعمال (أفلام / إعلانات / صور) (${rows.length})`}
+      action={
+        <button onClick={() => openEdit(empty())} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)] hover:scale-[1.02]">
+          <Plus className="size-4" /> جديد
+        </button>
+      }
+    >
+      {rows.length === 0 ? (
+        <div className="rounded-sm border border-dashed border-[var(--cream)]/20 p-12 text-center text-sm text-muted-foreground">لا توجد عناصر بعد.</div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {rows.map((r) => (
+            <article key={r.id} className="overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]">
+              <div className="aspect-[4/3] overflow-hidden bg-[var(--ink)]">
+                <img src={r.image_url} alt="" className="size-full object-cover" />
+              </div>
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cinema)]">{r.category}</span>
+                  {!r.published && <span className="text-[10px] uppercase text-muted-foreground">مسودة</span>}
+                </div>
+                <h3 className="mt-2 text-lg font-bold text-[var(--cream)]">{r.title}</h3>
+                {r.description && <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>}
+                <div className="mt-4 flex gap-2">
+                  <button onClick={() => openEdit(r)} className="inline-flex flex-1 items-center justify-center gap-2 rounded-sm bg-[var(--ink)] px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--cream)] hover:bg-[var(--cinema)]">
+                    <Pencil className="size-3" /> تعديل
+                  </button>
+                  <button onClick={() => remove(r.id)} className="grid size-9 place-items-center rounded-sm border border-[var(--cream)]/20 text-[var(--cream)] hover:bg-destructive">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {editing && (
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/80 p-6" onClick={() => setEditing(null)}>
+          <div dir="rtl" className="my-8 w-full max-w-2xl overflow-hidden rounded-sm border border-[var(--cream)]/10 bg-[var(--surface)]" onClick={(e) => e.stopPropagation()}>
+            <header className="flex items-center justify-between px-6 py-4" style={{ backgroundColor: "var(--cinema)" }}>
+              <h3 className="font-display text-xl font-bold text-[var(--cream)]">{editing.id ? "تعديل العمل" : "عمل جديد"}</h3>
+              <button onClick={() => setEditing(null)} className="text-[var(--cream)]"><X className="size-5" /></button>
+            </header>
+            <div className="grid gap-4 p-6 md:grid-cols-2">
+              {FIELDS.map((f) => {
+                const full = f.type === "textarea" || f.type === "media";
+                return (
+                  <div key={f.key} className={full ? "md:col-span-2" : ""}>
+                    {f.type === "media" ? (
+                      <MediaUploader label={f.label} value={editing[f.key] || ""} onChange={(v: string) => setEditing({ ...editing, [f.key]: v })} />
+                    ) : f.type === "bool" ? (
+                      <label className="flex items-center gap-2 text-sm text-[var(--cream)]">
+                        <input type="checkbox" checked={!!editing[f.key]} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.checked })} />
+                        {f.label}
+                      </label>
+                    ) : (
+                      <Field label={f.label}>
+                        {f.type === "textarea" ? (
+                          <textarea rows={4} value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} className={inputCls} dir={f.dir} />
+                        ) : f.type === "select" ? (
+                          <select value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} className={inputCls}>
+                            {f.options?.map((o: string) => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        ) : (
+                          <input type={f.type === "number" ? "number" : "text"} value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} className={inputCls} dir={f.dir} />
+                        )}
+                      </Field>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ===== Equipment Section ===== */}
+            {editing.id && (
+              <div className="border-t border-[var(--cream)]/10 px-6 py-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Camera className="size-4 text-[var(--cinema)]" />
+                  <h4 className="text-sm font-bold text-[var(--cream)]">المعدات المستخدمة</h4>
+                  <span className="text-[10px] text-muted-foreground">({eqList.length})</span>
+                </div>
+
+                {eqList.length > 0 && (
+                  <div className="grid gap-3 mb-4 grid-cols-2 md:grid-cols-3">
+                    {eqList.map((eq) => (
+                      <div key={eq.id} className="group relative flex items-center gap-3 rounded-sm border border-[var(--cream)]/10 bg-[var(--ink)] p-2">
+                        <div className="size-10 shrink-0 overflow-hidden rounded-sm bg-white/10 p-1">
+                          <img src={eq.image_url} alt="" className="size-full object-contain" />
+                        </div>
+                        <span className="text-[11px] text-[var(--cream)] truncate flex-1">{eq.name}</span>
+                        <button onClick={() => removeEquipment(eq.id)} className="shrink-0 grid size-6 place-items-center rounded-full text-[var(--cream)]/40 hover:bg-destructive hover:text-white">
+                          <Trash2 className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2 items-end">
+                  <Field label="اسم المعدة">
+                    <input type="text" value={eqDraft.name} onChange={(e) => setEqDraft({ ...eqDraft, name: e.target.value })} className={inputCls} dir="ltr" placeholder="Nikon Z R" />
+                  </Field>
+                  <Field label="رابط صورة المعدة (URL)">
+                    <input type="text" value={eqDraft.image_url} onChange={(e) => setEqDraft({ ...eqDraft, image_url: e.target.value })} className={inputCls} dir="ltr" placeholder="https://..." />
+                  </Field>
+                  <button onClick={addEquipment} className="shrink-0 mb-0.5 inline-flex items-center gap-1.5 rounded-sm bg-[var(--cinema)] px-3 py-2 text-[10px] font-bold uppercase text-[var(--cream)] hover:scale-[1.02]">
+                    <Plus className="size-3" /> إضافة
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <footer className="flex items-center justify-end gap-2 border-t border-[var(--cream)]/10 px-6 py-4">
+              <button onClick={() => setEditing(null)} className="rounded-full border border-[var(--cream)]/30 px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">إلغاء</button>
+              <button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--cream)]">
+                <Save className="size-3.5" /> حفظ
+              </button>
+            </footer>
+          </div>
+        </div>
+      )}
+    </Section>
   );
 }
 
