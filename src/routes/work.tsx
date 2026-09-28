@@ -60,9 +60,24 @@ function WorkPage() {
   const [tab, setTab] = useState<Tab>("all");
   const [openWork, setOpenWork] = useState<Work | null>(null);
   const [gearOpen, setGearOpen] = useState<string | null>(null);
+  const [showHint, setShowHint] = useState<string | null>(null);
   const [equipment, setEquipment] = useState<Record<string, Equipment[]>>({});
   const { rows } = useContent<Work>("works");
   const works = rows.length ? rows : FALLBACK;
+
+  useEffect(() => {
+    if (Object.keys(equipment).length > 0) {
+      const hasSeen = localStorage.getItem("hasSeenEqHint");
+      if (hasSeen) return;
+      const timer = setTimeout(() => {
+        const firstWithEq = works.find(w => equipment[w.id] && equipment[w.id].length > 0);
+        if (firstWithEq) {
+          setShowHint(firstWithEq.id);
+        }
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [works, equipment]);
 
   useEffect(() => {
     supabase.from("work_equipment").select("*").then(({ data }) => {
@@ -175,18 +190,35 @@ function WorkPage() {
                 </div>
                 {/* Equipment gear button */}
                 {equipment[w.id] && equipment[w.id].length > 0 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setGearOpen(gearOpen === w.id ? null : w.id);
-                    }}
-                    className="absolute left-3 top-3 z-[3] grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm transition-all hover:bg-cinema hover:text-cream hover:border-cinema"
-                    title={isAr ? "عرض المعدات" : "View gear"}
-                  >
-                    <Camera className="size-3.5" />
-                  </button>
+                  <div className="absolute left-3 top-3 z-[3] flex items-center gap-2">
+                    {showHint === w.id && !gearOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="bg-[var(--cinema)] text-[var(--cream)] text-[10px] font-bold px-3 py-1.5 rounded-sm whitespace-nowrap shadow-lg flex items-center gap-1.5 animate-pulse"
+                      >
+                        {isAr ? "انقر لرؤية المعدات" : "Click to see gear"}
+                        <svg className="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                      </motion.div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setGearOpen(gearOpen === w.id ? null : w.id);
+                        if (showHint) {
+                          setShowHint(null);
+                          localStorage.setItem("hasSeenEqHint", "true");
+                        }
+                      }}
+                      className="grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm transition-all hover:bg-cinema hover:text-cream hover:border-cinema relative"
+                      title={isAr ? "عرض المعدات" : "View gear"}
+                    >
+                      <Camera className="size-3.5" />
+                    </button>
+                  </div>
                 )}
                 {/* Equipment Drawer */}
                 <AnimatePresence>
