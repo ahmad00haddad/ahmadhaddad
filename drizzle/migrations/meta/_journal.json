@@ -8,6 +8,13 @@
       "when": 1790972499515,
       "tag": "0000_fix_equipment_image_urls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790972521430,
+      "tag": "0001_restrict_admin_writes",
+      "breakpoints": true
     }
   ]
 }
