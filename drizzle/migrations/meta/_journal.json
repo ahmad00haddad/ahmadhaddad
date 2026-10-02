@@ -15,6 +15,13 @@
       "when": 1790972521430,
       "tag": "0001_restrict_admin_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790973265391,
+      "tag": "0002_restrict_services_writes",
+      "breakpoints": true
     }
   ]
 }

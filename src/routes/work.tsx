@@ -82,11 +82,19 @@ function WorkPage() {
   useEffect(() => {
     supabase.from("work_equipment").select("*").then(({ data }) => {
       if (!data) return;
+      const rank = (n: string) => {
+        const s = n.toLowerCase();
+        if (/a7|fx\d|fx3|fx6|fx30|camera|cam|bmpcc|red |alexa|komodo|canon r|zv-/.test(s)) return 0;
+        if (/mm|lens|anamorphic|diopter|f\/|t\d/.test(s)) return 1;
+        if (/gvm|godox|amaran|aputure|nanlite|light|ls-|sl-|arri|led/.test(s)) return 2;
+        return 3;
+      };
       const grouped: Record<string, Equipment[]> = {};
       data.forEach((eq: any) => {
         if (!grouped[eq.work_id]) grouped[eq.work_id] = [];
         grouped[eq.work_id].push(eq);
       });
+      Object.values(grouped).forEach((list) => list.sort((a, b) => rank(a.name) - rank(b.name)));
       setEquipment(grouped);
     });
   }, []);
