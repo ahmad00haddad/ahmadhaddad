@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Auth manage services" ON public.services;
+CREATE POLICY "Admins manage services" ON public.services FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
