@@ -161,6 +161,35 @@ export type Database = {
         }
         Relationships: []
       }
+      work_equipment: {
+        Row: {
+          id: string
+          image_url: string
+          name: string
+          work_id: string
+        }
+        Insert: {
+          id?: string
+          image_url: string
+          name: string
+          work_id: string
+        }
+        Update: {
+          id?: string
+          image_url?: string
+          name?: string
+          work_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_equipment_work_id_fkey"
+            columns: ["work_id"]
+            isOneToOne: false
+            referencedRelation: "works"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       works: {
         Row: {
           category: string

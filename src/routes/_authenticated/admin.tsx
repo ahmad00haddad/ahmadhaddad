@@ -458,7 +458,7 @@ function WorksTab() {
                             {f.options?.map((o: string) => <option key={o} value={o}>{o}</option>)}
                           </select>
                         ) : (
-                          <input type={f.type === "number" ? "number" : "text"} value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} className={inputCls} dir={f.dir} />
+                          <input type={f.type === "number" ? "number" : "text"} value={editing[f.key] ?? ""} onChange={(e) => setEditing({ ...editing, [f.key]: e.target.value })} className={inputCls} dir={"dir" in f ? f.dir : undefined} />
                         )}
                       </Field>
                     )}

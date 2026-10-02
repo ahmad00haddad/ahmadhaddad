@@ -299,13 +299,13 @@ function WorkPage() {
                         >
                           {equipment[w.id].map((eq) => (
                             <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                              <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-darken" style={{ WebkitMixBlendMode: 'darken', mixBlendMode: 'darken' }}>
+                              <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-darken" style={{ mixBlendMode: 'darken' }}>
                                 <img
                                   src={eq.image_url}
                                   alt={eq.name}
                                   draggable={false}
                                   className="max-h-full max-w-full object-contain mix-blend-darken transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
-                                  style={{ WebkitMixBlendMode: 'darken', mixBlendMode: 'darken', transform: 'translateZ(0)' }}
+                                  style={{ mixBlendMode: 'darken', transform: 'translateZ(0)' }}
                                 />
                               </div>
                               <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
