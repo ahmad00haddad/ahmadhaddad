@@ -52,6 +52,14 @@ const FALLBACK: Work[] = [
 
 type Tab = "all" | "films" | "ads" | "photo";
 
+// B&H blocks hotlinking from www.bhphotovideo.com; its static CDN allows it.
+function fixGearUrl(u: string) {
+  if (!u) return u;
+  const cdn = u.match(/^https?:\/\/www\.bhphotovideo\.com\/cdn-cgi\/.*_(\d+_\d+\.jpg)$/);
+  if (cdn) return `https://static.bhphoto.com/images/images500x500/${cdn[1]}`;
+  return u.replace(/^https?:\/\/www\.bhphotovideo\.com\/images\//, "https://static.bhphoto.com/images/");
+}
+
 type Equipment = { id: string; work_id: string; name: string; image_url: string };
 
 function WorkPage() {
@@ -92,9 +100,11 @@ function WorkPage() {
       const grouped: Record<string, Equipment[]> = {};
       data.forEach((eq: any) => {
         if (!grouped[eq.work_id]) grouped[eq.work_id] = [];
-        grouped[eq.work_id].push(eq);
+        grouped[eq.work_id].push({ ...eq, image_url: fixGearUrl(eq.image_url) });
       });
-      Object.values(grouped).forEach((list) => list.sort((a, b) => rank(a.name) - rank(b.name)));
+      Object.values(grouped).forEach((list) =>
+        list.sort((a: any, b: any) => rank(a.name) - rank(b.name) || String(a.created_at ?? "").localeCompare(String(b.created_at ?? ""))),
+      );
       setEquipment(grouped);
     });
   }, []);
@@ -312,6 +322,7 @@ function WorkPage() {
                                   src={eq.image_url}
                                   alt={eq.name}
                                   draggable={false}
+                                  onError={(e) => { (e.currentTarget.closest(".group\\/eq") as HTMLElement | null)?.style.setProperty("display", "none"); }}
                                   className="max-h-full max-w-full object-contain mix-blend-darken transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
                                   style={{ mixBlendMode: 'darken', transform: 'translateZ(0)' }}
                                 />

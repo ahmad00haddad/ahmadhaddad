@@ -163,18 +163,21 @@ export type Database = {
       }
       work_equipment: {
         Row: {
+          created_at: string
           id: string
           image_url: string
           name: string
           work_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
           image_url: string
           name: string
           work_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           image_url?: string
           name?: string
