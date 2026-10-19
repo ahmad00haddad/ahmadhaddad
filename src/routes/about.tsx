@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { motion, useInView, animate } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { Download, ExternalLink, Loader2, FileText, Film } from "lucide-react";
-import cvAsset from "@/assets/Ahmad_Haddad_CV.pdf.asset.json";
 import { PageHero } from "@/components/PageHero";
 import { useSettings } from "@/lib/use-settings";
 import type { ReactNode } from "react";
@@ -223,7 +222,9 @@ function AboutPage() {
   const img1 = a.image1_url;
   const img2 = a.image2_url;
   const img3 = a.image3_url;
-  const cvUrl = a.cv_url || cvAsset.url;
+  // Language-specific CVs shipped in /public/cv (replaces the old admin-uploaded cv_url / asset).
+  const cvUrl = isAr ? "/cv/Ahmad_Haddad_CV_AR.pdf" : "/cv/Ahmad_Haddad_CV_EN.pdf";
+  const cvFileName = isAr ? "Ahmad_Haddad_CV_AR.pdf" : "Ahmad_Haddad_CV_EN.pdf";
   const cvTitle = (isAr ? a.cv_title_ar : a.cv_title_en) || t("about.cv_title");
   const cvSub = (isAr ? a.cv_sub_ar : a.cv_sub_en) || t("about.cv_sub");
   const studioName = a.studio_name || "Faii House";
@@ -329,7 +330,7 @@ function AboutPage() {
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{cvSub}</p>
               <a
                 href={cvUrl}
-                download="Ahmad_Haddad_CV.pdf"
+                download={cvFileName}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] hover:scale-[1.02]"
