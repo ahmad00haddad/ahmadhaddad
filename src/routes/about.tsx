@@ -207,6 +207,7 @@ function AboutPage() {
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
   const a = settings.about;
+  const [cvMenuOpen, setCvMenuOpen] = useState(false);
 
   const splitParas = (s?: string) => (s ? s.split(/\n\s*\n/).filter(Boolean) : []);
 
@@ -224,7 +225,6 @@ function AboutPage() {
   const img3 = a.image3_url;
   // Language-specific CVs shipped in /public/cv (replaces the old admin-uploaded cv_url / asset).
   const cvUrl = isAr ? "/cv/Ahmad_Haddad_CV_AR.pdf" : "/cv/Ahmad_Haddad_CV_EN.pdf";
-  const cvFileName = isAr ? "Ahmad_Haddad_CV_AR.pdf" : "Ahmad_Haddad_CV_EN.pdf";
   const cvTitle = (isAr ? a.cv_title_ar : a.cv_title_en) || t("about.cv_title");
   const cvSub = (isAr ? a.cv_sub_ar : a.cv_sub_en) || t("about.cv_sub");
   const studioName = a.studio_name || "Faii House";
@@ -328,16 +328,45 @@ function AboutPage() {
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— {isAr ? "CV / السيرة الذاتية" : "Curriculum Vitae"}</span>
               <h2 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{cvTitle}</h2>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{cvSub}</p>
-              <a
-                href={cvUrl}
-                download={cvFileName}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] hover:scale-[1.02]"
-              >
-                <Download className="size-3.5" />
-                {t("about.cv_download")}
-              </a>
+              <div className="relative mt-5 inline-block">
+                <button
+                  type="button"
+                  onClick={() => setCvMenuOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={cvMenuOpen}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] hover:scale-[1.02]"
+                >
+                  <Download className="size-3.5" />
+                  {t("about.cv_download")}
+                </button>
+                {cvMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute start-0 z-20 mt-2 min-w-[12rem] overflow-hidden rounded-xl border border-[var(--cream)]/20 bg-[var(--ink)] shadow-xl"
+                  >
+                    <a
+                      role="menuitem"
+                      href="/cv/Ahmad_Haddad_CV_AR.pdf"
+                      download="Ahmad_Haddad_CV_AR.pdf"
+                      onClick={() => setCvMenuOpen(false)}
+                      className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
+                    >
+                      <span className="font-arabic">العربية</span>
+                      <span className="text-[10px] uppercase tracking-widest opacity-70">AR · PDF</span>
+                    </a>
+                    <a
+                      role="menuitem"
+                      href="/cv/Ahmad_Haddad_CV_EN.pdf"
+                      download="Ahmad_Haddad_CV_EN.pdf"
+                      onClick={() => setCvMenuOpen(false)}
+                      className="flex items-center justify-between gap-4 border-t border-[var(--cream)]/10 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
+                    >
+                      <span>English</span>
+                      <span className="text-[10px] uppercase tracking-widest opacity-70">EN · PDF</span>
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
             <a
               href={cvUrl}
