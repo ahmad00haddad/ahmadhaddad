@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { uploadMedia } from "@/lib/use-settings";
+import { ElasticImage } from "@/components/ElasticImage";
 
 export function MediaUploader({
   value,
@@ -39,12 +40,12 @@ export function MediaUploader({
                   PDF<br/>عرض
                 </a>
               ) : (
-                <img src={value} alt="" className="size-full object-cover" />
+                <ElasticImage src={value} alt="" className="size-full object-cover" />
               )}
               <button
                 type="button"
                 onClick={() => onChange("")}
-                className="absolute right-1 top-1 grid size-6 place-items-center rounded-full bg-black/70 text-white hover:bg-destructive"
+                className="elastic-press absolute right-1 top-1 grid size-6 place-items-center rounded-full bg-black/70 text-white hover:bg-destructive"
               >
                 <X className="size-3" />
               </button>
@@ -65,7 +66,7 @@ export function MediaUploader({
             type="button"
             onClick={() => ref.current?.click()}
             disabled={busy}
-            className="inline-flex items-center justify-center gap-2 rounded-sm border border-[var(--cream)]/20 bg-[var(--ink)] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[var(--cream)] hover:bg-[var(--cinema)] disabled:opacity-50"
+            className="elastic-press inline-flex items-center justify-center gap-2 rounded-sm border border-[var(--cream)]/20 bg-[var(--ink)] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[var(--cream)] hover:bg-[var(--cinema)] disabled:opacity-50"
           >
             {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
             {busy ? "جاري الرفع..." : "رفع ملف"}
@@ -77,7 +78,7 @@ export function MediaUploader({
             placeholder="أو الصق رابط URL"
             className="rounded-sm border border-[var(--cream)]/20 bg-[var(--ink)] px-2 py-1.5 text-xs text-[var(--cream)] outline-none focus:border-[var(--cinema)]"
           />
-          {err && <p className="text-[10px] text-destructive">{err}</p>}
+          {err && <p role="alert" className="text-[10px] text-destructive">{err}</p>}
         </div>
       </div>
     </div>
