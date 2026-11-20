@@ -420,10 +420,10 @@ function WorkPage() {
           >
             <div className="absolute inset-0 bg-[var(--ink)]/85 backdrop-blur-sm" />
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ opacity: { duration: 0.25 }, scale: { type: "spring", stiffness: 320, damping: 24 } }}
               onClick={(e) => e.stopPropagation()}
               dir={isAr ? "rtl" : "ltr"}
               className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm border border-[var(--cream)]/15 bg-[#f3ecdc] text-[#2a1f12] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"

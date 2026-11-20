@@ -444,7 +444,7 @@ function HomePage() {
                   return w.external_url ? (
                     <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
                   ) : hasLetter ? (
-                    <button key={w.id} type="button" onClick={() => setOpenWork(w)} className="text-right">{card}</button>
+                    <button key={w.id} type="button" onClick={() => setOpenWork(w)} className="text-right elastic-press-soft">{card}</button>
                   ) : (
                     <div key={w.id}>{card}</div>
                   );
