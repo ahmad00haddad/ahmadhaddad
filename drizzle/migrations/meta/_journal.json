@@ -36,6 +36,13 @@
       "when": 1795209564560,
       "tag": "0004_tighten_testimonials_equipment",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795209762066,
+      "tag": "0005_restrict_media_read",
+      "breakpoints": true
     }
   ]
 }
