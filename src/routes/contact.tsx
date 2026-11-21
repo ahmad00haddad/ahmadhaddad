@@ -88,7 +88,7 @@ function ContactPage() {
             <Magnetic strength={0.12} radius={90}>
               <button
                 type="submit"
-                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cinema px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-cream transition-transform hover:scale-[1.01]"
+                className="elastic-press mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cinema px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-cream"
               >
                 <Send className="size-3.5" />
                 {t("contact.send")}
@@ -199,7 +199,7 @@ function SocialIcon({
         target="_blank"
         rel="noreferrer"
         aria-label={label}
-        className="grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
+        className="elastic-press grid size-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)]"
       >
         {children}
       </a>

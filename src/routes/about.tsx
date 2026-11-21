@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { Download, ExternalLink, Loader2, FileText, Film } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { ElasticImage } from "@/components/ElasticImage";
 import { useSettings } from "@/lib/use-settings";
 import type { ReactNode } from "react";
 
@@ -12,12 +13,17 @@ const TYPING_SPEED = 0.015; // seconds per character
 function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const reduceMotion = useReducedMotion();
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     if (!isInView || !text) return;
+    if (reduceMotion) {
+      setDisplayedText(text);
+      setIsTyping(false);
+      return;
+    }
     setIsTyping(true);
     const duration = text.length * TYPING_SPEED;
     const controls = animate(0, text.length, {
@@ -29,11 +35,10 @@ function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
       },
       onComplete: () => {
         setIsTyping(false);
-        setIsDone(true);
       },
     });
     return controls.stop;
-  }, [isInView, text, delay]);
+  }, [isInView, text, delay, reduceMotion]);
 
   return (
     <span ref={ref} className="relative block">
@@ -160,7 +165,10 @@ function Chapter({
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6 }}
+        transition={{
+          opacity: { duration: 0.25 },
+          y: { type: "spring", stiffness: 110, damping: 19 },
+        }}
         className={reverse ? "md:order-2" : ""}
       >
         <div className="flex items-baseline gap-3 text-cinema">
@@ -179,7 +187,10 @@ function Chapter({
         initial={{ opacity: 0, scale: 0.96 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.7 }}
+        transition={{
+          opacity: { duration: 0.25 },
+          scale: { type: "spring", stiffness: 140, damping: 20 },
+        }}
         className={reverse ? "md:order-1" : ""}
       >
         {imageSlot}
@@ -323,7 +334,13 @@ function AboutPage() {
           </motion.section>
 
           {/* CV — compact vintage card */}
-          <section className="grid items-center gap-6 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:grid-cols-[1fr_auto] md:p-10">
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ opacity: { duration: 0.25 }, y: { type: "spring", stiffness: 110, damping: 19 } }}
+            className="grid items-center gap-6 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:grid-cols-[1fr_auto] md:p-10"
+          >
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— {isAr ? "CV / السيرة الذاتية" : "Curriculum Vitae"}</span>
               <h2 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{cvTitle}</h2>
@@ -334,14 +351,20 @@ function AboutPage() {
                   onClick={() => setCvMenuOpen((v) => !v)}
                   aria-haspopup="menu"
                   aria-expanded={cvMenuOpen}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] hover:scale-[1.02]"
+                  className="elastic-press inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
                 >
                   <Download className="size-3.5" />
                   {t("about.cv_download")}
                 </button>
+                <AnimatePresence>
                 {cvMenuOpen && (
-                  <div
+                  <motion.div
                     role="menu"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ opacity: { duration: 0.15 }, scale: { type: "spring", stiffness: 500, damping: 24 } }}
+                    style={{ transformOrigin: isAr ? "top right" : "top left" }}
                     className="absolute start-0 z-20 mt-2 min-w-[12rem] overflow-hidden rounded-xl border border-[var(--cream)]/20 bg-[var(--ink)] shadow-xl"
                   >
                     <a
@@ -349,7 +372,7 @@ function AboutPage() {
                       href="/cv/Ahmad_Haddad_CV_AR.pdf"
                       download="Ahmad_Haddad_CV_AR.pdf"
                       onClick={() => setCvMenuOpen(false)}
-                      className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
+                      className="elastic-press-soft flex items-center justify-between gap-4 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
                     >
                       <span className="font-arabic">العربية</span>
                       <span className="text-[10px] uppercase tracking-widest opacity-70">AR · PDF</span>
@@ -359,20 +382,21 @@ function AboutPage() {
                       href="/cv/Ahmad_Haddad_CV_EN.pdf"
                       download="Ahmad_Haddad_CV_EN.pdf"
                       onClick={() => setCvMenuOpen(false)}
-                      className="flex items-center justify-between gap-4 border-t border-[var(--cream)]/10 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
+                      className="elastic-press-soft flex items-center justify-between gap-4 border-t border-[var(--cream)]/10 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
                     >
                       <span>English</span>
                       <span className="text-[10px] uppercase tracking-widest opacity-70">EN · PDF</span>
                     </a>
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             </div>
             <a
               href={cvUrl}
               target="_blank"
               rel="noreferrer"
-              className="group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-[#f3ecdc] md:h-52 md:w-40 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
+              className="elastic-press-soft group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-[#f3ecdc] md:h-52 md:w-40 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
             >
               <div className="absolute inset-0 p-3 md:p-4 opacity-60 transition-opacity duration-500 group-hover:opacity-100">
                 <div className="h-1.5 w-1/2 bg-[#2a1f12]/30 rounded-full mb-4" />
@@ -397,15 +421,21 @@ function AboutPage() {
                 <ExternalLink className="size-4 text-[#2a1f12] absolute top-2 right-2" />
               </div>
             </a>
-          </section>
+          </motion.section>
 
           {/* Studio / Team — photo of the creative team */}
-          <section className="grid gap-6 md:grid-cols-2 md:items-stretch">
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ opacity: { duration: 0.25 }, y: { type: "spring", stiffness: 110, damping: 19 } }}
+            className="grid gap-6 md:grid-cols-2 md:items-stretch"
+          >
             <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:aspect-auto">
               {settingsLoading || !img3 ? (
                 <ImgLoader />
               ) : (
-                <img src={img3} alt="" className="size-full object-cover" loading="lazy" />
+                <ElasticImage src={img3} alt="" className="size-full object-cover" loading="lazy" />
               )}
               <div className="grain-layer" style={{ opacity: 0.25 }} />
             </div>
@@ -417,12 +447,12 @@ function AboutPage() {
                 href={studioUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
+                className="elastic-press mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
               >
                 {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
               </a>
             </div>
-          </section>
+          </motion.section>
 
         </div>
       </div>

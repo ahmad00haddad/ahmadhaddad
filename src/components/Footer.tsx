@@ -65,7 +65,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="grid size-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brass hover:text-brass"
+                  className="elastic-press grid size-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-brass hover:text-brass"
                 >
                   <Icon className="size-3.5" />
                 </a>

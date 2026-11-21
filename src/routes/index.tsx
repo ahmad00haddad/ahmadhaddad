@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { motion, useInView, animate, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -15,11 +15,12 @@ import {
 } from "lucide-react";
 import { useSettings, useContent } from "@/lib/use-settings";
 import { Magnetic } from "@/components/MagneticButton";
+import { ElasticImage } from "@/components/ElasticImage";
 
 
 function LogoItem({ c }: { c: any }) {
   const img = (
-    <img
+    <ElasticImage
       src={c.logo_url}
       alt={c.name}
       width={180}
@@ -32,7 +33,7 @@ function LogoItem({ c }: { c: any }) {
   return (
     <div className="logo-item flex h-16 w-[180px] shrink-0 items-center justify-center md:h-20 md:w-[220px]">
       {c.url ? (
-        <a href={c.url} target="_blank" rel="noreferrer" className="block h-full w-full">
+        <a href={c.url} target="_blank" rel="noreferrer" className="elastic-press-soft block h-full w-full">
           {img}
         </a>
       ) : (
@@ -188,10 +189,10 @@ function HomePage() {
               <div className="hidden items-center gap-5 text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--cream)]/90 md:flex">
                 <span>{t("home.hero_top_label")}</span>
                 <span className="h-px w-20 bg-[var(--cream)]/40" />
-                <Link to="/services" className="hover:opacity-70">
+                <Link to="/services" className="elastic-press hover:opacity-70">
                   {t("home.hero_nav_a")}
                 </Link>
-                <Link to="/work" className="hover:opacity-70">
+                <Link to="/work" className="elastic-press hover:opacity-70">
                   {t("home.hero_nav_b")}
                 </Link>
               </div>
@@ -280,7 +281,7 @@ function HomePage() {
               <Magnetic strength={0.12} radius={80}>
                 <Link
                   to="/contact"
-                  className="inline-block rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-105"
+                  className="elastic-press inline-block rounded-full bg-[var(--ink)] px-5 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
                 >
                   {t("home.capture_now")}
                 </Link>
@@ -302,7 +303,7 @@ function HomePage() {
                       <ImgLoader />
                     ) : src ? (
                       <>
-                        <img
+                        <ElasticImage
                           src={src}
                           alt=""
                           loading="lazy"
@@ -346,7 +347,7 @@ function HomePage() {
                     href={href}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid size-8 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)] transition-transform hover:scale-110"
+                    className="elastic-press grid size-8 place-items-center rounded-full bg-[var(--ink)] text-[var(--cream)]"
                   >
                     <Icon className="size-3.5" />
                   </a>
@@ -389,7 +390,7 @@ function HomePage() {
             </h2>
             <Link
               to="/work"
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream story-link"
+              className="elastic-press inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:text-cream story-link"
             >
               {t("home.preview_cta")} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
@@ -419,10 +420,13 @@ function HomePage() {
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      transition={{
+                        opacity: { duration: 0.25, delay: i * 0.06 },
+                        y: { type: "spring", stiffness: 140, damping: 20, delay: i * 0.06 },
+                      }}
                       className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-[var(--surface-deep)]"
                     >
-                      <img
+                      <ElasticImage
                         src={w.image_url}
                         alt={title}
                         loading="lazy"
@@ -442,7 +446,7 @@ function HomePage() {
                     </motion.div>
                   );
                   return w.external_url ? (
-                    <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer">{card}</a>
+                    <a key={w.id} href={w.external_url} target="_blank" rel="noreferrer" className="elastic-press-soft">{card}</a>
                   ) : hasLetter ? (
                     <button key={w.id} type="button" onClick={() => setOpenWork(w)} className="text-right elastic-press-soft">{card}</button>
                   ) : (
@@ -484,9 +488,9 @@ function HomePage() {
                 <button
                   key={speed}
                   onClick={() => setMarqueeSpeed(speed)}
-                  className={`px-3 py-1 text-xs font-bold rounded-sm border transition-colors ${
+                  className={`elastic-press px-3 py-1 text-xs font-bold rounded-sm border transition-colors ${
                     marqueeSpeed === speed
-                      ? "bg-[var(--cinema)] text-[var(--cream)] border-[var(--cinema)]"
+                      ? "is-picked bg-[var(--cinema)] text-[var(--cream)] border-[var(--cinema)]"
                       : "bg-transparent text-[var(--cream)]/60 border-[var(--cream)]/20 hover:border-[var(--cream)]/60 hover:text-[var(--cream)]"
                   }`}
                 >
@@ -534,7 +538,11 @@ function HomePage() {
               initial={{ opacity: 0, y: 20, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+              transition={{
+                opacity: { duration: 0.2 },
+                y: { type: "spring", stiffness: 320, damping: 24 },
+                scale: { type: "spring", stiffness: 320, damping: 24 },
+              }}
               onClick={(e) => e.stopPropagation()}
               dir={isAr ? "rtl" : "ltr"}
               className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm border border-[var(--cream)]/15 bg-[#f3ecdc] text-[#2a1f12] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
@@ -547,7 +555,7 @@ function HomePage() {
                 type="button"
                 onClick={() => setOpenWork(null)}
                 aria-label="close"
-                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
+                className={`elastic-press sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
                 style={{ marginTop: "0.75rem" }}
               >
                 <X className="size-4" />
@@ -589,6 +597,7 @@ function HomePage() {
 function Stat({ number, label }: { number: string; label: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
+  const reduceMotion = useReducedMotion();
 
   // Parse prefix (e.g. "+"), numeric portion, and suffix (e.g. "+", "K")
   const match = number.match(/^(\D*)(\d+)(.*)$/);
@@ -601,6 +610,11 @@ function Stat({ number, label }: { number: string; label: string }) {
 
   useEffect(() => {
     if (!inView || !target) return;
+    if (reduceMotion) {
+      setDisplay(target);
+      setDone(true);
+      return;
+    }
     const controls = animate(0, target, {
       duration: 2,
       ease: "easeOut",
@@ -608,7 +622,7 @@ function Stat({ number, label }: { number: string; label: string }) {
       onComplete: () => setDone(true),
     });
     return () => controls.stop();
-  }, [inView, target]);
+  }, [inView, target, reduceMotion]);
 
   return (
     <motion.div
@@ -620,18 +634,9 @@ function Stat({ number, label }: { number: string; label: string }) {
       className="text-center"
     >
       <div className="font-display text-4xl font-bold text-cinema md:text-5xl tabular-nums relative inline-block">
-        {match ? `${prefix}${display}${suffix}` : number}
-        <AnimatePresence>
-          {done && (
-            <motion.div
-              initial={{ opacity: 0.7, scale: 1, filter: "blur(0px)" }}
-              animate={{ opacity: 0, scale: 2.2, filter: "blur(8px)" }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="absolute inset-0 z-[-1] rounded-full bg-cinema mix-blend-screen"
-            />
-          )}
-        </AnimatePresence>
+        <span key={done ? "done" : "counting"} className={done ? "elastic-bump" : undefined}>
+          {match ? `${prefix}${display}${suffix}` : number}
+        </span>
       </div>
       <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
         {label}

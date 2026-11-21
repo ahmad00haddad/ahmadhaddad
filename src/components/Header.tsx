@@ -45,7 +45,7 @@ export function Header() {
       >
         <Link
           to="/"
-          className="flex items-center gap-3 text-foreground shrink-0"
+          className="elastic-press-soft flex items-center gap-3 text-foreground shrink-0"
           onClick={() => setOpen(false)}
         >
           {settings.brand.logo_url && (
@@ -99,7 +99,7 @@ export function Header() {
         </AnimatePresence>
 
         <button
-          className="md:hidden shrink-0"
+          className="elastic-press md:hidden shrink-0"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -110,9 +110,14 @@ export function Header() {
       <AnimatePresence>
         {open && (
           <motion.nav
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{
+              opacity: { duration: 0.18 },
+              y: { type: "spring", stiffness: 380, damping: 26 },
+              scale: { type: "spring", stiffness: 380, damping: 26 },
+            }}
             className="absolute left-2 right-2 top-20 flex flex-col gap-1 rounded-sm border border-border bg-[var(--surface-deep)] px-6 py-4 shadow-2xl md:hidden pointer-events-auto"
           >
             {navItems.map((item) => (
@@ -120,7 +125,7 @@ export function Header() {
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-3 text-base text-muted-foreground hover:bg-white/5 hover:text-brass"
+                className="elastic-press-soft rounded-md px-3 py-3 text-base text-muted-foreground hover:bg-white/5 hover:text-brass"
                 activeProps={{ className: "text-brass" }}
                 activeOptions={{ exact: item.to === "/" }}
               >

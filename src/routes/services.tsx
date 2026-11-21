@@ -50,7 +50,7 @@ function ServicesPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="group relative overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-7 transition-all hover:border-cinema/60"
+                  className="elastic-press-soft group relative overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-7 transition-all hover:border-cinema/60"
                 >
                   <div className="grid size-12 place-items-center rounded-sm bg-cinema/15 text-cinema transition-colors group-hover:bg-cinema group-hover:text-cream">
                     <Icon className="size-6" strokeWidth={1.5} />
@@ -71,7 +71,7 @@ function ServicesPage() {
             href="https://haddad-rate-card.lovable.app/"
             target="_blank"
             rel="noreferrer"
-            className="group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-10 transition-transform hover:scale-[1.01]"
+            className="elastic-press-soft group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-10"
           >
             <div className="grain-layer" />
             <div className="relative z-[2] text-[var(--cream)]">
@@ -87,7 +87,7 @@ function ServicesPage() {
             href="https://faiihouse.lovable.app/"
             target="_blank"
             rel="noreferrer"
-            className="group block rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
+            className="elastic-press-soft group block rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
           >
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">Studio</span>
             <h3 className="mt-3 font-arabic text-3xl text-cream">{t("services.company_title")}</h3>
@@ -100,7 +100,7 @@ function ServicesPage() {
             href="https://haddad-rate-card.lovable.app/equipment"
             target="_blank"
             rel="noreferrer"
-            className="group relative block overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
+            className="elastic-press-soft group relative block overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
           >
             <div className="grain-layer" />
             <div className="relative z-[2]">

@@ -100,7 +100,7 @@ function AuthPage() {
             </div>
 
             {error && (
-              <div className="rounded-sm bg-[var(--ink)]/40 px-3 py-2 text-xs text-[var(--cream)]">
+              <div role="alert" className="rounded-sm bg-[var(--ink)]/40 px-3 py-2 text-xs text-[var(--cream)]">
                 {error}
               </div>
             )}
@@ -108,7 +108,7 @@ function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--ink)] px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-[1.02] disabled:opacity-60"
+              className="elastic-press inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--ink)] px-6 py-3 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] disabled:opacity-60"
             >
               <Lock className="size-3.5" />
               {loading ? "..." : "Sign in"}

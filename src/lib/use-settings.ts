@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type Brand = {
@@ -101,6 +101,7 @@ export const DEFAULTS: AllSettings = {
 };
 
 const SETTINGS_CACHE_KEY = "site_settings_cache_v1";
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 function readSettingsCache(): AllSettings {
   if (typeof window === "undefined") return DEFAULTS;
@@ -124,8 +125,13 @@ function writeSettingsCache(raw: Record<string, any>) {
 }
 
 export function useSettings(enableRealtime: boolean = false) {
-  const [settings, setSettings] = useState<AllSettings>(() => readSettingsCache());
+  // Match SSR during hydration, then restore the cache before the browser paints.
+  const [settings, setSettings] = useState<AllSettings>(DEFAULTS);
   const [loading, setLoading] = useState(true);
+
+  useIsomorphicLayoutEffect(() => {
+    setSettings(readSettingsCache());
+  }, []);
 
   const load = useCallback(async () => {
     const { data } = await supabase.from("site_settings").select("key,value");
@@ -181,8 +187,12 @@ export function useContent<T = any>(
     } catch { return []; }
   };
 
-  const [rows, setRows] = useState<T[]>(() => readCache());
+  const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useIsomorphicLayoutEffect(() => {
+    setRows(readCache());
+  }, [cacheKey]);
 
   const load = useCallback(async () => {
     let q = supabase.from(table).select("*").order("sort_order").order("created_at", { ascending: false });

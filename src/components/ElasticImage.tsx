@@ -5,7 +5,7 @@ type ElasticImageProps = ImgHTMLAttributes<HTMLImageElement>;
 
 /** Replays a tiny settle only when a new image source finishes loading. */
 export function ElasticImage({ className, onLoad, src, ...props }: ElasticImageProps) {
-  const [loadedSrc, setLoadedSrc] = useState<ImgHTMLAttributes<HTMLImageElement>["src"]>(null);
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
   const loaded = loadedSrc === src;
 
   return (

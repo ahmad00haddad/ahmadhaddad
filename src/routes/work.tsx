@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Instagram, Youtube, ExternalLink, Play, X, Camera } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { Magnetic } from "@/components/MagneticButton";
+import { ElasticImage } from "@/components/ElasticImage";
 import { useContent } from "@/lib/use-settings";
 import { supabase } from "@/integrations/supabase/client";
 import filmSet from "@/assets/film-set.jpg";
@@ -130,9 +131,9 @@ function WorkPage() {
               <button
                 onClick={() => setTab(tb.key)}
                 className={
-                  "rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors " +
+                  "elastic-press rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors " +
                   (tab === tb.key
-                    ? "bg-cinema text-cream"
+                    ? "is-picked bg-cinema text-cream"
                     : "border border-cream/15 text-muted-foreground hover:text-cream")
                 }
               >
@@ -146,12 +147,16 @@ function WorkPage() {
           key={tab}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{
+            opacity: { duration: 0.2 },
+            y: { type: "spring", stiffness: 380, damping: 26 },
+          }}
           className="grid gap-4 grid-cols-2 md:grid-cols-4 auto-rows-[250px] md:auto-rows-[340px]"
         >
           {items.map((w, i) => {
             const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
             const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
+            const interactive = Boolean(w.external_url || w.video_url || hasLetter);
             
             // Bento Box Pattern exactly matching the screenshot
             // Pattern repeats every 7 items:
@@ -178,9 +183,9 @@ function WorkPage() {
             return (
               <Wrapper
                 key={w.id}
-                className={`group relative overflow-hidden rounded-sm text-right ${bentoClass}`}
+                className={`group relative overflow-hidden rounded-sm text-right ${interactive ? "elastic-press-soft" : ""} ${bentoClass}`}
               >
-                <img
+                <ElasticImage
                   src={w.image_url}
                   alt={w.title}
                   loading="lazy"
@@ -231,7 +236,7 @@ function WorkPage() {
                           localStorage.setItem("hasSeenEqHint", "true");
                         }
                       }}
-                      className="grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm transition-all hover:bg-cinema hover:text-cream hover:border-cinema relative"
+                      className="elastic-press relative grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm hover:bg-cinema hover:text-cream hover:border-cinema"
                       title={isAr ? "عرض المعدات" : "View gear"}
                     >
                       <Camera className="size-3.5" />
@@ -245,7 +250,10 @@ function WorkPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                      transition={{
+                        opacity: { duration: 0.2 },
+                        y: { type: "spring", stiffness: 320, damping: 22 },
+                      }}
                       onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
                       className="absolute inset-x-0 bottom-0 z-[4] shadow-2xl"
                     >
@@ -264,7 +272,7 @@ function WorkPage() {
                                     const el = document.getElementById(`eq-scroll-${w.id}`);
                                     if (el) el.scrollBy({ left: isAr ? 150 : -150, behavior: 'smooth' });
                                   }}
-                                  className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
+                                  className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
                                 >
                                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
                                 </button>
@@ -275,7 +283,7 @@ function WorkPage() {
                                     const el = document.getElementById(`eq-scroll-${w.id}`);
                                     if (el) el.scrollBy({ left: isAr ? -150 : 150, behavior: 'smooth' });
                                   }}
-                                  className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
+                                  className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
                                 >
                                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                                 </button>
@@ -284,7 +292,7 @@ function WorkPage() {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
-                              className="grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
+                              className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
                             >
                               <X className="size-3" />
                             </button>
@@ -318,7 +326,7 @@ function WorkPage() {
                           {equipment[w.id].map((eq) => (
                             <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
                               <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-darken" style={{ mixBlendMode: 'darken' }}>
-                                <img
+                                <ElasticImage
                                   src={eq.image_url}
                                   alt={eq.name}
                                   draggable={false}
@@ -348,7 +356,7 @@ function WorkPage() {
               href="https://www.behance.net/ahmad00haddad"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)] transition-transform hover:scale-[1.03]"
+              className="elastic-press inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
             >
               {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
               <ExternalLink className="size-3.5" />
@@ -364,7 +372,7 @@ function WorkPage() {
               href="https://www.youtube.com/@ahmad00haddad"
               target="_blank"
               rel="noreferrer"
-              className="group block rounded-sm border border-cream/10 bg-[var(--surface)] p-8 transition-all hover:border-cinema/60"
+              className="elastic-press-soft group block rounded-sm border border-cream/10 bg-[var(--surface)] p-8 transition-all hover:border-cinema/60"
             >
               <div className="flex items-center gap-3 text-cinema">
                 <Youtube className="size-7" />
@@ -386,7 +394,7 @@ function WorkPage() {
               href="https://www.instagram.com/ahmad00haddad/"
               target="_blank"
               rel="noreferrer"
-              className="group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-8 transition-transform hover:scale-[1.01]"
+              className="elastic-press-soft group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-8"
             >
               <div className="grain-layer" />
               <div className="relative z-[2] text-[var(--cream)]">
@@ -436,7 +444,7 @@ function WorkPage() {
                 type="button"
                 onClick={() => setOpenWork(null)}
                 aria-label="close"
-                className={`sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
+                className={`elastic-press sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
                 style={{ marginTop: "0.75rem" }}
               >
                 <X className="size-4" />
