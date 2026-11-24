@@ -402,15 +402,6 @@ function WorkPage() {
                   )}
                 </AnimatePresence>
               </Wrapper>
-              <button
-                type="button"
-                onClick={() => shareWork(w)}
-                className="elastic-press absolute bottom-3 left-3 z-[3] grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm hover:bg-cinema hover:text-cream hover:border-cinema"
-                aria-label={isAr ? "مشاركة" : "Share"}
-                title={isAr ? "مشاركة" : "Share"}
-              >
-                {copiedId === w.id ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
-              </button>
               </div>
             );
           })}
@@ -542,9 +533,9 @@ function WorkPage() {
                   <button
                     type="button"
                     onClick={() => shareWork(openWork)}
-                    className="elastic-press mt-5 inline-flex items-center gap-2 rounded-full border border-[#7a5a30]/40 px-4 py-2 text-xs text-[#7a5a30] hover:bg-[#7a5a30]/10"
+                    className="elastic-press mt-6 inline-flex items-center gap-1 text-[9px] text-[#7a5a30]/50 hover:text-[#7a5a30]"
                   >
-                    {copiedId === openWork.id ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
+                    {copiedId === openWork.id ? <Check className="size-2.5" /> : <Share2 className="size-2.5" />}
                     {copiedId === openWork.id ? (isAr ? "تم نسخ الرابط" : "Link copied") : isAr ? "شارك هذه الرسالة" : "Share this letter"}
                   </button>
                 </div>
