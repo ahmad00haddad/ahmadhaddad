@@ -72,6 +72,58 @@ function Table({ title, rows }: { title: string; rows: [string, number][] }) {
   );
 }
 
+const EVENT_LABEL: Record<string, string> = {
+  letter_open: "قرأ رسالة",
+  share: "شارك",
+  shared_link_visit: "دخل من رابط مشارك إلى",
+};
+
+function Contacts({ rows }: { rows: Ev[] }) {
+  const submits = rows.filter((e) => e.event === "contact_submit" && e.visitor_id);
+  if (submits.length === 0) {
+    return (
+      <section className="rounded-sm border border-[var(--cream)]/15 bg-[var(--cream)]/5 p-5">
+        <h2 className="mb-4 text-sm font-bold text-[var(--cream)]">من تواصل معك وماذا شاهد قبل ذلك</h2>
+        <p className="text-xs text-[var(--cream)]/50">لا توجد رسائل تواصل بعد.</p>
+      </section>
+    );
+  }
+  return (
+    <section className="rounded-sm border border-[var(--cream)]/15 bg-[var(--cream)]/5 p-5">
+      <h2 className="mb-4 text-sm font-bold text-[var(--cream)]">من تواصل معك وماذا شاهد قبل ذلك</h2>
+      <ul className="space-y-4">
+        {submits.map((sub) => {
+          const journey = rows
+            .filter((e) => e.visitor_id === sub.visitor_id && e.created_at <= sub.created_at)
+            .sort((a, b) => a.created_at.localeCompare(b.created_at));
+          const source = journey.find((e) => e.referrer)?.referrer;
+          const pages = [...new Set(journey.filter((e) => e.event === "page_view").map((e) => (e.path ? PAGE_NAMES[e.path] ?? e.path : "")))].filter(Boolean);
+          const actions = journey.filter((e) => EVENT_LABEL[e.event] && e.title);
+          return (
+            <li key={sub.created_at + sub.visitor_id} className="rounded-sm bg-[var(--cream)]/5 p-4 text-xs text-[var(--cream)]">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="text-base font-bold">{sub.title || "بدون اسم"}</span>
+                <span className="text-[var(--cream)]/50">{new Date(sub.created_at).toLocaleString("ar")}</span>
+              </div>
+              <div className="mt-2 space-y-1 text-[var(--cream)]/80">
+                <div>دخل من: {source === "direct" ? "رابط مباشر" : source || "غير معروف"} · {sub.device === "mobile" ? "موبايل" : "كمبيوتر"}</div>
+                <div>الصفحات: {pages.join(" ← ") || "—"}</div>
+                {actions.length > 0 && (
+                  <div>
+                    {actions.map((a, i) => (
+                      <div key={i}>• {EVENT_LABEL[a.event]}: {a.title}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 function StatsPage() {
   const [days, setDays] = useState(30);
   const [rows, setRows] = useState<Ev[] | null>(null);
@@ -168,6 +220,7 @@ function StatsPage() {
               <Card label="مرات المشاركة" value={stats.shares} />
               <Card label="دخول من رابط مشارك" value={stats.arrivals} />
             </div>
+            <Contacts rows={rows} />
             <div className="grid gap-4 md:grid-cols-2">
               <Table title="الرسائل الأكثر قراءة" rows={stats.letters} />
               <Table title="الأعمال الأكثر مشاركة" rows={stats.shared} />

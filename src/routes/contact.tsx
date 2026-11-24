@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, Instagram, Linkedin, Youtube, Facebook, Send } fro
 import { PageHero } from "@/components/PageHero";
 import { Magnetic } from "@/components/MagneticButton";
 import { useSettings } from "@/lib/use-settings";
+import { track } from "@/lib/track";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -35,6 +36,7 @@ function ContactPage() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    track("contact_submit", { title: form.name.trim().slice(0, 100) });
     const subject = encodeURIComponent(`رسالة من ${form.name}`);
     const body = encodeURIComponent(
       `${form.message}\n\n— ${form.name} (${form.email})`,
