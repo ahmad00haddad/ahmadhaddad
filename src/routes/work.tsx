@@ -1,14 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Instagram, Youtube, ExternalLink, Play, X, Camera, Loader2 } from "lucide-react";
+import { Instagram, Youtube, ExternalLink, Play, X, Camera, Loader2, Share2, Check } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { ElasticImage } from "@/components/ElasticImage";
 import { useContent } from "@/lib/use-settings";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/work")({
+  validateSearch: (search: Record<string, unknown>): { work?: string } => ({
+    work: typeof search.work === "string" && search.work ? search.work : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "الأعمال — أحمد حدّاد" },
@@ -57,6 +60,55 @@ function WorkPage() {
   const [gearOpen, setGearOpen] = useState<string | null>(null);
   const [equipment, setEquipment] = useState<Record<string, Equipment[]>>({});
   const { rows: works, loading } = useContent<Work>("works");
+  const { work: sharedId } = Route.useSearch();
+  const navigate = useNavigate({ from: "/work" });
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const isLetter = (work: Work) => {
+    const d = isAr ? work.description || "" : work.description_en || work.description || "";
+    return !work.external_url && !work.video_url && d.trim().length > 80;
+  };
+
+  const openLetter = (work: Work | null) => {
+    setOpenWork(work);
+    navigate({ search: work ? { work: work.id } : {}, replace: true });
+  };
+
+  const shareWork = async (work: Work) => {
+    const url = `${window.location.origin}/work?work=${encodeURIComponent(work.id)}`;
+    const title = isAr ? work.title : work.title_en || work.title;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+    } catch {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(work.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      window.prompt(isAr ? "انسخ الرابط" : "Copy link", url);
+    }
+  };
+
+  // Deep link: ?work=<id> -> switch tab, open the letter or scroll to the work
+  useEffect(() => {
+    if (!sharedId || loading) return;
+    const target = works.find((w) => w.id === sharedId);
+    if (!target) return;
+    setTab(target.category as Tab);
+    if (isLetter(target)) {
+      setOpenWork(target);
+    } else {
+      setTimeout(() => {
+        document.getElementById(`work-${target.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sharedId, loading, works]);
 
   useEffect(() => {
     supabase.from("work_equipment").select("*").then(({ data }) => {
@@ -166,14 +218,23 @@ function WorkPage() {
               );
 
               return (
-                <article key={work.id} className={`group relative overflow-hidden rounded-sm bg-surface-deep ${bentoClass}`}>
+                <article key={work.id} id={`work-${work.id}`} className={`group relative overflow-hidden rounded-sm bg-surface-deep ${bentoClass}`}>
                   {externalUrl ? (
                     <a href={externalUrl} target="_blank" rel="noreferrer" className="block size-full" aria-label={title}>{content}</a>
                   ) : hasLetter ? (
-                    <button type="button" onClick={() => setOpenWork(work)} className="block size-full text-start" aria-label={`${isAr ? "اقرأ رسالة" : "Read letter"}: ${title}`}>{content}</button>
+                    <button type="button" onClick={() => openLetter(work)} className="block size-full text-start" aria-label={`${isAr ? "اقرأ رسالة" : "Read letter"}: ${title}`}>{content}</button>
                   ) : (
                     <div className="size-full">{content}</div>
                   )}
+
+                  <button
+                    type="button"
+                    onClick={() => shareWork(work)}
+                    className="absolute bottom-4 end-4 z-[3] grid size-9 place-items-center rounded-sm border border-cream/25 bg-ink/80 text-cream transition-colors duration-200 hover:bg-cinema"
+                    aria-label={isAr ? `شارك ${title}` : `Share ${title}`}
+                  >
+                    {copiedId === work.id ? <Check className="size-4" /> : <Share2 className="size-4" />}
+                  </button>
 
                   {equipment[work.id] && equipment[work.id].length > 0 && (
                     <button
@@ -280,7 +341,7 @@ function WorkPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            onClick={() => setOpenWork(null)}
+            onClick={() => openLetter(null)}
             role="dialog"
             aria-modal="true"
             aria-label={isAr ? openWork.title : openWork.title_en || openWork.title}
@@ -297,7 +358,7 @@ function WorkPage() {
             >
               <button
                 type="button"
-                onClick={() => setOpenWork(null)}
+                onClick={() => openLetter(null)}
                 aria-label={isAr ? "إغلاق" : "Close"}
                 className={`sticky top-4 z-[5] mt-4 grid size-9 place-items-center rounded-sm bg-paper-foreground/10 hover:bg-paper-foreground/20 ${isAr ? "float-left ml-4" : "float-right mr-4"}`}
               >
@@ -314,6 +375,14 @@ function WorkPage() {
                   <p className="mt-10 border-t border-paper-foreground/20 pt-4 text-sm text-paper-foreground/70">
                     {isAr ? "أحمد حدّاد" : "Ahmad Haddad"}
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => shareWork(openWork)}
+                    className="mt-4 inline-flex items-center gap-2 rounded-sm border border-paper-foreground/25 px-4 py-2 text-sm hover:bg-paper-foreground/10"
+                  >
+                    {copiedId === openWork.id ? <Check className="size-4" /> : <Share2 className="size-4" />}
+                    {copiedId === openWork.id ? (isAr ? "تم نسخ الرابط" : "Link copied") : isAr ? "شارك هذه الرسالة" : "Share this letter"}
+                  </button>
                 </div>
               </div>
             </motion.div>
