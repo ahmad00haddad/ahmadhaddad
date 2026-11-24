@@ -1,76 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { motion, useInView, animate, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
-import { Download, ExternalLink, Loader2, FileText, Film } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import { Download, ExternalLink, Loader2, FileText } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { ElasticImage } from "@/components/ElasticImage";
 import { useSettings } from "@/lib/use-settings";
 import type { ReactNode } from "react";
 
-const TYPING_SPEED = 0.015; // seconds per character
-
-function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const reduceMotion = useReducedMotion();
-  const [displayedText, setDisplayedText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    if (!isInView || !text) return;
-    if (reduceMotion) {
-      setDisplayedText(text);
-      setIsTyping(false);
-      return;
-    }
-    setIsTyping(true);
-    const duration = text.length * TYPING_SPEED;
-    const controls = animate(0, text.length, {
-      duration,
-      delay,
-      ease: "linear",
-      onUpdate: (latest) => {
-        setDisplayedText(text.substring(0, Math.floor(latest)));
-      },
-      onComplete: () => {
-        setIsTyping(false);
-      },
-    });
-    return controls.stop;
-  }, [isInView, text, delay, reduceMotion]);
-
-  return (
-    <span ref={ref} className="relative block">
-      <span className="opacity-0 pointer-events-none select-none" aria-hidden="true">{text}</span>
-      <span className="absolute inset-0">
-        {displayedText}
-        {isTyping && <span className="animate-pulse inline-block w-1.5 h-[0.9em] bg-[var(--cinema)] align-middle ml-1" />}
-      </span>
-    </span>
-  );
-}
-
-function TypewriterBlock({ paras, className = "" }: { paras: string[], className?: string }) {
-  return (
-    <div className={`space-y-4 ${className}`}>
-      {paras.map((p, i) => {
-        const prevLength = paras.slice(0, i).reduce((sum, t) => sum + t.length, 0);
-        const delay = prevLength * TYPING_SPEED;
-        return (
-          <p key={i} className="whitespace-pre-line">
-            <TypewriterText text={p} delay={delay} />
-          </p>
-        );
-      })}
-    </div>
-  );
-}
-
 function ImgLoader() {
   return (
-    <div className="grid size-full place-items-center bg-[var(--ink)]/40">
-      <Loader2 className="size-5 animate-spin text-[var(--cream)]/60" />
+    <div className="grid size-full place-items-center bg-ink/40">
+      <Loader2 className="size-5 animate-spin text-cream/60" aria-label="Loading" />
     </div>
   );
 }
@@ -88,114 +29,62 @@ function FilmFrame({
   className?: string;
   plain?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.4 });
-
   return (
-    <div ref={ref} className={`relative ${ratio} overflow-hidden rounded-[2px] bg-[var(--ink)] ${className}`}>
-      {!plain && (
-        <>
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[5] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-            ))}
-          </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] flex h-3 items-center justify-between gap-1 bg-[#0a0908]/90 px-1.5">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <span key={i} className="h-1.5 w-2 rounded-[1px] bg-[var(--cream)]/80" />
-            ))}
-          </div>
-        </>
-      )}
+    <div className={`relative ${ratio} overflow-hidden rounded-sm bg-surface-deep ${className}`}>
       {loading || !src ? (
         <ImgLoader />
       ) : (
-        <>
-          <motion.img
-            src={src}
-            alt=""
-            className="size-full object-cover"
-            loading="lazy"
-            initial={{ filter: "brightness(0) contrast(1.5) saturate(0) sepia(0)" }}
-            animate={{ 
-              filter: isInView 
-                ? (plain ? "brightness(1) contrast(1) saturate(1) sepia(0)" : "brightness(1) contrast(1.05) saturate(0.85) sepia(0.35)")
-                : "brightness(0) contrast(1.5) saturate(0) sepia(0)"
-            }}
-            transition={{ duration: 4, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
-          />
-          {/* Chemical wash fade effect */}
-          <motion.div
-            initial={{ opacity: 1 }}
-            animate={{ opacity: isInView ? 0 : 1 }}
-            transition={{ duration: 3, ease: "easeOut", delay: 0.2 }}
-            className="pointer-events-none absolute inset-0 z-[4] bg-[#0a0908] mix-blend-color"
-          />
-        </>
-      )}
-      <div className="grain-layer z-[6]" style={{ opacity: plain ? 0.25 : 0.45 }} />
-      {!plain && (
-        <div
-          className="pointer-events-none absolute inset-0 z-[7]"
-          style={{ boxShadow: "inset 0 0 80px 20px rgba(10,9,8,0.55)" }}
+        <img
+          src={src}
+          alt=""
+          className="size-full object-cover"
+          loading="lazy"
+          style={{ filter: plain ? "none" : "saturate(0.9) sepia(0.16)" }}
         />
       )}
+      <div className="grain-layer-soft" style={{ opacity: plain ? 0.16 : 0.28 }} />
+    </div>
+  );
+}
+
+function Paragraphs({ paragraphs, className = "" }: { paragraphs: string[]; className?: string }) {
+  return (
+    <div className={`space-y-4 ${className}`}>
+      {paragraphs.map((paragraph, index) => (
+        <p key={index} className="whitespace-pre-line">{paragraph}</p>
+      ))}
     </div>
   );
 }
 
 function Chapter({
   num,
-  label,
   title,
-  paras,
+  paragraphs,
   reverse,
-  imageSlot,
+  image,
 }: {
   num: string;
-  label: string;
   title: string;
-  paras: string[];
+  paragraphs: string[];
   reverse?: boolean;
-  imageSlot: ReactNode;
+  image: ReactNode;
 }) {
   return (
-    <section className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{
-          opacity: { duration: 0.25 },
-          y: { type: "spring", stiffness: 110, damping: 19 },
-        }}
-        className={reverse ? "md:order-2" : ""}
-      >
-        <div className="flex items-baseline gap-3 text-cinema">
-          <span className="font-display text-5xl italic md:text-6xl">{num}</span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.35em]">— {label}</span>
-        </div>
-        <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title}</h2>
-        <TypewriterBlock paras={paras} className="mt-5 text-[15px] leading-loose text-muted-foreground" />
-        <div className="mt-6 flex items-center gap-2 text-cream/30">
-          <span className="h-px w-12 bg-current" />
-          <Film className="size-3.5" />
-          <span className="h-px w-24 bg-current" />
-        </div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{
-          opacity: { duration: 0.25 },
-          scale: { type: "spring", stiffness: 140, damping: 20 },
-        }}
-        className={reverse ? "md:order-1" : ""}
-      >
-        {imageSlot}
-      </motion.div>
-    </section>
+    <motion.section
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.3 }}
+      className="grid items-center gap-8 md:grid-cols-2 md:gap-12"
+    >
+      <div className={reverse ? "md:order-2" : ""}>
+        <span className="font-display text-4xl text-cinema">{num}</span>
+        <h2 className="mt-4 text-3xl leading-tight text-cream md:text-4xl">{title}</h2>
+        <Paragraphs paragraphs={paragraphs} className="mt-6 text-base leading-8 text-muted-foreground" />
+      </div>
+      <div className={reverse ? "md:order-1" : ""}>{image}</div>
+    </motion.section>
   );
 }
 
@@ -203,9 +92,14 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "نبذة عني — أحمد حدّاد" },
-      { name: "description", content: "رحلة أحمد حدّاد في عالم التصوير والسينما — من 2014 إلى اليوم." },
+      {
+        name: "description",
+        content: "دراسة أحمد حدّاد، بدايته في التصوير، واكتشافه للسينما وأسلوب عمله مع الفريق.",
+      },
       { property: "og:title", content: "نبذة عن أحمد حدّاد" },
-      { property: "og:description", content: "مصور سينمائي وصانع أفلام من الأردن." },
+      { property: "og:description", content: "مسيرة مصور سينمائي مستقل من الأردن، وطريقة عمله ورؤيته." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "https://ahmadhaddad.lovable.app/about" },
     ],
     links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/about" }],
@@ -217,178 +111,118 @@ function AboutPage() {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
   const { settings, loading: settingsLoading } = useSettings();
-  const a = settings.about;
+  const about = settings.about;
   const [cvMenuOpen, setCvMenuOpen] = useState(false);
 
-  const splitParas = (s?: string) => (s ? s.split(/\n\s*\n/).filter(Boolean) : []);
-
-  const title1 = (isAr ? a.title_ar : a.title_en) || t("about.title");
-  const paras1 = splitParas(isAr ? a.body_ar : a.body_en);
-  const title2 = (isAr ? a.title2_ar : a.title2_en) || t("about.title2");
-  const paras2 = splitParas(isAr ? a.body2_ar : a.body2_en);
-  const title3 = (isAr ? a.title3_ar : a.title3_en) || "اكتشافي لعالم السينما";
-  const paras3 = splitParas(isAr ? a.body3_ar : a.body3_en);
-  const title4 = (isAr ? a.title4_ar : a.title4_en) || "رؤيتي وفلسفتي";
-  const paras4 = splitParas(isAr ? a.body4_ar : a.body4_en);
-
-  const img1 = a.image1_url;
-  const img2 = a.image2_url;
-  const img3 = a.image3_url;
-  // Language-specific CVs shipped in /public/cv (replaces the old admin-uploaded cv_url / asset).
+  const splitParas = (text?: string) => (text ? text.split(/\n\s*\n/).filter(Boolean) : []);
+  const title1 = (isAr ? about.title_ar : about.title_en) || t("about.title");
+  const paragraphs1 = splitParas(isAr ? about.body_ar : about.body_en);
+  const title2 = (isAr ? about.title2_ar : about.title2_en) || t("about.title2");
+  const paragraphs2 = splitParas(isAr ? about.body2_ar : about.body2_en);
+  const title3 = (isAr ? about.title3_ar : about.title3_en) || (isAr ? "اكتشافي لعالم السينما" : "Discovering cinema");
+  const paragraphs3 = splitParas(isAr ? about.body3_ar : about.body3_en);
+  const title4 = (isAr ? about.title4_ar : about.title4_en) || (isAr ? "رؤيتي وطريقة عملي" : "My approach");
+  const paragraphs4 = splitParas(isAr ? about.body4_ar : about.body4_en);
   const cvUrl = isAr ? "/cv/Ahmad_Haddad_CV_AR.pdf" : "/cv/Ahmad_Haddad_CV_EN.pdf";
-  const cvTitle = (isAr ? a.cv_title_ar : a.cv_title_en) || t("about.cv_title");
-  const cvSub = (isAr ? a.cv_sub_ar : a.cv_sub_en) || t("about.cv_sub");
-  const studioName = a.studio_name || "Faii House";
-  const studioUrl = a.studio_url || "https://faiihouse.lovable.app/";
-  const studioDesc = (isAr ? a.studio_desc_ar : a.studio_desc_en) || "";
+  const cvTitle = (isAr ? about.cv_title_ar : about.cv_title_en) || t("about.cv_title");
+  const cvSub = (isAr ? about.cv_sub_ar : about.cv_sub_en) || t("about.cv_sub");
+  const studioName = about.studio_name || "Faii House";
+  const studioUrl = about.studio_url || "https://faiihouse.lovable.app/";
+  const studioDesc = (isAr ? about.studio_desc_ar : about.studio_desc_en) || "";
 
   return (
     <>
       <PageHero
-        kicker="Ahmad · Cinematographer"
-        title={isAr ? "رحلتي خلف العدسة" : "My Journey Behind the Lens"}
-        subtitle={isAr ? "أربعة فصول من الشغف، الدراسة، السينما والرؤية — من 2014 إلى اليوم." : "Four chapters of passion, study, cinema and vision — from 2014 to today."}
+        title={isAr ? "رحلتي خلف العدسة" : "My journey behind the lens"}
+        subtitle={
+          isAr
+            ? "من دراسة هندسة الحاسوب إلى التصوير السينمائي، ومن العمل الفردي إلى قيادة فريق عندما يتطلبه المشروع."
+            : "From computer engineering to cinematography, and from solo shoots to leading a crew when a project requires one."
+        }
       />
 
-      <div dir="rtl" className="relative bg-[var(--ink)]">
-        {/* faint vertical film-strip rail decoration */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-2 hidden w-3 md:block"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(to bottom, var(--cream) 0 6px, transparent 6px 18px)",
-            opacity: 0.06,
-          }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-2 hidden w-3 md:block"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(to bottom, var(--cream) 0 6px, transparent 6px 18px)",
-            opacity: 0.06,
-          }}
-        />
-
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-24 space-y-24 md:space-y-32">
+      <div dir={isAr ? "rtl" : "ltr"} className="bg-ink">
+        <div className="mx-auto max-w-6xl space-y-20 px-6 py-16 md:space-y-24 md:px-8 md:py-24">
           <Chapter
             num="01"
-            label={isAr ? "البداية" : "The Beginning"}
             title={title1}
-            paras={paras1}
-            imageSlot={<FilmFrame src={img1} loading={settingsLoading} ratio="aspect-[4/5]" />}
+            paragraphs={paragraphs1}
+            image={<FilmFrame src={about.image1_url} loading={settingsLoading} ratio="aspect-[4/5]" />}
           />
-
           <Chapter
             num="02"
-            label={isAr ? "الدراسة" : "Studies"}
             title={title2}
-            paras={paras2}
+            paragraphs={paragraphs2}
             reverse
-            imageSlot={<FilmFrame src={img2} loading={settingsLoading} ratio="aspect-[4/5]" plain />}
+            image={<FilmFrame src={about.image2_url} loading={settingsLoading} ratio="aspect-[4/5]" plain />}
           />
 
-          {/* Cinema — text-only chapter, no photo (image3 belongs to the team/studio block) */}
           <motion.section
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto max-w-3xl text-center"
+            transition={{ duration: 0.3 }}
+            className="max-w-3xl border-s-2 border-cinema ps-6 md:ps-8"
           >
-            <div className="mb-3 flex items-center justify-center gap-3 text-cream/40">
-              <span className="h-px w-12 bg-current" />
-              <Film className="size-3.5" />
-              <span className="h-px w-12 bg-current" />
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-cream/60">— 03 / {isAr ? "السينما" : "Cinema"}</span>
-            <h2 className="mt-3 font-arabic text-3xl leading-tight text-cream md:text-4xl">{title3}</h2>
-            <TypewriterBlock paras={paras3} className="mt-5 text-[15px] leading-loose text-muted-foreground text-center" />
+            <span className="font-display text-4xl text-cinema">03</span>
+            <h2 className="mt-4 text-3xl leading-tight text-cream md:text-4xl">{title3}</h2>
+            <Paragraphs paragraphs={paragraphs3} className="mt-6 text-base leading-8 text-muted-foreground" />
           </motion.section>
 
-
-          {/* Vision pull-quote, full width on cinema red */}
-          <motion.section
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7 }}
-            className="relative overflow-hidden rounded-sm bg-[var(--cinema)] px-6 py-14 md:px-14 md:py-20"
-          >
-            <div className="grain-layer" style={{ opacity: 0.5 }} />
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{ boxShadow: "inset 0 0 120px 30px rgba(10,9,8,0.45)" }}
-            />
-            <div className="relative z-[2] mx-auto max-w-3xl text-center text-[var(--cream)]">
-              <div className="mb-4 flex items-center justify-center gap-2 opacity-80">
-                <span className="h-px w-10 bg-current" />
-                <span className="font-display text-5xl italic">04</span>
-                <span className="h-px w-10 bg-current" />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-80">— {isAr ? "رؤيتي" : "Vision"}</span>
-              <h2 className="mt-3 font-arabic text-3xl leading-tight md:text-5xl">{title4}</h2>
-              <TypewriterBlock paras={paras4} className="mx-auto mt-6 max-w-2xl text-[15px] leading-loose opacity-95 md:text-base text-center" />
+          <section className="relative overflow-hidden rounded-sm bg-cinema px-6 py-12 text-cream md:px-12 md:py-16">
+            <div className="grain-layer-soft" style={{ opacity: 0.24 }} />
+            <div className="relative z-[2] max-w-3xl">
+              <span className="font-display text-4xl">04</span>
+              <h2 className="mt-4 text-3xl leading-tight md:text-5xl">{title4}</h2>
+              <Paragraphs paragraphs={paragraphs4} className="mt-6 text-base leading-8 text-cream/90" />
             </div>
-          </motion.section>
+          </section>
 
-          {/* CV — compact vintage card */}
-          <motion.section
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ opacity: { duration: 0.25 }, y: { type: "spring", stiffness: 110, damping: 19 } }}
-            className="grid items-center gap-6 rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:grid-cols-[1fr_auto] md:p-10"
-          >
+          <section className="grid items-center gap-8 rounded-sm border border-border bg-surface p-6 md:grid-cols-[1fr_auto] md:p-8">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— {isAr ? "CV / السيرة الذاتية" : "Curriculum Vitae"}</span>
-              <h2 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{cvTitle}</h2>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{cvSub}</p>
-              <div className="relative mt-5 inline-block">
+              <h2 className="text-2xl text-cream md:text-3xl">{cvTitle}</h2>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground">{cvSub}</p>
+              <div className="relative mt-6 inline-block">
                 <button
                   type="button"
-                  onClick={() => setCvMenuOpen((v) => !v)}
+                  onClick={() => setCvMenuOpen((value) => !value)}
                   aria-haspopup="menu"
                   aria-expanded={cvMenuOpen}
-                  className="elastic-press inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
+                  className="inline-flex items-center gap-2 rounded-sm bg-cinema px-5 py-3 text-sm font-semibold text-cream transition-colors duration-200 hover:bg-cinema-deep"
                 >
-                  <Download className="size-3.5" />
+                  <Download className="size-4" />
                   {t("about.cv_download")}
                 </button>
                 <AnimatePresence>
-                {cvMenuOpen && (
-                  <motion.div
-                    role="menu"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ opacity: { duration: 0.15 }, scale: { type: "spring", stiffness: 500, damping: 24 } }}
-                    style={{ transformOrigin: isAr ? "top right" : "top left" }}
-                    className="absolute start-0 z-20 mt-2 min-w-[12rem] overflow-hidden rounded-xl border border-[var(--cream)]/20 bg-[var(--ink)] shadow-xl"
-                  >
-                    <a
-                      role="menuitem"
-                      href="/cv/Ahmad_Haddad_CV_AR.pdf"
-                      download="Ahmad_Haddad_CV_AR.pdf"
-                      onClick={() => setCvMenuOpen(false)}
-                      className="elastic-press-soft flex items-center justify-between gap-4 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
+                  {cvMenuOpen && (
+                    <motion.div
+                      role="menu"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute start-0 z-20 mt-2 min-w-48 overflow-hidden rounded-sm border border-border bg-ink shadow-xl"
                     >
-                      <span className="font-arabic">العربية</span>
-                      <span className="text-[10px] uppercase tracking-widest opacity-70">AR · PDF</span>
-                    </a>
-                    <a
-                      role="menuitem"
-                      href="/cv/Ahmad_Haddad_CV_EN.pdf"
-                      download="Ahmad_Haddad_CV_EN.pdf"
-                      onClick={() => setCvMenuOpen(false)}
-                      className="elastic-press-soft flex items-center justify-between gap-4 border-t border-[var(--cream)]/10 px-4 py-3 text-sm text-[var(--cream)] hover:bg-[var(--cinema)]"
-                    >
-                      <span>English</span>
-                      <span className="text-[10px] uppercase tracking-widest opacity-70">EN · PDF</span>
-                    </a>
-                  </motion.div>
-                )}
+                      <a
+                        role="menuitem"
+                        href="/cv/Ahmad_Haddad_CV_AR.pdf"
+                        download="Ahmad_Haddad_CV_AR.pdf"
+                        onClick={() => setCvMenuOpen(false)}
+                        className="flex items-center justify-between gap-4 px-4 py-3 text-sm text-cream hover:bg-cinema"
+                      >
+                        <span>العربية</span><span className="text-xs opacity-70">PDF</span>
+                      </a>
+                      <a
+                        role="menuitem"
+                        href="/cv/Ahmad_Haddad_CV_EN.pdf"
+                        download="Ahmad_Haddad_CV_EN.pdf"
+                        onClick={() => setCvMenuOpen(false)}
+                        className="flex items-center justify-between gap-4 border-t border-border px-4 py-3 text-sm text-cream hover:bg-cinema"
+                      >
+                        <span>English</span><span className="text-xs opacity-70">PDF</span>
+                      </a>
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
             </div>
@@ -396,64 +230,37 @@ function AboutPage() {
               href={cvUrl}
               target="_blank"
               rel="noreferrer"
-              className="elastic-press-soft group relative block h-44 w-32 shrink-0 overflow-hidden rounded-sm border border-[var(--ink)]/30 bg-[#f3ecdc] md:h-52 md:w-40 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
+              className="group flex h-44 w-36 shrink-0 flex-col items-center justify-center gap-3 rounded-sm border border-paper-foreground/20 bg-paper text-paper-foreground transition-colors duration-200 hover:bg-cream"
+              aria-label={isAr ? "فتح السيرة الذاتية" : "Open CV"}
             >
-              <div className="absolute inset-0 p-3 md:p-4 opacity-60 transition-opacity duration-500 group-hover:opacity-100">
-                <div className="h-1.5 w-1/2 bg-[#2a1f12]/30 rounded-full mb-4" />
-                <div className="space-y-1.5">
-                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
-                  <div className="h-1 w-5/6 bg-[#2a1f12]/15 rounded-full" />
-                  <div className="h-1 w-4/6 bg-[#2a1f12]/15 rounded-full" />
-                </div>
-                <div className="mt-4 space-y-1.5">
-                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
-                  <div className="h-1 w-full bg-[#2a1f12]/15 rounded-full" />
-                  <div className="h-1 w-3/4 bg-[#2a1f12]/15 rounded-full" />
-                </div>
-              </div>
-              <div className="absolute inset-0 grid place-items-center">
-                <div className="flex flex-col items-center gap-1.5 drop-shadow-md">
-                  <FileText className="size-7 text-[var(--cinema)]" />
-                  <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#2a1f12] bg-[#f3ecdc]/80 px-1 rounded">CV.pdf</span>
-                </div>
-              </div>
-              <div className="absolute inset-0 z-[2] bg-[var(--ink)]/0 opacity-0 transition-all duration-300 group-hover:bg-[#2a1f12]/5">
-                <ExternalLink className="size-4 text-[#2a1f12] absolute top-2 right-2" />
-              </div>
+              <FileText className="size-8 text-cinema" />
+              <span className="text-sm font-semibold">CV.pdf</span>
+              <ExternalLink className="size-4 opacity-60" />
             </a>
-          </motion.section>
+          </section>
 
-          {/* Studio / Team — photo of the creative team */}
-          <motion.section
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ opacity: { duration: 0.25 }, y: { type: "spring", stiffness: 110, damping: 19 } }}
-            className="grid gap-6 md:grid-cols-2 md:items-stretch"
-          >
-            <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-[var(--ink)]/40 md:aspect-auto">
-              {settingsLoading || !img3 ? (
+          <section className="grid gap-4 md:grid-cols-2">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-surface-deep md:aspect-auto">
+              {settingsLoading || !about.image3_url ? (
                 <ImgLoader />
               ) : (
-                <ElasticImage src={img3} alt="" className="size-full object-cover" loading="lazy" />
+                <ElasticImage src={about.image3_url} alt={studioName} className="size-full object-cover" loading="lazy" />
               )}
-              <div className="grain-layer" style={{ opacity: 0.25 }} />
+              <div className="grain-layer-soft" style={{ opacity: 0.18 }} />
             </div>
-            <div className="flex flex-col justify-center rounded-sm border border-cream/10 bg-[var(--surface)] p-6 md:p-8">
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">— Studio / {isAr ? "الفريق" : "Team"}</span>
-              <h3 className="mt-2 font-arabic text-2xl text-cream md:text-3xl">{studioName}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{studioDesc}</p>
+            <div className="flex flex-col items-start justify-center rounded-sm border border-border bg-surface p-6 md:p-8">
+              <h3 className="text-2xl text-cream md:text-3xl">{studioName}</h3>
+              <p className="mt-4 text-sm leading-7 text-muted-foreground">{studioDesc}</p>
               <a
                 href={studioUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="elastic-press mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-cinema/60 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-cinema hover:bg-cinema hover:text-cream"
+                className="mt-6 inline-flex items-center gap-2 border-b border-cinema pb-1 text-sm font-semibold text-cinema"
               >
-                {studioUrl.replace(/^https?:\/\//, "")} <ExternalLink className="size-3.5" />
+                {isAr ? "تعرّف على الفريق" : "Meet the team"} <ExternalLink className="size-4" />
               </a>
             </div>
-          </motion.section>
-
+          </section>
         </div>
       </div>
     </>

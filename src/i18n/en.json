@@ -14,7 +14,7 @@
     "hero_nav_b": "Portfolio",
     "hero_title_a": "Frame &",
     "hero_title_b": "Focus",
-    "hero_tagline": "Freelance cinematographer crafting honest, story-driven frames — and leading a full creative team for larger productions.",
+    "hero_tagline": "Freelance cinematographer based in Jordan. I shoot films and commercials, handle color grading, and lead a crew for productions that need one.",
     "hero_big_a": "We capture",
     "hero_big_b": "__the extraordinary",
     "capture_now": "Capture Now",
@@ -29,8 +29,8 @@
     "preview_title": "Selected work",
     "preview_cta": "View all work",
     "trusted_eyebrow": "Trusted by",
-    "trusted_title": "Partners in success",
-    "trusted_sub": "brands have trusted us"
+    "trusted_title": "Clients and collaborators",
+    "trusted_sub": "Brands and production teams I have worked with."
   },
   "about": {
     "title": "My journey",
@@ -46,7 +46,7 @@
   },
   "services": {
     "title": "Services",
-    "subtitle": "Five focused offerings to bring your vision to the screen.",
+    "subtitle": "Film and commercial cinematography, photography, color grading, and editing. Rates and equipment are linked below.",
     "items": {
       "shorts": { "title": "Short film production", "desc": "High-quality short films that bring a focused story to life with intention and craft." },
       "ads": { "title": "Cinematic ads", "desc": "Inventive commercial work that reflects your brand identity and stops the scroll." },
@@ -67,7 +67,7 @@
   },
   "work": {
     "title": "Work",
-    "subtitle": "Whether you need a short or a feature, let me help turn your vision into a striking cinematic experience.",
+    "subtitle": "Films, commercials, and photographs from completed projects. Open a piece to view it or read selected photo letters.",
     "tabs": { "all": "All", "films": "Films", "ads": "Commercials", "photo": "Photography" },
     "youtube_title": "From my YouTube channel",
     "youtube_sub": "Recent releases — tap to watch.",
@@ -77,7 +77,7 @@
   },
   "contact": {
     "title": "Get in touch",
-    "subtitle": "Whether you're interested in working together or just want to say hi, I'd love to hear from you.",
+    "subtitle": "Send the project type, shoot date, and city, and I will reply to discuss the details and next steps.",
     "form_title": "Send a message",
     "name": "Full name",
     "email": "Email address",

@@ -1,17 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Instagram, Youtube, ExternalLink, Play, X, Camera } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Instagram, Youtube, ExternalLink, Play, X, Camera, Loader2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-import { Magnetic } from "@/components/MagneticButton";
 import { ElasticImage } from "@/components/ElasticImage";
 import { useContent } from "@/lib/use-settings";
 import { supabase } from "@/integrations/supabase/client";
-import filmSet from "@/assets/film-set.jpg";
-import journey from "@/assets/journey.jpg";
-import lens from "@/assets/camera-lens.jpg";
-import heroImg from "@/assets/ahmad-hero.jpg";
 
 export const Route = createFileRoute("/work")({
   head: () => ({
@@ -19,10 +14,12 @@ export const Route = createFileRoute("/work")({
       { title: "الأعمال — أحمد حدّاد" },
       {
         name: "description",
-        content: "أعمال أحمد حدّاد السينمائية: أفلام قصيرة، إعلانات، تصوير فوتوغراف.",
+        content: "مختارات فعلية من الأفلام والإعلانات والتصوير الفوتوغرافي لأحمد حدّاد.",
       },
       { property: "og:title", content: "أعمال أحمد حدّاد" },
-      { property: "og:description", content: "مختارات من الأفلام والإعلانات والتصوير." },
+      { property: "og:description", content: "شاهد الأفلام والإعلانات والصور، وافتح روابط المشاريع الأصلية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: "https://ahmadhaddad.lovable.app/work" },
     ],
     links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/work" }],
@@ -42,26 +39,15 @@ type Work = {
   external_url: string | null;
 };
 
-const FALLBACK: Work[] = [
-  { id: "1", title: "لقطة سينمائية", category: "films", description: null, image_url: filmSet, video_url: null, external_url: null },
-  { id: "2", title: "رحلة", category: "films", description: null, image_url: journey, video_url: null, external_url: null },
-  { id: "3", title: "العدسة", category: "photo", description: null, image_url: lens, video_url: null, external_url: null },
-  { id: "4", title: "بورتريه", category: "photo", description: null, image_url: heroImg, video_url: null, external_url: null },
-  { id: "5", title: "خلف الكواليس", category: "ads", description: null, image_url: filmSet, video_url: null, external_url: null },
-  { id: "6", title: "ضوء", category: "ads", description: null, image_url: lens, video_url: null, external_url: null },
-];
-
 type Tab = "all" | "films" | "ads" | "photo";
+type Equipment = { id: string; work_id: string; name: string; image_url: string; created_at?: string };
 
-// B&H blocks hotlinking from www.bhphotovideo.com; its static CDN allows it.
-function fixGearUrl(u: string) {
-  if (!u) return u;
-  const cdn = u.match(/^https?:\/\/www\.bhphotovideo\.com\/cdn-cgi\/.*_(\d+_\d+\.jpg)$/);
+function fixGearUrl(url: string) {
+  if (!url) return url;
+  const cdn = url.match(/^https?:\/\/www\.bhphotovideo\.com\/cdn-cgi\/.*_(\d+_\d+\.jpg)$/);
   if (cdn) return `https://static.bhphoto.com/images/images500x500/${cdn[1]}`;
-  return u.replace(/^https?:\/\/www\.bhphotovideo\.com\/images\//, "https://static.bhphoto.com/images/");
+  return url.replace(/^https?:\/\/www\.bhphotovideo\.com\/images\//, "https://static.bhphoto.com/images/");
 }
-
-type Equipment = { id: string; work_id: string; name: string; image_url: string };
 
 function WorkPage() {
   const { t, i18n } = useTranslation();
@@ -69,51 +55,37 @@ function WorkPage() {
   const [tab, setTab] = useState<Tab>("all");
   const [openWork, setOpenWork] = useState<Work | null>(null);
   const [gearOpen, setGearOpen] = useState<string | null>(null);
-  const [showHint, setShowHint] = useState<string | null>(null);
   const [equipment, setEquipment] = useState<Record<string, Equipment[]>>({});
-  const { rows } = useContent<Work>("works");
-  const works = rows.length ? rows : FALLBACK;
-
-  useEffect(() => {
-    if (Object.keys(equipment).length > 0) {
-      const hasSeen = localStorage.getItem("hasSeenEqHint");
-      if (hasSeen) return;
-      const timer = setTimeout(() => {
-        const firstWithEq = works.find(w => equipment[w.id] && equipment[w.id].length > 0);
-        if (firstWithEq) {
-          setShowHint(firstWithEq.id);
-        }
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [works, equipment]);
+  const { rows: works, loading } = useContent<Work>("works");
 
   useEffect(() => {
     supabase.from("work_equipment").select("*").then(({ data }) => {
       if (!data) return;
-      const rank = (n: string) => {
-        const s = n.toLowerCase();
-        if (/a7|fx\d|fx3|fx6|fx30|camera|cam|bmpcc|red |alexa|komodo|canon r|zv-/.test(s)) return 0;
-        if (/mm|lens|anamorphic|diopter|f\/|t\d/.test(s)) return 1;
-        if (/gvm|godox|amaran|aputure|nanlite|light|ls-|sl-|arri|led/.test(s)) return 2;
+      const rank = (name: string) => {
+        const value = name.toLowerCase();
+        if (/a7|fx\d|camera|bmpcc|red |alexa|komodo|canon r|zv-/.test(value)) return 0;
+        if (/mm|lens|anamorphic|diopter|f\/|t\d/.test(value)) return 1;
+        if (/gvm|godox|amaran|aputure|nanlite|light|arri|led/.test(value)) return 2;
         return 3;
       };
       const grouped: Record<string, Equipment[]> = {};
-      data.forEach((eq: any) => {
-        if (!grouped[eq.work_id]) grouped[eq.work_id] = [];
-        grouped[eq.work_id].push({ ...eq, image_url: fixGearUrl(eq.image_url) });
+      data.forEach((item: Equipment) => {
+        if (!grouped[item.work_id]) grouped[item.work_id] = [];
+        grouped[item.work_id].push({ ...item, image_url: fixGearUrl(item.image_url) });
       });
-      Object.values(grouped).forEach((list) =>
-        list.sort((a: any, b: any) => rank(a.name) - rank(b.name) || String(a.created_at ?? "").localeCompare(String(b.created_at ?? ""))),
-      );
+      Object.values(grouped).forEach((list) => {
+        list.sort(
+          (a, b) =>
+            rank(a.name) - rank(b.name) ||
+            String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")),
+        );
+      });
       setEquipment(grouped);
     });
   }, []);
 
-  const items = tab === "all" ? works.filter((w) => w.category !== "photo") : works.filter((w) => w.category === tab);
-
-
-  const TABS: { key: Tab; label: string }[] = [
+  const items = tab === "all" ? works.filter((work) => work.category !== "photo") : works.filter((work) => work.category === tab);
+  const tabs: { key: Tab; label: string }[] = [
     { key: "all", label: t("work.tabs.all") },
     { key: "films", label: t("work.tabs.films") },
     { key: "ads", label: t("work.tabs.ads") },
@@ -124,296 +96,179 @@ function WorkPage() {
     <>
       <PageHero title={t("work.title")} subtitle={t("work.subtitle")} />
 
-      <div dir="rtl" className="mx-auto max-w-7xl px-6 py-16">
-        <div className="mb-10 flex flex-wrap justify-center gap-2">
-          {TABS.map((tb) => (
-            <Magnetic key={tb.key} strength={0.1} radius={70}>
-              <button
-                onClick={() => setTab(tb.key)}
-                className={
-                  "elastic-press rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors " +
-                  (tab === tb.key
-                    ? "is-picked bg-cinema text-cream"
-                    : "border border-cream/15 text-muted-foreground hover:text-cream")
-                }
-              >
-                {tb.label}
-              </button>
-            </Magnetic>
+      <div dir={isAr ? "rtl" : "ltr"} className="mx-auto max-w-7xl px-6 py-16 md:px-8">
+        <div className="mb-8 flex flex-wrap gap-2" role="tablist" aria-label={t("work.title")}>
+          {tabs.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              role="tab"
+              aria-selected={tab === item.key}
+              onClick={() => setTab(item.key)}
+              className={`rounded-sm border px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                tab === item.key
+                  ? "border-cinema bg-cinema text-cream"
+                  : "border-border text-muted-foreground hover:border-cream/40 hover:text-cream"
+              }`}
+            >
+              {item.label}
+            </button>
           ))}
         </div>
 
-        <motion.div
-          key={tab}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            opacity: { duration: 0.2 },
-            y: { type: "spring", stiffness: 380, damping: 26 },
-          }}
-          className="grid gap-4 grid-cols-2 md:grid-cols-4 auto-rows-[250px] md:auto-rows-[340px]"
-        >
-          {items.map((w, i) => {
-            const desc = isAr ? (w.description || "") : (w.description_en || w.description || "");
-            const hasLetter = !w.external_url && !w.video_url && desc.trim().length > 80;
-            const interactive = Boolean(w.external_url || w.video_url || hasLetter);
-            
-            // Bento Box Pattern exactly matching the screenshot
-            // Pattern repeats every 7 items:
-            // 0: 1 col, 1: 1 col, 2: 2 cols (Row 1)
-            // 3, 4, 5, 6: 1 col each (Row 2)
-            const mod = i % 7;
-            let bentoClass = "col-span-1 md:col-span-1 md:row-span-1";
-            if (mod === 2) {
-              bentoClass = "col-span-2 md:col-span-2 md:row-span-1";
-            }
-            const Wrapper = (props: any) =>
-              w.external_url || w.video_url ? (
-                <a
-                  href={w.external_url || w.video_url!}
-                  target="_blank"
-                  rel="noreferrer"
-                  {...props}
-                />
-              ) : hasLetter ? (
-                <button type="button" onClick={() => setOpenWork(w)} {...props} />
-              ) : (
-                <div {...props} />
-              );
-            return (
-              <Wrapper
-                key={w.id}
-                className={`group relative overflow-hidden rounded-sm text-right ${interactive ? "elastic-press-soft" : ""} ${bentoClass}`}
-              >
-                <ElasticImage
-                  src={w.image_url}
-                  alt={w.title}
-                  loading="lazy"
-                  className="size-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                />
-                <div className="grain-layer" style={{ opacity: 0.3 }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent opacity-80" />
-                {w.video_url && (
-                  <div className="absolute inset-0 grid place-items-center opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="grid size-14 place-items-center rounded-full bg-cinema text-cream">
-                      <Play className="size-5" />
+        {loading ? (
+          <div className="grid h-72 place-items-center rounded-sm bg-surface-deep">
+            <Loader2 className="size-6 animate-spin text-cream/60" aria-label="Loading" />
+          </div>
+        ) : items.length === 0 ? (
+          <p className="border-y border-border py-12 text-sm text-muted-foreground">
+            {isAr ? "لا توجد أعمال منشورة في هذا التصنيف." : "No published work in this category yet."}
+          </p>
+        ) : (
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="grid auto-rows-[260px] grid-cols-1 gap-4 sm:grid-cols-2 md:auto-rows-[340px] lg:grid-cols-4"
+          >
+            {items.map((work, index) => {
+              const title = isAr ? work.title : work.title_en || work.title;
+              const description = isAr ? work.description || "" : work.description_en || work.description || "";
+              const hasLetter = !work.external_url && !work.video_url && description.trim().length > 80;
+              const externalUrl = work.external_url || work.video_url;
+              const bentoClass = index % 7 === 2 ? "sm:col-span-2 lg:col-span-2" : "";
+
+              const content = (
+                <>
+                  <ElasticImage
+                    src={work.image_url}
+                    alt={title}
+                    loading="lazy"
+                    className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                  <div className="grain-layer-soft" style={{ opacity: 0.16 }} />
+                  <div className="absolute inset-x-0 bottom-0 bg-ink/90 p-4 text-cream">
+                    <p className="text-xs text-cream/65">{t(`work.tabs.${work.category}`)}</p>
+                    <h3 className="mt-1 text-xl">{title}</h3>
+                  </div>
+                  {work.video_url && (
+                    <span className="absolute left-4 top-4 grid size-10 place-items-center rounded-sm bg-cinema text-cream">
+                      <Play className="size-4" aria-hidden="true" />
                     </span>
-                  </div>
-                )}
-                {hasLetter && (
-                  <div className="absolute right-3 top-3 z-[2] rounded-full border border-cream/30 bg-[var(--ink)]/70 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-cream opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                    {isAr ? "اقرأ الرسالة" : "Read the letter"}
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 p-5 text-cream">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cinema">
-                    {w.category}
-                  </span>
-                  <h3 className="mt-1 font-arabic text-xl">{isAr ? w.title : (w.title_en || w.title)}</h3>
-                </div>
-                {/* Equipment gear button */}
-                {equipment[w.id] && equipment[w.id].length > 0 && (
-                  <div className="absolute left-3 top-3 z-[3] flex items-center gap-2">
-                    {showHint === w.id && !gearOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        className="bg-[var(--cinema)] text-[var(--cream)] text-[10px] font-bold px-3 py-1.5 rounded-sm whitespace-nowrap shadow-lg flex items-center gap-1.5 animate-pulse"
-                      >
-                        {isAr ? "انقر لرؤية المعدات" : "Click to see gear"}
-                        <svg className="w-3 h-3 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                      </motion.div>
-                    )}
+                  )}
+                  {hasLetter && (
+                    <span className="absolute right-4 top-4 border-b border-cream/60 bg-ink/75 px-2 py-1 text-xs text-cream">
+                      {isAr ? "اقرأ الرسالة" : "Read the letter"}
+                    </span>
+                  )}
+                </>
+              );
+
+              return (
+                <article key={work.id} className={`group relative overflow-hidden rounded-sm bg-surface-deep ${bentoClass}`}>
+                  {externalUrl ? (
+                    <a href={externalUrl} target="_blank" rel="noreferrer" className="block size-full" aria-label={title}>{content}</a>
+                  ) : hasLetter ? (
+                    <button type="button" onClick={() => setOpenWork(work)} className="block size-full text-start" aria-label={`${isAr ? "اقرأ رسالة" : "Read letter"}: ${title}`}>{content}</button>
+                  ) : (
+                    <div className="size-full">{content}</div>
+                  )}
+
+                  {equipment[work.id] && equipment[work.id].length > 0 && (
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setGearOpen(gearOpen === w.id ? null : w.id);
-                        if (showHint) {
-                          setShowHint(null);
-                          localStorage.setItem("hasSeenEqHint", "true");
-                        }
-                      }}
-                      className="elastic-press relative grid size-8 place-items-center rounded-full border border-cream/30 bg-[var(--ink)]/60 text-cream/80 backdrop-blur-sm hover:bg-cinema hover:text-cream hover:border-cinema"
-                      title={isAr ? "عرض المعدات" : "View gear"}
+                      onClick={() => setGearOpen(gearOpen === work.id ? null : work.id)}
+                      className="absolute left-4 top-4 z-[3] grid size-9 place-items-center rounded-sm border border-cream/25 bg-ink/80 text-cream transition-colors duration-200 hover:bg-cinema"
+                      aria-label={isAr ? `معدات ${title}` : `Gear used for ${title}`}
+                      aria-expanded={gearOpen === work.id}
                     >
-                      <Camera className="size-3.5" />
+                      <Camera className="size-4" />
                     </button>
-                  </div>
-                )}
-                {/* Equipment Drawer */}
-                <AnimatePresence>
-                  {gearOpen === w.id && equipment[w.id] && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{
-                        opacity: { duration: 0.2 },
-                        y: { type: "spring", stiffness: 320, damping: 22 },
-                      }}
-                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                      className="absolute inset-x-0 bottom-0 z-[4] shadow-2xl"
-                    >
-                      <div className="w-full h-full bg-[#DDD0C1] p-4 text-[var(--ink)] isolate relative z-[1]">
-                        <div className="flex items-center justify-between mb-3 border-b border-[var(--ink)]/10 pb-2">
-                          <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
-                            {isAr ? "المعدات المستخدمة" : "Gear Used"}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            {equipment[w.id].length > 3 && (
-                              <div className="flex gap-1 mr-4">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation(); e.preventDefault();
-                                    const el = document.getElementById(`eq-scroll-${w.id}`);
-                                    if (el) el.scrollBy({ left: isAr ? 150 : -150, behavior: 'smooth' });
-                                  }}
-                                  className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
-                                >
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation(); e.preventDefault();
-                                    const el = document.getElementById(`eq-scroll-${w.id}`);
-                                    if (el) el.scrollBy({ left: isAr ? -150 : 150, behavior: 'smooth' });
-                                  }}
-                                  className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/5 text-[var(--ink)]/60 hover:bg-[var(--ink)]/15 hover:text-[var(--ink)]"
-                                >
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-                                </button>
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); e.preventDefault(); setGearOpen(null); }}
-                              className="elastic-press grid size-5 place-items-center rounded-full bg-[var(--ink)]/10 text-[var(--ink)]/70 hover:bg-[var(--ink)]/20 hover:text-[var(--ink)]"
-                            >
-                              <X className="size-3" />
-                            </button>
-                          </div>
+                  )}
+
+                  <AnimatePresence>
+                    {gearOpen === work.id && equipment[work.id] && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute inset-x-0 bottom-0 z-[4] bg-paper p-4 text-paper-foreground shadow-2xl"
+                      >
+                        <div className="mb-3 flex items-center justify-between border-b border-paper-foreground/15 pb-2">
+                          <span className="text-sm font-semibold">{isAr ? "المعدات المستخدمة" : "Gear used"}</span>
+                          <button
+                            type="button"
+                            onClick={() => setGearOpen(null)}
+                            className="grid size-7 place-items-center rounded-sm hover:bg-paper-foreground/10"
+                            aria-label={isAr ? "إغلاق المعدات" : "Close gear"}
+                          >
+                            <X className="size-4" />
+                          </button>
                         </div>
-                        <div 
-                          id={`eq-scroll-${w.id}`}
-                          className="flex gap-4 overflow-x-auto pb-1 pt-1 scroll-smooth cursor-grab active:cursor-grabbing" 
-                          style={{ scrollbarWidth: "none" }}
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            const slider = e.currentTarget;
-                            slider.dataset.isDown = "true";
-                            slider.dataset.startX = (e.pageX - slider.offsetLeft).toString();
-                            slider.dataset.scrollLeft = slider.scrollLeft.toString();
-                          }}
-                          onMouseLeave={(e) => { e.currentTarget.dataset.isDown = "false"; }}
-                          onMouseUp={(e) => { e.currentTarget.dataset.isDown = "false"; }}
-                          onDragStart={(e) => e.preventDefault()}
-                          onMouseMove={(e) => {
-                            const slider = e.currentTarget;
-                            if (slider.dataset.isDown !== "true") return;
-                            e.preventDefault();
-                            const x = e.pageX - slider.offsetLeft;
-                            const startX = parseFloat(slider.dataset.startX || "0");
-                            const scrollLeft = parseFloat(slider.dataset.scrollLeft || "0");
-                            const walk = (x - startX) * 2;
-                            slider.scrollLeft = scrollLeft - walk;
-                          }}
-                        >
-                          {equipment[w.id].map((eq) => (
-                            <div key={eq.id} className="group/eq flex flex-col items-center gap-2 shrink-0">
-                              <div className="relative size-16 md:size-20 rounded-[4px] p-2 flex items-center justify-center pointer-events-none mix-blend-darken" style={{ mixBlendMode: 'darken' }}>
+                        <div className="flex gap-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "thin" }}>
+                          {equipment[work.id].map((item) => (
+                            <div key={item.id} className="group/eq flex w-20 shrink-0 flex-col items-center gap-2">
+                              <div className="flex size-16 items-center justify-center">
                                 <ElasticImage
-                                  src={eq.image_url}
-                                  alt={eq.name}
+                                  src={item.image_url}
+                                  alt={item.name}
                                   draggable={false}
-                                  onError={(e) => { (e.currentTarget.closest(".group\\/eq") as HTMLElement | null)?.style.setProperty("display", "none"); }}
-                                  className="max-h-full max-w-full object-contain mix-blend-darken transition-transform duration-500 group-hover/eq:scale-110 pointer-events-none select-none"
-                                  style={{ mixBlendMode: 'darken', transform: 'translateZ(0)' }}
+                                  onError={(event) => {
+                                    event.currentTarget.closest(".group\\/eq")?.setAttribute("hidden", "true");
+                                  }}
+                                  className="max-h-full max-w-full object-contain mix-blend-darken"
                                 />
                               </div>
-                              <span className="text-[8px] font-bold uppercase tracking-wider text-[var(--ink)]/70 text-center max-w-[80px] leading-tight group-hover/eq:text-[var(--ink)] transition-colors select-none">
-                                {eq.name}
-                              </span>
+                              <span className="text-center text-xs leading-5 text-paper-foreground/75">{item.name}</span>
                             </div>
                           ))}
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Wrapper>
-            );
-          })}
-        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </article>
+              );
+            })}
+          </motion.div>
+        )}
 
-        <div className="mt-14 flex justify-center">
-          <Magnetic strength={0.12} radius={90}>
-            <a
-              href="https://www.behance.net/ahmad00haddad"
-              target="_blank"
-              rel="noreferrer"
-              className="elastic-press inline-flex items-center gap-2 rounded-full bg-[var(--cinema)] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.25em] text-[var(--cream)]"
-            >
-              {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
-              <ExternalLink className="size-3.5" />
-            </a>
-          </Magnetic>
+        <div className="mt-12">
+          <a
+            href="https://www.behance.net/ahmad00haddad"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-sm bg-cinema px-6 py-3 text-sm font-semibold text-cream transition-colors duration-200 hover:bg-cinema-deep"
+          >
+            {isAr ? "عرض المزيد على Behance" : "View more on Behance"}
+            <ExternalLink className="size-4" />
+          </a>
         </div>
 
-
-        {/* social CTAs */}
-        <section className="mt-20 grid gap-4 md:grid-cols-2">
-          <Magnetic strength={0.08} radius={120}>
-            <a
-              href="https://www.youtube.com/@ahmad00haddad"
-              target="_blank"
-              rel="noreferrer"
-              className="elastic-press-soft group block rounded-sm border border-cream/10 bg-[var(--surface)] p-8 transition-all hover:border-cinema/60"
-            >
-              <div className="flex items-center gap-3 text-cinema">
-                <Youtube className="size-7" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                  YouTube
-                </span>
-              </div>
-              <h3 className="mt-4 font-arabic text-2xl text-cream">
-                {t("work.youtube_title")}
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">{t("work.youtube_sub")}</p>
-              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
-                @ahmad00haddad <ExternalLink className="size-3.5" />
-              </span>
-            </a>
-          </Magnetic>
-          <Magnetic strength={0.08} radius={120}>
-            <a
-              href="https://www.instagram.com/ahmad00haddad/"
-              target="_blank"
-              rel="noreferrer"
-              className="elastic-press-soft group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-8"
-            >
-              <div className="grain-layer" />
-              <div className="relative z-[2] text-[var(--cream)]">
-                <div className="flex items-center gap-3">
-                  <Instagram className="size-7" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-                    Instagram
-                  </span>
-                </div>
-                <h3 className="mt-4 font-arabic text-2xl">
-                  {t("work.instagram_title")}
-                </h3>
-                <p className="mt-2 text-sm opacity-90">{t("work.instagram_sub")}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
-                  {t("work.instagram_cta")} <ExternalLink className="size-3.5" />
-                </span>
-              </div>
-            </a>
-          </Magnetic>
+        <section className="mt-16 grid gap-4 border-t border-border pt-8 md:grid-cols-2">
+          <a
+            href="https://www.youtube.com/@ahmad00haddad"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-sm border border-border bg-surface p-6 transition-colors duration-200 hover:border-cinema/60 md:p-8"
+          >
+            <Youtube className="size-6 text-cinema" />
+            <h3 className="mt-4 text-2xl text-cream">{t("work.youtube_title")}</h3>
+            <p className="mt-3 text-sm leading-7 text-muted-foreground">{t("work.youtube_sub")}</p>
+            <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cinema">@ahmad00haddad <ExternalLink className="size-4" /></span>
+          </a>
+          <a
+            href="https://www.instagram.com/ahmad00haddad/"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-sm border border-border bg-surface p-6 transition-colors duration-200 hover:border-cinema/60 md:p-8"
+          >
+            <Instagram className="size-6 text-cinema" />
+            <h3 className="mt-4 text-2xl text-cream">{t("work.instagram_title")}</h3>
+            <p className="mt-3 text-sm leading-7 text-muted-foreground">{t("work.instagram_sub")}</p>
+            <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cinema">{t("work.instagram_cta")} <ExternalLink className="size-4" /></span>
+          </a>
         </section>
       </div>
 
@@ -424,54 +279,40 @@ function WorkPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
             onClick={() => setOpenWork(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={isAr ? openWork.title : openWork.title_en || openWork.title}
           >
-            <div className="absolute inset-0 bg-[var(--ink)]/85 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-ink/90" />
             <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ opacity: { duration: 0.25 }, scale: { type: "spring", stiffness: 320, damping: 24 } }}
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(event) => event.stopPropagation()}
               dir={isAr ? "rtl" : "ltr"}
-              className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm border border-[var(--cream)]/15 bg-[#f3ecdc] text-[#2a1f12] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 20% 10%, rgba(120,80,40,0.08), transparent 50%), radial-gradient(circle at 80% 90%, rgba(80,40,20,0.10), transparent 55%)",
-              }}
+              className="relative z-[2] max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-sm bg-paper text-paper-foreground shadow-2xl"
             >
               <button
                 type="button"
                 onClick={() => setOpenWork(null)}
-                aria-label="close"
-                className={`elastic-press sticky top-3 z-[5] grid size-9 place-items-center rounded-full bg-[#2a1f12]/15 text-[#2a1f12] backdrop-blur-sm transition-colors hover:bg-[#2a1f12]/30 ${isAr ? "float-left ml-3" : "float-right mr-3"}`}
-                style={{ marginTop: "0.75rem" }}
+                aria-label={isAr ? "إغلاق" : "Close"}
+                className={`sticky top-4 z-[5] mt-4 grid size-9 place-items-center rounded-sm bg-paper-foreground/10 hover:bg-paper-foreground/20 ${isAr ? "float-left ml-4" : "float-right mr-4"}`}
               >
                 <X className="size-4" />
               </button>
-              <div className="relative px-7 py-10 sm:px-12 sm:py-14">
-                <div className="grain-layer pointer-events-none absolute inset-0" style={{ opacity: 0.35, mixBlendMode: "multiply" }} />
-                <div className="mb-6 text-center">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#7a5a30]">
-                    {isAr ? "رسالة" : "A Letter"}
-                  </span>
-                  <div className="mx-auto mt-3 h-px w-16 bg-[#7a5a30]/40" />
-                  <h3 className={`mt-4 text-2xl sm:text-3xl ${isAr ? "font-arabic" : "font-serif italic"}`}>
-                    {isAr ? openWork.title : (openWork.title_en || openWork.title)}
-                  </h3>
-                </div>
-                <article
-                  className={`whitespace-pre-line text-[15px] leading-[2] sm:text-[16px] sm:leading-[2.05] ${isAr ? "font-arabic-body text-right" : "font-serif text-left"}`}
-                  style={{ textWrap: "pretty" as any }}
-                >
-                  {isAr
-                    ? (openWork.description || "")
-                    : (openWork.description_en || openWork.description || "")}
-                </article>
-                <div className="mt-10 text-center">
-                  <div className="mx-auto h-px w-12 bg-[#7a5a30]/40" />
-                  <p className={`mt-4 text-[11px] uppercase tracking-[0.35em] text-[#7a5a30] ${isAr ? "font-arabic" : ""}`}>
-                    — {isAr ? "أحمد حدّاد" : "Ahmad Haddad"}
+              <div className="relative px-8 py-12 sm:px-12 sm:py-16">
+                <div className="grain-layer-soft" style={{ opacity: 0.2 }} />
+                <div className="relative z-[2]">
+                  <h3 className="text-2xl sm:text-3xl">{isAr ? openWork.title : openWork.title_en || openWork.title}</h3>
+                  <div className="my-6 h-px w-16 bg-paper-foreground/30" />
+                  <article className="whitespace-pre-line font-arabic-body text-base leading-8">
+                    {isAr ? openWork.description || "" : openWork.description_en || openWork.description || ""}
+                  </article>
+                  <p className="mt-10 border-t border-paper-foreground/20 pt-4 text-sm text-paper-foreground/70">
+                    {isAr ? "أحمد حدّاد" : "Ahmad Haddad"}
                   </p>
                 </div>
               </div>

@@ -1,13 +1,8 @@
 import { type ReactNode } from "react";
-import { Aperture } from "lucide-react";
-import { useSettings } from "@/lib/use-settings";
 import { useTranslation } from "react-i18next";
 
-/**
- * Cinematic page header — red canvas with grain, matching the hero on /.
- */
+/** A direct editorial page header with the same cinematic grain as the homepage. */
 export function PageHero({
-  kicker,
   title,
   subtitle,
   children,
@@ -17,33 +12,19 @@ export function PageHero({
   subtitle?: ReactNode;
   children?: ReactNode;
 }) {
-  const { settings } = useSettings();
   const { i18n } = useTranslation();
   const isAr = i18n.language === "ar";
 
-  const defaultKicker = isAr
-    ? `${settings.brand.name_ar} · ${settings.brand.tagline_ar}`
-    : "HADDAD · CINEMATOGRAPHER";
-
   return (
-    <section dir="rtl" className="bg-[var(--ink)] p-3 md:p-4">
-      <div
-        className="relative overflow-hidden rounded-sm"
-        style={{ backgroundColor: "var(--cinema)" }}
-      >
-        <div className="grain-layer" />
-        <div className="relative z-[2] px-6 py-16 md:px-12 md:py-24 text-[var(--cream)]">
-          <div className="mb-6 flex items-center gap-3">
-            <Aperture className="size-8" strokeWidth={1.3} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-              {kicker ?? defaultKicker}
-            </span>
-          </div>
-          <h1 className="font-arabic text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.95] tracking-tight">
+    <section dir={isAr ? "rtl" : "ltr"} className="bg-ink p-4 md:p-8">
+      <div className="relative mx-auto max-w-[1600px] overflow-hidden rounded-sm bg-cinema">
+        <div className="grain-layer-soft" style={{ opacity: 0.24 }} />
+        <div className="relative z-[2] px-6 py-16 text-cream md:px-12 md:py-20">
+          <h1 className="max-w-5xl text-[clamp(2.75rem,6vw,5.5rem)] leading-[0.98] tracking-tight">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-5 max-w-2xl text-sm leading-relaxed opacity-90 md:text-base">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-cream/90 md:text-lg">
               {subtitle}
             </p>
           )}
