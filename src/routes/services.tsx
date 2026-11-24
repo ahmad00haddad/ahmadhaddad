@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import * as Icons from "lucide-react";
+import { Film, ExternalLink } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { useContent } from "@/lib/use-settings";
 
@@ -9,17 +10,9 @@ export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "الخدمات والأسعار — أحمد حدّاد" },
-      {
-        name: "description",
-        content: "خدمات أحمد حدّاد في تصوير الأفلام والإعلانات والفوتوغراف والتلوين والمونتاج.",
-      },
-      { property: "og:title", content: "الخدمات والأسعار — أحمد حدّاد" },
-      {
-        property: "og:description",
-        content: "تصوير أفلام وإعلانات، فوتوغراف، تلوين، ومونتاج، مع رابط مباشر لبطاقة الأسعار.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "description", content: "خدمات الإنتاج السينمائي والتصوير والأسعار من أحمد حدّاد." },
+      { property: "og:title", content: "الخدمات والأسعار" },
+      { property: "og:description", content: "أفلام، إعلانات، تلوين، تصوير، ومونتاج." },
       { property: "og:url", content: "https://ahmadhaddad.lovable.app/services" },
     ],
     links: [{ rel: "canonical", href: "https://ahmadhaddad.lovable.app/services" }],
@@ -28,12 +21,8 @@ export const Route = createFileRoute("/services")({
 });
 
 type Service = {
-  id: string;
-  title: string;
-  title_en: string | null;
-  description: string | null;
-  description_en: string | null;
-  icon: string;
+  id: string; title: string; title_en: string | null;
+  description: string | null; description_en: string | null; icon: string;
 };
 
 function ServicesPage() {
@@ -45,73 +34,83 @@ function ServicesPage() {
     <>
       <PageHero title={t("services.title")} subtitle={t("services.subtitle")} />
 
-      <div dir={isAr ? "rtl" : "ltr"} className="mx-auto max-w-7xl px-6 py-16 md:px-8 md:py-20">
+      <div dir="rtl" className="mx-auto max-w-7xl px-6 py-20">
         {rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {isAr ? "لا توجد خدمات منشورة بعد." : "No services have been published yet."}
-          </p>
+          <p className="text-center text-sm text-muted-foreground">لا توجد خدمات منشورة بعد. أضفها من لوحة التحكم.</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {rows.map((service, index) => {
-              const title = isAr ? service.title : service.title_en || service.title;
-              const description = isAr
-                ? service.description
-                : service.description_en || service.description;
+            {rows.map((s, i) => {
+              const Icon = (Icons as any)[s.icon] || Film;
+              const title = isAr ? s.title : (s.title_en || s.title);
+              const desc = isAr ? s.description : (s.description_en || s.description);
               return (
-                <motion.article
-                  key={service.id}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
+                <motion.div
+                  key={s.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.25, delay: index * 0.04 }}
-                  className="rounded-sm border border-border bg-surface p-6 md:p-8"
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                  className="elastic-press-soft group relative overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-7 transition-all hover:border-cinema/60"
                 >
-                  <h3 className="text-2xl text-cream">{title}</h3>
-                  {description && (
-                    <p className="mt-4 text-sm leading-7 text-muted-foreground">{description}</p>
-                  )}
-                </motion.article>
+                  <div className="grid size-12 place-items-center rounded-sm bg-cinema/15 text-cinema transition-colors group-hover:bg-cinema group-hover:text-cream">
+                    <Icon className="size-6" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="mt-5 font-arabic text-2xl text-cream">{title}</h3>
+                  {desc && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>}
+                  <span className="absolute -left-3 -bottom-4 font-display text-7xl font-bold text-cinema/10">
+                    0{i + 1}
+                  </span>
+                </motion.div>
               );
             })}
           </div>
         )}
 
-        <section className="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-label={isAr ? "روابط إضافية" : "Additional links"}>
+        <section className="mt-20 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <a
             href="https://haddad-rate-card.lovable.app/"
             target="_blank"
             rel="noreferrer"
-            className="group rounded-sm bg-cinema p-8 text-cream transition-colors duration-200 hover:bg-cinema-deep"
+            className="elastic-press-soft group relative block overflow-hidden rounded-sm bg-[var(--cinema)] p-10"
           >
-            <h3 className="text-3xl">{t("services.rate_card_title")}</h3>
-            <p className="mt-4 text-sm leading-7 text-cream/90">{t("services.rate_card_sub")}</p>
-            <span className="mt-8 inline-flex items-center gap-2 border-b border-cream/60 pb-1 text-sm font-semibold">
-              {t("services.rate_card_cta")} <ExternalLink className="size-4" />
-            </span>
+            <div className="grain-layer" />
+            <div className="relative z-[2] text-[var(--cream)]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80">Rate Card</span>
+              <h3 className="mt-3 font-arabic text-3xl">{t("services.rate_card_title")}</h3>
+              <p className="mt-3 text-sm opacity-90">{t("services.rate_card_sub")}</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
+                {t("services.rate_card_cta")} <ExternalLink className="size-3.5" />
+              </span>
+            </div>
           </a>
           <a
             href="https://faiihouse.lovable.app/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-sm border border-border bg-surface p-8 transition-colors duration-200 hover:border-cinema/60"
+            className="elastic-press-soft group block rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
           >
-            <h3 className="text-3xl text-cream">{t("services.company_title")}</h3>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">{t("services.company_sub")}</p>
-            <span className="mt-8 inline-flex items-center gap-2 border-b border-cinema pb-1 text-sm font-semibold text-cinema">
-              {t("services.company_cta")} <ExternalLink className="size-4" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">Studio</span>
+            <h3 className="mt-3 font-arabic text-3xl text-cream">{t("services.company_title")}</h3>
+            <p className="mt-3 text-sm text-muted-foreground">{t("services.company_sub")}</p>
+            <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
+              {t("services.company_cta")} <ExternalLink className="size-3.5" />
             </span>
           </a>
           <a
             href="https://haddad-rate-card.lovable.app/equipment"
             target="_blank"
             rel="noreferrer"
-            className="rounded-sm border border-border bg-surface p-8 transition-colors duration-200 hover:border-cinema/60"
+            className="elastic-press-soft group relative block overflow-hidden rounded-sm border border-cream/10 bg-[var(--surface)] p-10 transition-all hover:border-cinema/60"
           >
-            <h3 className="text-3xl text-cream">{t("services.equipment_title")}</h3>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">{t("services.equipment_sub")}</p>
-            <span className="mt-8 inline-flex items-center gap-2 border-b border-cinema pb-1 text-sm font-semibold text-cinema">
-              {t("services.equipment_cta")} <ExternalLink className="size-4" />
-            </span>
+            <div className="grain-layer" />
+            <div className="relative z-[2]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cinema">Gear</span>
+              <h3 className="mt-3 font-arabic text-3xl text-cream">{t("services.equipment_title")}</h3>
+              <p className="mt-3 text-sm text-muted-foreground">{t("services.equipment_sub")}</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cinema">
+                {t("services.equipment_cta")} <ExternalLink className="size-3.5" />
+              </span>
+            </div>
           </a>
         </section>
       </div>

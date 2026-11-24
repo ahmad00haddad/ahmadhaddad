@@ -12,7 +12,7 @@ export function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="elastic-press inline-flex items-center gap-2 rounded-sm border border-brass/40 px-3 py-1.5 text-xs font-semibold text-brass transition-colors hover:bg-brass hover:text-surface-deep"
+      className="elastic-press inline-flex items-center gap-2 rounded-full border border-brass/40 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-brass transition-colors hover:bg-brass hover:text-[var(--surface-deep)]"
       aria-label="Switch language"
     >
       <Globe className="size-3.5" />

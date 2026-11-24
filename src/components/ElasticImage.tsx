@@ -1,8 +1,22 @@
-import type { ImgHTMLAttributes } from "react";
+import { useState, type ImgHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 type ElasticImageProps = ImgHTMLAttributes<HTMLImageElement>;
 
-/** Kept as a shared image primitive; loading no longer triggers a bounce. */
-export function ElasticImage(props: ElasticImageProps) {
-  return <img {...props} />;
+/** Replays a tiny settle only when a new image source finishes loading. */
+export function ElasticImage({ className, onLoad, src, ...props }: ElasticImageProps) {
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const loaded = loadedSrc === src;
+
+  return (
+    <img
+      {...props}
+      src={src}
+      onLoad={(event) => {
+        setLoadedSrc(src ?? null);
+        onLoad?.(event);
+      }}
+      className={cn(loaded && "img-settle", className)}
+    />
+  );
 }

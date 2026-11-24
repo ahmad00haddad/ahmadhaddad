@@ -36,10 +36,10 @@ export function Header() {
     <header className="sticky top-0 z-50 flex justify-center w-full px-0 pt-0 md:pt-2 pointer-events-none">
       <motion.div
         layout
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
         className={`pointer-events-auto flex items-center justify-between overflow-hidden transition-all duration-300 ${
           isPill
-            ? "rounded-sm px-5 py-2 gap-4 backdrop-blur-md border border-border/40 bg-surface-deep/95 shadow-lg"
+            ? "rounded-full px-5 py-2 gap-4 backdrop-blur-md border border-[var(--border)]/40 bg-[var(--surface-deep)]/85 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]"
             : "px-6 py-4 w-full max-w-7xl gap-6 bg-transparent border-transparent"
         }`}
       >
@@ -86,7 +86,7 @@ export function Header() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-brass"
+                  className="text-sm uppercase tracking-wider text-muted-foreground transition-colors hover:text-brass"
                   activeProps={{ className: "text-brass" }}
                   activeOptions={{ exact: item.to === "/" }}
                 >
@@ -113,7 +113,11 @@ export function Header() {
             initial={{ opacity: 0, y: -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
+            transition={{
+              opacity: { duration: 0.18 },
+              y: { type: "spring", stiffness: 380, damping: 26 },
+              scale: { type: "spring", stiffness: 380, damping: 26 },
+            }}
             className="absolute left-2 right-2 top-20 flex flex-col gap-1 rounded-sm border border-border bg-[var(--surface-deep)] px-6 py-4 shadow-2xl md:hidden pointer-events-auto"
           >
             {navItems.map((item) => (
@@ -121,7 +125,7 @@ export function Header() {
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className="elastic-press-soft rounded-sm px-3 py-3 text-base text-muted-foreground hover:bg-surface hover:text-brass"
+                className="elastic-press-soft rounded-md px-3 py-3 text-base text-muted-foreground hover:bg-white/5 hover:text-brass"
                 activeProps={{ className: "text-brass" }}
                 activeOptions={{ exact: item.to === "/" }}
               >
