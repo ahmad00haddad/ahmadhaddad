@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Instagram, Youtube, ExternalLink, Play, X, Camera, Share2, Check } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
@@ -80,6 +80,7 @@ function WorkPage() {
   const { work: sharedId } = Route.useSearch();
   const navigate = useNavigate({ from: "/work" });
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const trackedShared = useRef<string | null>(null);
 
   const isLetter = (w: Work) => {
     const d = isAr ? w.description || "" : w.description_en || w.description || "";
@@ -88,14 +89,14 @@ function WorkPage() {
 
   const openLetter = (w: Work | null) => {
     setOpenWork(w);
-    if (w) track(`letter_open: ${w.title}`, { key: "letter", value: w.title });
+    if (w) track("letter_open", { title: w.title, workId: w.id });
     navigate({ search: w ? { work: w.id } : {}, replace: true });
   };
 
   const shareWork = async (w: Work) => {
     const url = `${window.location.origin}/work?work=${encodeURIComponent(w.id)}`;
     const title = isAr ? w.title : w.title_en || w.title;
-    track(`share: ${w.title}`, { key: "shared", value: w.title });
+    track("share", { title: w.title, workId: w.id });
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
@@ -119,7 +120,10 @@ function WorkPage() {
     const target = rows.find((w) => w.id === sharedId);
     if (!target) return;
     setTab(target.category as Tab);
-    track(`shared_link_visit: ${target.title}`, { key: "visited_shared", value: target.title });
+    if (trackedShared.current !== sharedId) {
+      trackedShared.current = sharedId;
+      track("shared_link_visit", { title: target.title, workId: target.id });
+    }
     if (isLetter(target)) {
       setOpenWork(target);
     } else {

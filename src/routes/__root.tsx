@@ -5,6 +5,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -14,6 +15,7 @@ import { MotionConfig } from "framer-motion";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import "../i18n";
+import { track } from "../lib/track";
 import { I18nBoundary } from "../components/I18nBoundary";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -140,6 +142,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    track("page_view");
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

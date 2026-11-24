@@ -54,6 +54,7 @@ function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/admin-stats" className="rounded-full border border-[var(--cream)]/40 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[var(--cream)]/10">الإحصائيات</Link>
             <Link to="/" className="rounded-full border border-[var(--cream)]/40 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[var(--cream)]/10">الموقع</Link>
             <button onClick={logout} className="inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em]">
               <LogOut className="size-3.5" /> خروج
