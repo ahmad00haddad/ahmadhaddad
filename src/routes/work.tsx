@@ -7,6 +7,7 @@ import { PageHero } from "@/components/PageHero";
 import { Magnetic } from "@/components/MagneticButton";
 import { ElasticImage } from "@/components/ElasticImage";
 import { useContent } from "@/lib/use-settings";
+import { track } from "@/lib/track";
 import { supabase } from "@/integrations/supabase/client";
 import filmSet from "@/assets/film-set.jpg";
 import journey from "@/assets/journey.jpg";
@@ -87,12 +88,14 @@ function WorkPage() {
 
   const openLetter = (w: Work | null) => {
     setOpenWork(w);
+    if (w) track(`letter_open: ${w.title}`, { key: "letter", value: w.title });
     navigate({ search: w ? { work: w.id } : {}, replace: true });
   };
 
   const shareWork = async (w: Work) => {
     const url = `${window.location.origin}/work?work=${encodeURIComponent(w.id)}`;
     const title = isAr ? w.title : w.title_en || w.title;
+    track(`share: ${w.title}`, { key: "shared", value: w.title });
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
@@ -116,6 +119,7 @@ function WorkPage() {
     const target = rows.find((w) => w.id === sharedId);
     if (!target) return;
     setTab(target.category as Tab);
+    track(`shared_link_visit: ${target.title}`, { key: "visited_shared", value: target.title });
     if (isLetter(target)) {
       setOpenWork(target);
     } else {
