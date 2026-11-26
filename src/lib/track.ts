@@ -35,7 +35,8 @@ export function track(event: string, meta: Meta = {}) {
     }
   }
 
-  void (supabase as any).from("site_events").insert({
+  // The query builder is lazy: it only sends when .then() is called.
+  (supabase as any).from("site_events").insert({
     event,
     path,
     work_id: meta.workId ?? null,
@@ -43,5 +44,8 @@ export function track(event: string, meta: Meta = {}) {
     visitor_id: visitorId(),
     referrer,
     device: window.innerWidth < 768 ? "mobile" : "desktop",
-  });
+  }).then(
+    () => undefined,
+    () => undefined,
+  );
 }
